@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Next.js build output & caches
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment variables & secrets (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env*
+
+# Local media, audio files, large raw data & logs
+audio_files/
+transcripts/
+output/
+*.mp3
+*.wav
+*.m4a
+*.log
+*.txt
+
+# OS & IDE
+.DS_Store
+*.pem
+.vscode/
+.idea/
+.vercel

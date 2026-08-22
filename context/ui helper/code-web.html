@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Citizens Library - Explore The Archive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-secondary-container": "#71612f",
+                            "surface-variant": "#e1e3e4",
+                            "background": "#f8f9fa",
+                            "inverse-surface": "#2e3132",
+                            "on-secondary-fixed": "#231b00",
+                            "tertiary": "#6b3700",
+                            "error": "#ba1a1a",
+                            "on-tertiary-fixed-variant": "#6e3900",
+                            "tertiary-fixed": "#ffdcc3",
+                            "secondary-container": "#f4dea0",
+                            "surface": "#f8f9fa",
+                            "on-error": "#ffffff",
+                            "inverse-on-surface": "#f0f1f2",
+                            "surface-container-high": "#e7e8e9",
+                            "primary-fixed": "#d7e2ff",
+                            "on-primary-fixed-variant": "#044590",
+                            "on-secondary-fixed-variant": "#534616",
+                            "on-primary-container": "#c3d6ff",
+                            "outline-variant": "#c3c6d3",
+                            "surface-container-low": "#f3f4f5",
+                            "on-tertiary": "#ffffff",
+                            "error-container": "#ffdad6",
+                            "secondary": "#6c5d2b",
+                            "primary-fixed-dim": "#acc7ff",
+                            "on-surface-variant": "#434751",
+                            "tertiary-fixed-dim": "#ffb77e",
+                            "secondary-fixed-dim": "#dac589",
+                            "inverse-primary": "#acc7ff",
+                            "surface-container-highest": "#e1e3e4",
+                            "on-background": "#191c1d",
+                            "surface-container": "#edeeef",
+                            "surface-container-lowest": "#ffffff",
+                            "tertiary-container": "#8e4b00",
+                            "on-tertiary-container": "#ffcba5",
+                            "on-primary": "#ffffff",
+                            "on-surface": "#191c1d",
+                            "on-primary-fixed": "#001a40",
+                            "surface-tint": "#2d5da9",
+                            "primary": "#00438e",
+                            "outline": "#737782",
+                            "on-error-container": "#93000a",
+                            "primary-container": "#2a5ba7",
+                            "surface-bright": "#f8f9fa",
+                            "on-tertiary-fixed": "#2f1500",
+                            "surface-dim": "#d9dadb",
+                            "secondary-fixed": "#f7e1a3",
+                            "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "container-margin": "20px",
+                            "xl": "64px",
+                            "md": "24px",
+                            "gutter": "16px",
+                            "base": "8px",
+                            "sm": "12px",
+                            "xs": "4px",
+                            "lg": "40px"
+                    },
+                    "fontFamily": {
+                            "label-sm": ["Inter"],
+                            "label-md": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "headline-lg-mobile": ["Inter"],
+                            "body-md": ["Inter"],
+                            "headline-lg": ["Inter"],
+                            "display-lg": ["Inter"],
+                            "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                            "label-sm": ["12px", {"lineHeight": "1.0", "fontWeight": "500"}],
+                            "label-md": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                            "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                            "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                            "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                            "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: oklch(0.98 0.01 260); /* OKLCH soft off-white background */
+        }
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        /* Custom scrollbar for filter ribbon */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-on-background min-h-screen flex flex-col pb-[120px]">
+<!-- TopNavBar (Web Only) -->
+<header class="hidden md:flex bg-surface/80 backdrop-blur-md fixed top-0 w-full z-50 justify-between items-center px-container-margin h-16 border-b border-white/20 shadow-sm">
+<div class="text-headline-md font-headline-md font-bold text-primary">Citizens Library</div>
+<nav class="flex gap-lg">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 active:scale-90 transition-transform" href="#">Browse Library</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-body-md text-body-md scale-95 active:scale-90 transition-transform" href="#">Ask AI</a>
+</nav>
+<div class="flex gap-md text-primary">
+<button class="scale-95 active:scale-90 transition-transform hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+<button class="scale-95 active:scale-90 transition-transform hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Immersive Hero Header -->
+<section class="w-full pt-24 md:pt-32 pb-16 px-container-margin max-w-[1440px] mx-auto flex flex-col items-center justify-center text-center">
+<!-- Segment Toggle -->
+<div class="glass-panel rounded-full p-1 flex items-center mb-12 w-full max-w-sm relative">
+<div class="absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-sm transition-transform duration-300 z-0"></div>
+<button class="flex-1 py-3 px-6 text-primary font-label-md text-label-md z-10 relative">Browse Library</button>
+<button class="flex-1 py-3 px-6 text-on-surface-variant font-label-md text-label-md z-10 relative">Ask AI</button>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-background mb-4">Explore The Archive</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Discover timeless wisdom and spiritual guidance through our curated collection of sermons and teachings.</p>
+</section>
+<!-- Sticky Filter Ribbon -->
+<div class="sticky top-0 md:top-16 z-40 w-full glass-panel border-t-0 border-x-0 py-4 px-container-margin shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+<div class="max-w-[1440px] mx-auto flex items-center gap-md">
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-surface-container-low text-primary hover:bg-surface-container transition-colors shrink-0">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<div class="flex items-center gap-sm overflow-x-auto hide-scrollbar w-full pb-1">
+<button class="px-5 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Preacher</button>
+<button class="px-5 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Series</button>
+<button class="px-5 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Date</button>
+<button class="px-5 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Topics</button>
+<button class="px-5 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Scripture</button>
+</div>
+</div>
+</div>
+<!-- Main Content: Sermon Grid -->
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-container-margin py-lg pb-40">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+<!-- Sermon Card 1 -->
+<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A serene, cinematic shot of a modern church stage, bathed in soft, warm light mode illumination. The atmosphere is calm and reverent, emphasizing a premium, editorial visual style with deep blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrGI9DztfhtoNe3SUMb4qADNdV6ef9DFHpYdrAzj_vytucwNhLLnHrrIGgvxjaCWu8hNVKeltVPorc-Np83JXf0NZ3WnkFQmWY7ehApggBbjLX9qfNAwgRBCwtkIeHnomZmdaYnvbSEhIBw1JhPareKFGYkurINyioPfY8hfGECWsakbsZ4pszlxP0_sVbvS83ic328pCw9NoVL70hoB9yji5bNOQLFL8PhXm0VN_CIV-tIetbByFn3XsuikurcrfBJjGLaToy0oiQ"/>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white font-label-sm text-label-sm px-2 py-1 rounded text-xs">45:20</div>
+</div>
+<div class="p-5 flex flex-col gap-sm">
+<span class="text-primary font-label-sm text-label-sm uppercase tracking-wider">Faith Fundamentals</span>
+<h3 class="font-headline-md text-headline-md text-on-background line-clamp-2">The Architecture of Belief in a Modern Age</h3>
+<div class="flex items-center text-on-surface-variant font-label-md text-label-md mt-2">
+<span>Dr. Sarah Jenkins</span>
+<span class="mx-2 text-outline-variant">•</span>
+<span>Oct 12, 2023</span>
+</div>
+</div>
+</article>
+<!-- Sermon Card 2 -->
+<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A beautifully lit open Bible resting on a minimalist wooden podium. High-key lighting creates a bright, ethereal glow, aligning with a premium, sacred modernism design philosophy. Soft focus background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1WvPluwfqkWunBpequ1VOwqVA_pqPrD3TlwzQCjBJUsmW3OOK9c_frmzuMsou7cyQxWMoO9XqLCH7EQl0wt6ChnGeaw3Hcbj-c-vMoVtjmP1cx9-mt9FpJOGEb-2DFKHBKPXJVxlIifMxBEbODkePCpue3IkszytR2y7R6kAqLENaOrhD9eFOcde8DDzwpFW8Tz_e7Wujw-YGlyLkCfhP9qBKa-eeU0UIXtJZE4FsVN6Rql7QmV48pVQ1VZ0GaIkjjIzMFtAW2G2y"/>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white font-label-sm text-label-sm px-2 py-1 rounded text-xs">38:15</div>
+</div>
+<div class="p-5 flex flex-col gap-sm">
+<span class="text-secondary font-label-sm text-label-sm uppercase tracking-wider">Wisdom Literature</span>
+<h3 class="font-headline-md text-headline-md text-on-background line-clamp-2">Navigating Uncertainty with Ancient Texts</h3>
+<div class="flex items-center text-on-surface-variant font-label-md text-label-md mt-2">
+<span>Rev. Marcus Thorne</span>
+<span class="mx-2 text-outline-variant">•</span>
+<span>Sep 28, 2023</span>
+</div>
+</div>
+</article>
+<!-- Sermon Card 3 -->
+<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Abstract rendering of light passing through a contemporary stained glass window, casting soft, geometric patterns on a pristine white surface. The image exudes a calm, media-focused elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnunHekNCnvz-7MCpnWMgDUflPfvsEK8bKcmgWsw85hnnqRLl7bcwIZ-CKpqY2-JnqP1lzvgpp09CSbUH2qE_pXpJKU5Xq_4D7CSZHeICaJkh_jiUk1y8CC2gzqtrA_0PT6f0Kq7hJ1V9p2IxtpVri1KqpIfF-ZJ7f8I66ZUO4IoR7bQupKuhTvNQuV7EmAlONg6IpP8FXbR6CUeHPjFotPI-0NUncNbyOXITHESviwpYQsGH2cIObABFQLFrgsu1T8d5aYm8nXF_l"/>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white font-label-sm text-label-sm px-2 py-1 rounded text-xs">52:10</div>
+</div>
+<div class="p-5 flex flex-col gap-sm">
+<span class="text-tertiary font-label-sm text-label-sm uppercase tracking-wider">Community Series</span>
+<h3 class="font-headline-md text-headline-md text-on-background line-clamp-2">Building Sanctuaries in Digital Spaces</h3>
+<div class="flex items-center text-on-surface-variant font-label-md text-label-md mt-2">
+<span>Elena Rostova</span>
+<span class="mx-2 text-outline-variant">•</span>
+<span>Sep 15, 2023</span>
+</div>
+</div>
+</article>
+<!-- Sermon Card 4 -->
+<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A wide, sweeping shot of a quiet morning landscape viewed from within a minimalist architectural space. The mood is highly contemplative and airy, matching a light-mode editorial visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDri57Jj9BLuE2_GTJqJ2i2ALqpdrAEvkIembtVpO1m-VuQt_YEthqxt_zj7SAqrfpOluFny_mc7banfMj1q4lRXQ6jR1rp7DfVTpcR8rz0tkxJsn44nyCW_3Q1nD1sCGzzIpl4iuzKXhD1v3KkJdD45exl70hKRo4q5jCBMMumeO5TLKgKr0ShRQqOVaazpazgXTLyVWRB2FFBr-YjXdARKSL0ok2TyS_2bpRkXKQadNjWwb8sF3BGS3Hr77Ap3vfQ2qnxN6d6eDw2"/>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white font-label-sm text-label-sm px-2 py-1 rounded text-xs">41:05</div>
+</div>
+<div class="p-5 flex flex-col gap-sm">
+<span class="text-primary font-label-sm text-label-sm uppercase tracking-wider">Morning Meditations</span>
+<h3 class="font-headline-md text-headline-md text-on-background line-clamp-2">Finding Stillness Before the Dawn</h3>
+<div class="flex items-center text-on-surface-variant font-label-md text-label-md mt-2">
+<span>Dr. Sarah Jenkins</span>
+<span class="mx-2 text-outline-variant">•</span>
+<span>Aug 30, 2023</span>
+</div>
+</div>
+</article>
+<!-- Sermon Card 5 -->
+<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up shot of hands holding a notebook and pen during a lecture. The lighting is bright and clean, highlighting a focus on study and reflection within a premium interface design context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAaZO9459RX-OqtJW6wEArwr9ofWqHgE6NImJgdNMLeaYtCVcz4cShz52DbCSbUyJ6pelvlBD5vqF9zSC3DSzjwYavzdxD5JV-1cr_zPhTZdm4mOGJwFGP7w6Z1IU8ElCuelMtlnTWRL20weBqXp9jVJ_126jqgaWdqdzkz57iWDzOod_Tsh0EgN8dFSIcRToCaKwAOwAYEX5DeStrBNdg_WIBBaLT6sIPctOOURxB5EbmeIZfvaQ-CiINCOlB5_TTEr8pJDtnRmU6"/>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white font-label-sm text-label-sm px-2 py-1 rounded text-xs">35:50</div>
+</div>
+<div class="p-5 flex flex-col gap-sm">
+<span class="text-primary font-label-sm text-label-sm uppercase tracking-wider">Theological Study</span>
+<h3 class="font-headline-md text-headline-md text-on-background line-clamp-2">The Ethics of Grace in Everyday Life</h3>
+<div class="flex items-center text-on-surface-variant font-label-md text-label-md mt-2">
+<span>Rev. Marcus Thorne</span>
+<span class="mx-2 text-outline-variant">•</span>
+<span>Aug 12, 2023</span>
+</div>
+</div>
+</article>
+<!-- Sermon Card 6 -->
+<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+<div class="relative aspect-video w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A minimalist arrangement of stones stacked in balance against a clean, off-white background. The image conveys peace, structure, and spiritual grounding, suitable for a sacred modernism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxs7AOkLDNNKPSnXlc15vlgUnTSnPmm2iiwOYSlkYdDpHX87aRY-rELExJhK9q3_ujxgAmPdir8H5JRwpTjn5FDvutwr049QCZ8MvrbTMf_-FmR8aj8mZHltrhbXUBYfiks52lGTZLnZmMbtndGF8Y-naAAqTN7JfDAv_W29eOS8vRcsQ9jh73Y-XLs7TbAHk1fGs_omGpmRuZPkAsb5SuIdk9osIMIT-pjh4YsZ0JX7i4awF0ccYDNsHdG6ydnE9XrCTw2aOG1Kn3"/>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white font-label-sm text-label-sm px-2 py-1 rounded text-xs">48:30</div>
+</div>
+<div class="p-5 flex flex-col gap-sm">
+<span class="text-secondary font-label-sm text-label-sm uppercase tracking-wider">Foundations</span>
+<h3 class="font-headline-md text-headline-md text-on-background line-clamp-2">Establishing a Practice of Daily Prayer</h3>
+<div class="flex items-center text-on-surface-variant font-label-md text-label-md mt-2">
+<span>Elena Rostova</span>
+<span class="mx-2 text-outline-variant">•</span>
+<span>Jul 25, 2023</span>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-white/60 backdrop-blur-xl docked full-width bottom-0 rounded-t-xl bg-white/60 border-t border-white/80 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out fixed left-0 w-full z-50 flex justify-around items-center h-20 px-4 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-primary hover:opacity-80 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="library_books" data-weight="fill" style="font-variation-settings: 'FILL' 1;">library_books</span>
+            Library
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="search">search</span>
+            Search
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="auto_awesome">auto_awesome</span>
+            Ask AI
+        </a>
+</nav>
+</body></html>

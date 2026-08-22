@@ -1,0 +1,17 @@
+{
+  "name": "Freedom Messages",
+  "short_name": "Freedom Messages",
+  "description": "A curated library of sermon audio recordings by Apostle Muyiwa Areo and ministers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030303",
+  "theme_color": "#030303",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

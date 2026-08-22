@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Citizens Library - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#71612f",
+                      "primary": "#00438e",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed": "#231b00",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-fixed": "#2f1500",
+                      "inverse-surface": "#2e3132",
+                      "outline-variant": "#c3c6d3",
+                      "surface-dim": "#d9dadb",
+                      "tertiary": "#6b3700",
+                      "surface-bright": "#f8f9fa",
+                      "on-primary-fixed": "#001a40",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#dac589",
+                      "tertiary-container": "#8e4b00",
+                      "surface-container-low": "#f3f4f5",
+                      "on-surface": "#191c1d",
+                      "background": "#f8f9fa",
+                      "surface": "#f8f9fa",
+                      "on-tertiary-container": "#ffcba5",
+                      "tertiary-fixed": "#ffdcc3",
+                      "on-secondary-fixed-variant": "#534616",
+                      "surface-container-high": "#e7e8e9",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#e1e3e4",
+                      "surface-container": "#edeeef",
+                      "primary-fixed-dim": "#acc7ff",
+                      "surface-tint": "#2d5da9",
+                      "inverse-primary": "#acc7ff",
+                      "on-primary-container": "#c3d6ff",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "on-tertiary-fixed-variant": "#6e3900",
+                      "on-background": "#191c1d",
+                      "on-primary-fixed-variant": "#044590",
+                      "primary-fixed": "#d7e2ff",
+                      "secondary": "#6c5d2b",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-container": "#f4dea0",
+                      "surface-container-highest": "#e1e3e4",
+                      "primary-container": "#2a5ba7",
+                      "inverse-on-surface": "#f0f1f2",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb77e",
+                      "on-surface-variant": "#434751",
+                      "outline": "#737782",
+                      "secondary-fixed": "#f7e1a3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "gutter": "16px",
+                      "xl": "64px",
+                      "md": "24px",
+                      "base": "8px",
+                      "container-margin": "20px",
+                      "sm": "12px",
+                      "lg": "40px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: oklch(0.98 0.01 260); /* Soft off-white as requested */
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Subtly hide scrollbar for horizontal scrolling areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-background font-body-md antialiased min-h-screen flex flex-col relative md:hidden pb-32">
+<!-- TopAppBar -->
+<header class="bg-white/60 dark:bg-surface/60 backdrop-blur-md docked full-width top-0 sticky z-50 border-b border-white/80 dark:border-outline-variant/20 shadow-sm flex justify-between items-center w-full px-container-margin py-base">
+<button class="flex items-center justify-center p-2 rounded-full text-primary dark:text-primary-fixed-dim hover:opacity-80 transition-opacity scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary dark:text-primary-fixed-dim tracking-tight">Citizens Library</h1>
+<div class="flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:opacity-80 transition-opacity scale-95 transition-transform duration-200">
+<img class="w-8 h-8 rounded-full object-cover shadow-sm border border-white/50" data-alt="A small circular avatar placeholder image. Light, minimalist styling, professional headshot in high-key lighting, soft white background, perfectly suited for a premium modern interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfyhBfWlKvnQ_yQ3k06ZinolEptAegUsY8StW5VQcfcJK4cdoLtvMQ8jHpmme_1frciEj2sUeL9tob-LVyMod5uLHe5nEYX9xoqis65vsXdNhnEZwKiTuShaVSvmNlTHIJk_sxCP4lop8Dohy2PLa33szQW0KVawcNx_ncK1C0Is8oQmhS3WKFizWIKgKrqzXKAXZnOY-eq3kT55gBMPw4owqjsiPCUcnN3xMhE6cYoCTEOH6XhmSaeOHWERKKm8CqGxZDTnm3rwmN"/>
+</div>
+</header>
+<!-- Hero / Main Header Area -->
+<section class="px-container-margin pt-md pb-base flex flex-col gap-md">
+<!-- Segment Control (Browse vs Ask AI) -->
+<div class="flex bg-surface-container-high/50 p-1 rounded-full backdrop-blur-sm border border-white/40 shadow-inner w-full max-w-sm mx-auto">
+<button class="flex-1 py-2 text-center rounded-full bg-white shadow-sm text-primary font-label-md text-label-md transition-all">Browse</button>
+<button class="flex-1 py-2 text-center rounded-full text-on-surface-variant font-label-md text-label-md hover:text-primary transition-all">Ask AI</button>
+</div>
+</section>
+<!-- Sticky Filter Ribbon -->
+<div class="sticky top-[64px] z-40 bg-white/60 backdrop-blur-md border-b border-white/80 py-sm px-container-margin flex gap-sm items-center overflow-x-auto hide-scrollbar shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
+<button class="flex items-center justify-center w-9 h-9 rounded-full bg-surface-container-low text-primary flex-shrink-0 border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded-full border border-outline-variant/50 bg-white/40 text-on-surface-variant font-label-sm text-label-sm whitespace-nowrap">
+            Preacher <span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded-full border border-outline-variant/50 bg-white/40 text-on-surface-variant font-label-sm text-label-sm whitespace-nowrap">
+            Series <span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded-full border border-outline-variant/50 bg-white/40 text-on-surface-variant font-label-sm text-label-sm whitespace-nowrap">
+            Date <span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-xs px-sm py-1.5 rounded-full border border-outline-variant/50 bg-white/40 text-on-surface-variant font-label-sm text-label-sm whitespace-nowrap">
+            Topic <span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+</div>
+<!-- Content Area: Sermon Cards -->
+<main class="flex-1 px-container-margin py-md flex flex-col gap-sm">
+<!-- Card 1 -->
+<article class="group relative flex items-center gap-md p-sm rounded-xl transition-colors hover:bg-white/40 border border-transparent hover:border-white/60 active:scale-[0.98]">
+<!-- Thumbnail -->
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 relative shadow-sm border border-white/50">
+<img class="w-full h-full object-cover" data-alt="A close-up abstract architectural detail of a modern church sanctuary, featuring clean white lines, soft diffused daylight, and a calm, reverent atmosphere. Minimalist, premium photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP6F8sOksg1jxWIERDnE1pvOnTodvd_GGlXIso13q2KGG25V1kmmQDy1m841j4uUaXwS1W0fhhiqGtZws5qG-AddQc9qqis79qgDZ77PJWOQufkzKsQ9YAnoX7M3fpw-YqkaYqxYZ_sF0K9ZrX7esS1E4ZQE0ev7t3d1w1LkEoR2amXEixyv4YNF9SPQKjRIpImiCyJ6dLaGAs50q888Csiarv7jBbkV93CMQ_THifi5gL9R9KZ9BHi6qw2JoWjgL34H_nGjTunh2x"/>
+<!-- Play overlay -->
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<!-- Details -->
+<div class="flex-1 min-w-0 flex flex-col justify-center">
+<span class="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1 truncate block">The Kingdom Within</span>
+<h3 class="font-body-md text-body-md font-bold text-primary truncate leading-tight mb-1">Silence &amp; Solitude</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">Dr. Sarah Jenkins • Oct 12, 2023</p>
+<!-- AI Tags -->
+<div class="flex gap-1 mt-2">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-[9px] border border-primary-container/30">Contemplation</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-[9px] border border-primary-container/30">Peace</span>
+</div>
+</div>
+<!-- Quick Action -->
+<button class="p-2 text-outline hover:text-primary transition-colors flex-shrink-0">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</article>
+<!-- Card 2 -->
+<article class="group relative flex items-center gap-md p-sm rounded-xl transition-colors hover:bg-white/40 border border-transparent hover:border-white/60 active:scale-[0.98]">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 relative shadow-sm border border-white/50">
+<img class="w-full h-full object-cover" data-alt="Soft morning sunlight streaming through a frosted glass window, illuminating a blank piece of parchment on a light wooden desk. Peaceful, meditative, highly professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQLmAylv_cIJ1DZ5k_6Aoi0FySWrWF9s7oSApA9l-EAvheB5G13xNF6KQt0ojHj-A4DkXpzviQgpmG8XDB1LmezEwFh_2f2e5lOrzTb6w_SuoQBSQ--HQczT02nnSFmKbahpbnOAqCXrb60up1xWxefU20vxAgbZ6gW7gywNVcv5h1krOcXRpWNqlKaUl5i1el3a_x0aHM6-3HAGDVSmnGCNYbN-VImVQ9A0Mf6w2JwuoiCrJKWZQLrKsmdtO2F6k61M_tZg_8FgYf"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center">
+<span class="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1 truncate block">Sermon on the Mount</span>
+<h3 class="font-body-md text-body-md font-bold text-primary truncate leading-tight mb-1">Blessed are the Meek</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">Rev. Thomas Cole • Sep 28, 2023</p>
+<div class="flex gap-1 mt-2">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-[9px] border border-primary-container/30">Humility</span>
+</div>
+</div>
+<button class="p-2 text-outline hover:text-primary transition-colors flex-shrink-0">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</article>
+<!-- Card 3 -->
+<article class="group relative flex items-center gap-md p-sm rounded-xl transition-colors hover:bg-white/40 border border-transparent hover:border-white/60 active:scale-[0.98]">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 relative shadow-sm border border-white/50">
+<img class="w-full h-full object-cover" data-alt="A delicate olive branch resting on an open book, captured with shallow depth of field against a soft, bright background. Elegant, minimal, spiritual photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCE0kyOWoozjFBXh6oRsNu3knejBEvOxNr5FC9nGJdEFL0xDbv-tuz-oRc8mw4BMwVBJRg8Zk5RlKG8QWwEqI6ImMnF--PoJhvsNIakwMbECxv_6A99rvCKjQ93b3rbTYAp-t4i_9u87UE0ynrSjmxiFwd_9TcMA-cxhIg_fiyE7Pe9wPiRwoQC2DiXQKBvMasBEUxCPVfW81gOnQUHfhckzqMqyux4gufroYUs7ulG0pbgyL7JAruI03nfA5flvt1ZegkAWe2jfAom"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center">
+<span class="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1 truncate block">Stand Alone</span>
+<h3 class="font-body-md text-body-md font-bold text-primary truncate leading-tight mb-1">Navigating Cultural Shifts</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">Dr. David Chen • Sep 14, 2023</p>
+<div class="flex gap-1 mt-2">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-[9px] border border-primary-container/30">Culture</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-sm text-[9px] border border-primary-container/30">Wisdom</span>
+</div>
+</div>
+<button class="p-2 text-outline hover:text-primary transition-colors flex-shrink-0">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</article>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/60 dark:bg-surface/60 backdrop-blur-lg fixed bottom-0 w-full z-50 rounded-t-xl border-t border-white/80 dark:border-outline-variant/20 shadow-[0_-4px_20px_0_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full h-[80px] flex justify-around items-center px-4 pb-safe">
+<!-- Tab 1: Library (Active) -->
+<button class="group flex flex-col items-center justify-center bg-primary-container/40 dark:bg-primary-container/20 text-primary dark:text-on-primary-container rounded-full px-4 py-1 hover:text-primary dark:hover:text-primary-fixed-dim transition-colors active:scale-90 transition-all duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-label-sm text-label-sm">Library</span>
+</button>
+<!-- Tab 2: Ask AI (Inactive) -->
+<button class="group flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed-dim transition-colors active:scale-90 transition-all duration-200 px-4 py-1">
+<span class="material-symbols-outlined mb-1">temp_preferences_custom</span>
+<span class="font-label-sm text-label-sm">Ask AI</span>
+</button>
+<!-- Tab 3: Series (Inactive) -->
+<button class="group flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed-dim transition-colors active:scale-90 transition-all duration-200 px-4 py-1">
+<span class="material-symbols-outlined mb-1">layers</span>
+<span class="font-label-sm text-label-sm">Series</span>
+</button>
+<!-- Tab 4: Saved (Inactive) -->
+<button class="group flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed-dim transition-colors active:scale-90 transition-all duration-200 px-4 py-1">
+<span class="material-symbols-outlined mb-1">bookmark</span>
+<span class="font-label-sm text-label-sm">Saved</span>
+</button>
+</nav>
+</body></html>

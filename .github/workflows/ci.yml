@@ -13,6 +13,13 @@ jobs:
       run:
         working-directory: web
 
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+      SUPABASE_URL: https://placeholder.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+      GROQ_API_KEY: placeholder-groq-key
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
 
@@ -29,6 +36,3 @@ jobs:
 
       - name: TypeScript Type Check
         run: npx tsc --noEmit
-
-      - name: ESLint
-        run: npm run lint

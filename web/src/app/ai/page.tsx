@@ -108,6 +108,7 @@ export default function AskAIPage() {
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isSearching) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setThinkingIndex(0);
       interval = setInterval(() => {
         setThinkingIndex((prev) => Math.min(prev + 1, THINKING_MESSAGES.length - 1));

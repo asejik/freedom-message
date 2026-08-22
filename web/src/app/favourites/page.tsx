@@ -32,6 +32,7 @@ export default function FavouritesPage() {
       }
     };
     window.addEventListener("storage", handleStorage);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoaded(true);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);

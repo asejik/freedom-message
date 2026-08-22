@@ -122,16 +122,28 @@ function SermonActionSheet({
   const router = useRouter();
   const { play } = useAudioStore();
   const [copied, setCopied] = useState(false);
-  const [isFav, setIsFav] = useState(false);
+  const [isFav, setIsFav] = useState(() => {
+    if (typeof window === "undefined" || !sermon) return false;
+    try {
+      const favs = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
+      return favs.includes(sermon.id);
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     if (!sermon) return;
-    try {
-      const favs = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
-      setIsFav(favs.includes(sermon.id));
-    } catch {
-      // ignore
-    }
+    const handleStorage = () => {
+      try {
+        const favs = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
+        setIsFav(favs.includes(sermon.id));
+      } catch {}
+    };
+    // Initialize strictly on mount/sermon change
+    handleStorage();
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, [sermon]);
 
   if (!sermon) return null;

@@ -9,29 +9,30 @@ import Link from "next/link";
 import type { SermonWithRelations } from "@/types/database";
 
 export default function FavouritesPage() {
-  const [favIds, setFavIds] = useState<string[]>([]);
+  const [favIds, setFavIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem("favourite_sermons");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("favourite_sermons");
-      if (stored) {
-        setFavIds(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.warn("Could not read favourite_sermons from storage:", e);
-    }
-    setIsLoaded(true);
-
-    // Sync across tabs/actions
     const handleStorage = () => {
       try {
-        const updated = localStorage.getItem("favourite_sermons");
-        setFavIds(updated ? JSON.parse(updated) : []);
-      } catch {}
+        const stored = localStorage.getItem("favourite_sermons");
+        if (stored) {
+          setFavIds(JSON.parse(stored));
+        }
+      } catch (e) {
+        console.warn("Could not read favourite_sermons from storage:", e);
+      }
     };
-
     window.addEventListener("storage", handleStorage);
+    setIsLoaded(true);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 

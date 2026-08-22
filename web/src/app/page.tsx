@@ -541,8 +541,6 @@ function DateFilterPicker({
   const btnRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setTempDate(value); }, [value, open]);
-
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {

@@ -10,13 +10,20 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
 
   try {
-    const { data: sermon } = await supabase
+    const { data } = await supabase
       .from("sermons")
       .select("title, ai_summary, artwork_url, preachers(name)")
       .eq("id", id)
       .single();
 
-    if (!sermon) {
+    const sermon = data as {
+      title?: string;
+      ai_summary?: string | null;
+      artwork_url?: string | null;
+      preachers?: { name?: string } | null;
+    } | null;
+
+    if (!sermon || !sermon.title) {
       return {
         title: "Sermon | Freedom Messages",
         description: "Listen to sermon audio on Freedom Messages.",

@@ -14,13 +14,25 @@ export default function SermonDetailPage() {
   const sermonId = params.id as string;
   const { currentSermon, isPlaying, play, togglePlay } = useAudioStore();
   const [copied, setCopied] = useState(false);
-  const [isFav, setIsFav] = useState(false);
-
-  useEffect(() => {
+  const [isFav, setIsFav] = useState(() => {
+    if (typeof window === "undefined") return false;
     try {
       const favs: string[] = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
-      setIsFav(favs.includes(sermonId));
-    } catch {}
+      return favs.includes(sermonId);
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    const handleStorage = () => {
+      try {
+        const favs: string[] = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
+        setIsFav(favs.includes(sermonId));
+      } catch {}
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, [sermonId]);
 
   const toggleFav = () => {

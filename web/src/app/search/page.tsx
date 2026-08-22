@@ -144,8 +144,6 @@ function DateFilterPicker({
   const btnRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setTempDate(value); }, [value, open]);
-
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {
@@ -162,14 +160,14 @@ function DateFilterPicker({
 
   const handleOpen = () => {
     if (open) { setOpen(false); return; }
+    setTempDate(value);
     if (btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
-      const dropW = Math.min(256, window.innerWidth - 24);
+      const dropW = Math.min(280, window.innerWidth - 24);
       const leftRaw = rect.left;
       const left = Math.min(Math.max(12, leftRaw), window.innerWidth - dropW - 12);
       setDropdownPos({ top: rect.bottom + 6, left, width: dropW });
     }
-    setTempDate(value);
     setOpen(true);
   };
 

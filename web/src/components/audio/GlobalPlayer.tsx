@@ -1,7 +1,7 @@
 "use client";
 
 import { useAudioStore } from "@/store/useAudioStore";
-import { Play, Pause, X, Volume2, Download } from "lucide-react";
+import { Play, Pause, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 export function GlobalPlayer() {
@@ -10,12 +10,10 @@ export function GlobalPlayer() {
     isPlaying,
     currentTime,
     duration,
-    volume,
     playbackSpeed,
     togglePlay,
     clear,
     seek,
-    setVolume,
     setSpeed
   } = useAudioStore();
 
@@ -23,12 +21,7 @@ export function GlobalPlayer() {
   const [localTime, setLocalTime] = useState(0);
   const progressRef = useRef<HTMLDivElement>(null);
 
-  // Sync local scrubber time when not actively scrubbing
-  useEffect(() => {
-    if (!isScrubbing) {
-      setLocalTime(currentTime);
-    }
-  }, [currentTime, isScrubbing]);
+  const displayTime = isScrubbing ? localTime : currentTime;
 
   const formatTime = (time: number) => {
     if (isNaN(time)) return "00:00";
@@ -75,7 +68,7 @@ export function GlobalPlayer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScrubbing, localTime]); // localTime needed for seek on end
 
-  const progressPercent = duration > 0 ? (localTime / duration) * 100 : 0;
+  const progressPercent = duration > 0 ? (displayTime / duration) * 100 : 0;
 
   const toggleSpeed = () => {
     const nextSpeed = playbackSpeed >= 2.0 ? 0.5 : playbackSpeed >= 1.5 ? 2.0 : playbackSpeed >= 1.0 ? 1.5 : 1.0;
@@ -135,7 +128,7 @@ export function GlobalPlayer() {
 
         {/* Scrubber */}
         <div className="flex items-center gap-3 font-label-sm text-label-sm text-on-surface-variant">
-          <span className="w-8 text-right font-medium">{formatTime(localTime)}</span>
+          <span className="w-8 text-right font-medium">{formatTime(displayTime)}</span>
           <div
             ref={progressRef}
             className="flex-1 h-2 bg-surface-container-high rounded-full cursor-pointer relative group"

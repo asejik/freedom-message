@@ -17,15 +17,16 @@ export function Sidebar() {
     <aside className="hidden md:flex w-[72px] lg:w-[240px] flex-shrink-0 h-full flex-col bg-[#030303] text-white pt-4 pb-4 z-30 transition-all duration-300 relative border-r border-white/5">
       
       {/* Brand */}
-      <div className="px-2 lg:px-6 mb-8 flex items-center justify-center lg:justify-start gap-3">
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm shadow-primary/30"
-          style={{ background: "linear-gradient(135deg, #6C63FF 0%, #3ECFCF 100%)" }}>
-          <span className="text-white font-black text-xs tracking-tighter">FM</span>
-        </div>
+      <Link href="/" className="px-2 lg:px-6 mb-8 flex items-center justify-center lg:justify-start gap-3 group">
+        <img
+          src="/logo.PNG"
+          alt="Freedom Messages"
+          className="w-8 h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-105"
+        />
         <span className="hidden lg:block font-heading font-bold text-xl tracking-tight text-white leading-none">
           Freedom Messages
         </span>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 px-2 lg:px-3 flex flex-col gap-1 overflow-y-auto hide-scrollbar">

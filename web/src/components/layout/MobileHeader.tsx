@@ -8,12 +8,12 @@ export function MobileHeader() {
       {/* Brand */}
       <Link href="/" className="flex items-center gap-2.5">
         <img
-          src="/logo.PNG"
-          alt="Freedom Messages"
-          className="h-9 w-auto object-contain shrink-0"
+          src="/mami.png"
+          alt="Messages"
+          className="h-8 sm:h-9 w-auto object-contain shrink-0"
         />
         <span className="font-heading font-bold text-white text-lg tracking-tight leading-none">
-          Freedom Messages
+          Messages
         </span>
       </Link>
     </header>

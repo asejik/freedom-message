@@ -10,7 +10,7 @@ export function MobileHeader() {
         <img
           src="/logo.PNG"
           alt="Freedom Messages"
-          className="w-8 h-8 object-contain shrink-0"
+          className="h-9 w-auto object-contain shrink-0"
         />
         <span className="font-heading font-bold text-white text-lg tracking-tight leading-none">
           Freedom Messages

@@ -21,7 +21,7 @@ export function Sidebar() {
         <img
           src="/logo.PNG"
           alt="Freedom Messages"
-          className="w-8 h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-105"
+          className="h-[42px] w-auto object-contain shrink-0 transition-transform duration-200 group-hover:scale-105"
         />
         <span className="hidden lg:block font-heading font-bold text-xl tracking-tight text-white leading-none">
           Freedom Messages

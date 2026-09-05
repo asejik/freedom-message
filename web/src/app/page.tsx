@@ -319,7 +319,10 @@ function QuickPicksSection({
           <Loader2 className="animate-spin text-white/40" />
         </div>
       ) : (
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory -mx-4 px-4 pb-2">
+        <div 
+          className="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory scroll-pl-4 -mx-4 px-4 pb-2"
+          style={{ scrollPaddingLeft: "16px" }}
+        >
           {columns.map((col, colIdx) => (
             <div
               key={colIdx}
@@ -340,7 +343,7 @@ function QuickPicksSection({
                 return (
                   <div
                     key={sermon.id}
-                    className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-white/5 transition-colors group"
+                    className="flex items-center gap-3 py-1.5 pr-2 pl-0 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors group"
                   >
                     {/* Thumbnail: Clicking plays the sermon */}
                     <div

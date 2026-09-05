@@ -17,14 +17,14 @@ export function Sidebar() {
     <aside className="hidden md:flex w-[72px] lg:w-[240px] flex-shrink-0 h-full flex-col bg-[#030303] text-white pt-4 pb-4 z-30 transition-all duration-300 relative border-r border-white/5">
       
       {/* Brand */}
-      <Link href="/" className="px-2 lg:px-6 mb-8 flex items-center justify-center lg:justify-start gap-3 group">
+      <Link href="/" className="px-2 lg:px-4 mb-8 flex items-center justify-center lg:justify-start gap-2 group">
         <img
-          src="/logo.PNG"
-          alt="Freedom Messages"
-          className="h-[42px] w-auto object-contain shrink-0 transition-transform duration-200 group-hover:scale-105"
+          src="/mami.png"
+          alt="Messages"
+          className="h-7 lg:h-[30px] w-auto max-w-[48px] lg:max-w-none object-contain shrink-0 transition-transform duration-200 group-hover:scale-105"
         />
-        <span className="hidden lg:block font-heading font-bold text-xl tracking-tight text-white leading-none">
-          Freedom Messages
+        <span className="hidden lg:block font-heading font-bold text-lg tracking-tight text-white leading-none whitespace-nowrap">
+          Messages
         </span>
       </Link>
 

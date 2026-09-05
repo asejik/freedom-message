@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     if (!sermon || !sermon.title) {
       return {
-        title: "Sermon | Freedom Messages",
-        description: "Listen to sermon audio on Freedom Messages.",
+        title: "Sermon | Messages",
+        description: "Listen to sermon audio on Messages.",
       };
     }
 
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const title = `${sermon.title} — ${preacherName}`;
     const description = sermon.ai_summary 
       ? sermon.ai_summary.slice(0, 160) 
-      : `Listen to "${sermon.title}" by ${preacherName} on Freedom Messages.`;
+      : `Listen to "${sermon.title}" by ${preacherName} on Messages.`;
 
     const images = sermon.artwork_url ? [sermon.artwork_url] : [];
 
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         description,
         type: "music.song",
         images,
-        siteName: "Freedom Messages",
+        siteName: "Messages",
       },
       twitter: {
         card: "summary_large_image",
@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   } catch {
     return {
-      title: "Sermon | Freedom Messages",
-      description: "Listen to sermon audio on Freedom Messages.",
+      title: "Sermon | Messages",
+      description: "Listen to sermon audio on Messages.",
     };
   }
 }

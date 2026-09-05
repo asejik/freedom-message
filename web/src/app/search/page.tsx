@@ -384,7 +384,7 @@ function SearchContent() {
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4 text-white/40">
               <span className="material-symbols-outlined text-[32px]">search</span>
             </div>
-            <h2 className="text-xl font-bold text-white mb-1.5">Search Freedom Messages</h2>
+            <h2 className="text-xl font-bold text-white mb-1.5">Search Messages</h2>
             <p className="text-sm text-[#AAAAAA] max-w-sm">
               Type a sermon title or select a preacher, year, or date above to find messages.
             </p>

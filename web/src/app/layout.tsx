@@ -73,16 +73,16 @@ const geist = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Freedom Messages",
-    template: "%s | Freedom Messages",
+    default: "Messages",
+    template: "%s | Messages",
   },
   description: "A curated library of sermon audio recordings by Apostle Muyiwa Areo and ministers.",
   manifest: "/manifest.json",
-  applicationName: "Freedom Messages",
+  applicationName: "Messages",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Freedom Messages",
+    title: "Messages",
   },
   icons: {
     icon: [
@@ -98,13 +98,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://www.muyiwaareo.com",
-    siteName: "Freedom Messages",
-    title: "Freedom Messages — Sermon Library",
+    siteName: "Messages",
+    title: "Messages — Sermon Library",
     description: "Stream and search hundreds of sermons by Apostle Muyiwa Areo.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Freedom Messages",
+    title: "Messages",
     description: "Stream and search hundreds of sermons by Apostle Muyiwa Areo.",
   },
 };

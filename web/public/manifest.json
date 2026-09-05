@@ -1,6 +1,6 @@
 {
-  "name": "Freedom Messages",
-  "short_name": "Freedom Messages",
+  "name": "Messages",
+  "short_name": "Messages",
   "description": "A curated library of sermon audio recordings by Apostle Muyiwa Areo and ministers.",
   "start_url": "/",
   "display": "standalone",

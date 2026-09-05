@@ -45,6 +45,8 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
   const gradient = artworkGradient(seriesName);
   const accentText = seriesAccent(seriesName);
 
+  const hasArtwork = Boolean(sermon.artwork_url && sermon.artwork_url !== "ERROR" && sermon.artwork_url.trim() !== "");
+
   if (layout === "list") {
     return (
       <article 
@@ -54,9 +56,9 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
       >
         {/* Thumbnail */}
         <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 relative shadow-sm border border-white/50 bg-surface-container">
-          {sermon.artwork_url ? (
+          {hasArtwork ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={sermon.artwork_url} alt="" className="w-full h-full object-cover" />
+            <img src={sermon.artwork_url!} alt="" className="w-full h-full object-cover" />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
               <span className="material-symbols-outlined text-primary/30 text-[28px] sm:text-[32px]">music_note</span>
@@ -113,9 +115,9 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
           <span className="sr-only">View {sermon.title}</span>
         </Link>
         
-        {sermon.artwork_url ? (
+        {hasArtwork ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={sermon.artwork_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={sermon.artwork_url!} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-500`}>
             <span className="material-symbols-outlined text-primary/20 text-[48px] sm:text-[64px]">music_note</span>

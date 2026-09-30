@@ -59,6 +59,18 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+// Words too common to narrow a sermon search
+const SEARCH_STOPWORDS = new Set([
+  'a', 'an', 'and', 'the', 'of', 'on', 'in', 'to', 'for', 'by', 'with',
+  'about', 'is', 'are', 'how', 'what', 'my', 'your', 'our',
+]);
+
+// Distinct meaningful words from the extracted topic (capped to keep the filter small)
+function topicWords(topic: string): string[] {
+  const words = topic.toLowerCase().split(/\s+/).filter((w) => w.length > 1 && !SEARCH_STOPWORDS.has(w));
+  return Array.from(new Set(words)).slice(0, 5);
+}
+
 export async function GET(request: Request) {
   try {
     // 0. Rate limiting check
@@ -154,17 +166,30 @@ Example: "messages on the love commandment by pastor temi" -> {"topic": "love co
       searchSelect = searchSelect.replace('preachers(id, name)', 'preachers!inner(id, name)');
     }
     
-    let dbQuery = supabase
-      .from('sermons')
-      .select(searchSelect)
-      .or(`title.ilike.%${safeTopic}%,ai_summary.ilike.%${safeTopic}%`);
-
-    if (intent.preacher) {
-      dbQuery = dbQuery.ilike('preachers.name', `%${intent.preacher}%`);
-    }
+    // Match words individually so "holy spirit baptism" finds "The Baptism of the Holy Spirit"
+    const words = topicWords(safeTopic);
+    const wordMatch = (word: string) => `title.ilike.%${word}%,ai_summary.ilike.%${word}%`;
 
     // Fetch a focused candidate pool (top 50 is sufficient since we keep top 20 after scoring)
-    const { data, error } = await dbQuery.order('date_preached', { ascending: false }).limit(50);
+    const runQuery = (orFilter: string) => {
+      let dbQuery = supabase.from('sermons').select(searchSelect).or(orFilter);
+      if (intent.preacher) {
+        dbQuery = dbQuery.ilike('preachers.name', `%${intent.preacher}%`);
+      }
+      return dbQuery.order('date_preached', { ascending: false }).limit(50);
+    };
+
+    // Every word must appear in the title or summary; with 0–1 words this is the old single-term match
+    const allWordsFilter = words.length > 1
+      ? `and(${words.map((w) => `or(${wordMatch(w)})`).join(',')})`
+      : wordMatch(words[0] ?? safeTopic);
+
+    let { data, error } = await runQuery(allWordsFilter);
+
+    // No sermon has every word: fall back to any of them (scoring ranks those matching more words first)
+    if (!error && (data?.length ?? 0) === 0 && words.length > 1) {
+      ({ data, error } = await runQuery(words.map(wordMatch).join(',')));
+    }
 
     if (error) {
       console.error("[SEARCH API ERROR] Supabase search query:", error);
@@ -190,6 +215,12 @@ Example: "messages on the love commandment by pastor temi" -> {"topic": "love co
           if (title.startsWith(lowerTopic)) score += 10;
         }
         else if (summary.includes(lowerTopic)) score += 20;
+
+        // Per-word relevance, so sermons matching more of the query rank higher
+        for (const word of words) {
+          if (title.includes(word)) score += 15;
+          else if (summary.includes(word)) score += 5;
+        }
         
         return score;
       };

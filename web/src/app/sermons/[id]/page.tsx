@@ -80,12 +80,12 @@ export default function SermonDetailPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("sermons")
-        .select("*, preachers(*), series(*)")
+        .select(SERMON_LIST_SELECT)
         .eq("id", sermonId)
         .single();
-      
+
       if (error) throw error;
-      return data;
+      return data as unknown as SermonWithRelations;
     },
   });
 

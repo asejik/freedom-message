@@ -9,6 +9,7 @@ import { AnimatedBackground } from "@/components/layout/AnimatedBackground";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MobileHeader } from "@/components/layout/MobileHeader";
+import { Analytics } from "@vercel/analytics/next";
 
 // Klarheit font for Headings & Titles
 const klarheit = localFont({
@@ -149,6 +150,9 @@ export default function RootLayout({
 
           </AudioProvider>
         </QueryProvider>
+
+        {/* Vercel Web Analytics: page views and visitor counts */}
+        <Analytics />
       </body>
     </html>
   );

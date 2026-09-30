@@ -39,3 +39,24 @@ output/
 .vscode/
 .idea/
 .vercel
+
+# Private: kept locally, never published (solo project; public repo)
+# Audit reports (security findings must never be public)
+audits/
+# AI assistant instructions and working notes
+CLAUDE.md
+web/CLAUDE.md
+web/AGENTS.md
+.claude/
+context/
+# Offline data pipeline (not part of the website build) and its inputs/outputs
+scripts/
+csv/
+series_by_year.md
+# Font source packs (trial licences must not be redistributed; the site uses web/src/fonts)
+font/
+# Database schema notes (documents access rules; out of date)
+web/supabase/
+# Ad-hoc scratch scripts
+web/test_*.js
+web/fix_db.js

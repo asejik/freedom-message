@@ -96,7 +96,11 @@ export async function GET(request: Request) {
         console.error("[SEARCH API ERROR] Supabase latest fetch:", error);
         throw error;
       }
-      return NextResponse.json({ answer: null, results: data ?? [] });
+      // Same "latest sermons" list for every visitor: cache at the CDN for 5 minutes
+      return NextResponse.json(
+        { answer: null, results: data ?? [] },
+        { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600' } }
+      );
     }
 
     // 2. Extract intent with Groq (best-effort, with fallback and caching)

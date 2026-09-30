@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { supabase, SERMON_CARD_SELECT } from "@/lib/supabase";
 
+// Public catalog is identical for every visitor and only changes on admin
+// uploads, so let the Vercel CDN serve it for 5 minutes (stale up to 1 hour
+// while it refreshes in the background).
+const PUBLIC_LIST_CACHE = 'public, s-maxage=300, stale-while-revalidate=3600';
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -65,12 +70,15 @@ export async function GET(request: Request) {
       throw error;
     }
 
-    return NextResponse.json({
-      data: data ?? [],
-      count: count ?? 0,
-      page,
-      limit,
-    });
+    return NextResponse.json(
+      {
+        data: data ?? [],
+        count: count ?? 0,
+        page,
+        limit,
+      },
+      { headers: { 'Cache-Control': PUBLIC_LIST_CACHE } }
+    );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("[CATALOG API ERROR]:", message);

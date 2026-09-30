@@ -112,8 +112,11 @@ export async function GET(request: Request) {
 
       if (process.env.GROQ_API_KEY) {
         try {
+          // Small model + low reasoning: this only extracts a 1-3 word topic
           const completion = await groq.chat.completions.create({
-            model: "openai/gpt-oss-120b",
+            model: "openai/gpt-oss-20b",
+            reasoning_effort: "low",
+            max_completion_tokens: 200,
             messages: [
               {
                 role: "system",
@@ -215,6 +218,8 @@ Example: "messages on the love commandment by pastor temi" -> {"topic": "love co
         
         const ragCompletion = await groq.chat.completions.create({
           model: "openai/gpt-oss-120b",
+          reasoning_effort: "low",
+          max_completion_tokens: 800, // includes reasoning tokens; answer is ~7 short lines
           messages: [
             {
               role: "system",

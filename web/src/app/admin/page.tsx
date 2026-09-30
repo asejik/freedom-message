@@ -20,11 +20,7 @@ import {
   BookOpen,
   Layers,
   Check,
-  Radio,
-  FileCheck2,
-  Calendar,
-  Users,
-  UserCheck
+  Users
 } from "lucide-react";
 import type { Preacher, Series, SermonWithRelations } from "@/types/database";
 import { compressImageClient } from "@/utils/image";

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import { Loader2, X, Sparkles } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import type { SermonWithRelations } from "@/types/database";
 
 const THINKING_MESSAGES = [
@@ -133,7 +132,7 @@ export default function AskAIPage() {
       const json = await res.json();
       setResults(json.results ?? (Array.isArray(json) ? json : [])); // fallback in case old api format hits
       setAnswer(json.answer ?? null);
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setIsSearching(false);

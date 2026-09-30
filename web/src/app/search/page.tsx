@@ -5,11 +5,9 @@ import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import { Loader2 } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { SermonWithRelations, Preacher } from "@/types/database";
-
-const MOODS = ["Grace", "Favour", "Faith", "Healing", "Redemption", "Righteousness"];
 
 // ── Filter Dropdown ──────────────────────────────────────────────────────────
 function FilterDropdown({

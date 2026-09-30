@@ -31,9 +31,12 @@ export async function GET(request: Request) {
       selectQuery = selectQuery.replace('series(id, name, thumbnail_url)', 'series!inner(id, name, thumbnail_url)');
     }
 
+    // Callers that don't show totals (home shelves) pass count=false to skip the COUNT query
+    const wantCount = searchParams.get('count') !== 'false';
+
     let dbQuery = supabase
       .from('sermons')
-      .select(selectQuery, { count: 'exact' });
+      .select(selectQuery, wantCount ? { count: 'exact' } : undefined);
 
     if (title && title.trim() !== '') {
       dbQuery = dbQuery.ilike('title', `%${title.trim()}%`);

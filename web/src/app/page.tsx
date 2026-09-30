@@ -680,6 +680,7 @@ function DateFilterPicker({
 async function fetchRecentSermons(): Promise<SermonWithRelations[]> {
   const url = new URL("/api/sermons", window.location.origin);
   url.searchParams.set("limit", "20");
+  url.searchParams.set("count", "false");
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error("Failed to fetch recent sermons");
   const json = await res.json();

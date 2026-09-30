@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase, SERMON_LIST_SELECT } from '@/lib/supabase';
+import { supabase, SERMON_CARD_SELECT } from "@/lib/supabase";
 
 export async function GET(request: Request) {
   try {
@@ -17,8 +17,8 @@ export async function GET(request: Request) {
     const hasSeriesFilter = series && series.trim() !== '';
     const hasPreacherFilter = preacher && preacher.trim() !== '';
 
-    // Replace the join portions of SERMON_LIST_SELECT with !inner when filtering
-    let selectQuery = SERMON_LIST_SELECT;
+    // Replace the join portions of SERMON_CARD_SELECT with !inner when filtering
+    let selectQuery = SERMON_CARD_SELECT;
     if (hasPreacherFilter) {
       selectQuery = selectQuery.replace('preachers(id, name)', 'preachers!inner(id, name)');
     }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { supabase, SERMON_LIST_SELECT } from "@/lib/supabase";
+import { supabase, SERMON_LIST_SELECT, SERMON_CARD_SELECT } from "@/lib/supabase";
 import { useAudioStore } from "@/store/useAudioStore";
 import { Loader2 } from "lucide-react";
 import { SermonCard } from "@/components/sermons/SermonCard";
@@ -95,7 +95,7 @@ export default function SermonDetailPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("sermons")
-        .select(SERMON_LIST_SELECT)
+        .select(SERMON_CARD_SELECT)
         .neq("id", sermonId)
         .limit(10);
       

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
-import { supabase, SERMON_LIST_SELECT } from '@/lib/supabase';
+import { supabase, SERMON_CARD_SELECT } from '@/lib/supabase';
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -88,7 +88,7 @@ export async function GET(request: Request) {
     if (!query || !query.trim()) {
       const { data, error } = await supabase
         .from('sermons')
-        .select(SERMON_LIST_SELECT)
+        .select(SERMON_CARD_SELECT)
         .order('date_preached', { ascending: false })
         .limit(20);
 
@@ -139,8 +139,10 @@ Example: "messages on the love commandment by pastor temi" -> {"topic": "love co
     // 3. Query Supabase with explicit field selection (no transcript_text)
     const safeTopic = intent.topic.replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
 
+    // Card fields plus ai_summary, which is needed server-side for scoring and
+    // the RAG answer but stripped before responding (cards never display it).
     // Use !inner for preacher join when filtering by preacher
-    let searchSelect = SERMON_LIST_SELECT;
+    let searchSelect = `${SERMON_CARD_SELECT}, ai_summary`;
     if (intent.preacher) {
       searchSelect = searchSelect.replace('preachers(id, name)', 'preachers!inner(id, name)');
     }
@@ -242,7 +244,13 @@ Rules:
       }
     }
 
-    return NextResponse.json({ answer, results });
+    const cardResults = results.map((sermon) => {
+      const card = { ...sermon };
+      delete card.ai_summary;
+      return card;
+    });
+
+    return NextResponse.json({ answer, results: cardResults });
 
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);

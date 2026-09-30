@@ -29,3 +29,21 @@ export const SERMON_LIST_SELECT = `
   preachers(id, name),
   series(id, name, thumbnail_url)
 `.replace(/\s+/g, ' ').trim();
+
+/**
+ * Minimal projection for sermon cards, shelves and the audio player.
+ * Omits the AI fields (ai_summary alone is ~2.5KB per row), which only the
+ * detail page renders. The join strings must stay identical to
+ * SERMON_LIST_SELECT because API routes swap them for `!inner` joins.
+ */
+export const SERMON_CARD_SELECT = `
+  id,
+  title,
+  date_preached,
+  audio_url,
+  artwork_url,
+  preacher_id,
+  series_id,
+  preachers(id, name),
+  series(id, name, thumbnail_url)
+`.replace(/\s+/g, ' ').trim();

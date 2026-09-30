@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase, SERMON_LIST_SELECT } from "@/lib/supabase";
+import { supabase, SERMON_CARD_SELECT } from "@/lib/supabase";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -43,7 +43,7 @@ export default function FavouritesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("sermons")
-        .select(SERMON_LIST_SELECT)
+        .select(SERMON_CARD_SELECT)
         .in("id", favIds);
 
       if (error) throw error;

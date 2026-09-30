@@ -254,6 +254,7 @@ function SermonsListManager({ onEdit }: { onEdit: (sermon: SermonWithRelations) 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [loadingEditId, setLoadingEditId] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
   const queryClient = useQueryClient();
   const limit = 20;
@@ -272,6 +273,23 @@ function SermonsListManager({ onEdit }: { onEdit: (sermon: SermonWithRelations) 
   });
 
   const totalPages = data?.count ? Math.ceil(data.count / limit) : 1;
+
+  // The table rows omit transcript_text, so load the full record before editing;
+  // otherwise saving the form would overwrite the transcript with an empty value.
+  const handleEdit = async (id: string) => {
+    setLoadingEditId(id);
+    setActionStatus(null);
+    try {
+      const res = await fetch(`/api/admin/sermons?id=${id}`);
+      if (!res.ok) throw new Error("Failed to load sermon for editing");
+      const json = await res.json();
+      onEdit(json.data as SermonWithRelations);
+    } catch (err) {
+      setActionStatus({ type: 'error', msg: err instanceof Error ? err.message : "Failed to load sermon" });
+    } finally {
+      setLoadingEditId(null);
+    }
+  };
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) return;
@@ -409,11 +427,12 @@ function SermonsListManager({ onEdit }: { onEdit: (sermon: SermonWithRelations) 
                   <td className="py-3 px-4 text-right whitespace-nowrap align-middle">
                     <div className="flex items-center justify-end gap-1.5">
                       <button
-                        onClick={() => onEdit(sermon)}
+                        onClick={() => handleEdit(sermon.id)}
+                        disabled={loadingEditId === sermon.id}
                         className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-white/80 hover:text-white border border-white/10 transition-colors shadow-sm"
                         title="Edit sermon"
                       >
-                        <Edit3 size={14} />
+                        {loadingEditId === sermon.id ? <Loader2 size={14} className="animate-spin" /> : <Edit3 size={14} />}
                       </button>
                       <button
                         onClick={() => handleDelete(sermon.id, sermon.title)}

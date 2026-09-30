@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { SERMON_CARD_SELECT } from '@/lib/supabase';
 
 export async function GET(request: Request) {
   try {
@@ -12,6 +13,20 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
+
+    // Single full record (incl. transcript_text) for the edit form
+    const id = searchParams.get('id');
+    if (id) {
+      const { data, error } = await supabase
+        .from('sermons')
+        .select('*, preachers(*), series(*)')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return NextResponse.json({ data });
+    }
+
     const search = searchParams.get('search') || '';
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const limit = Math.max(1, parseInt(searchParams.get('limit') || '20', 10));
@@ -19,7 +34,8 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('sermons')
-      .select('*, preachers(*), series(*)', { count: 'exact' });
+      // Table only shows card fields; transcripts (~61KB each) load on edit via ?id=
+      .select(SERMON_CARD_SELECT, { count: 'exact' });
 
     if (search.trim()) {
       query = query.ilike('title', `%${search.trim()}%`);

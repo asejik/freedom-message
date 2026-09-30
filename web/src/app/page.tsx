@@ -676,6 +676,21 @@ function DateFilterPicker({
   );
 }
 
+// ── Home shelf data ──────────────────────────────────────────────────────────
+async function fetchRecentSermons(): Promise<SermonWithRelations[]> {
+  const url = new URL("/api/sermons", window.location.origin);
+  url.searchParams.set("limit", "20");
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error("Failed to fetch recent sermons");
+  const json = await res.json();
+  return json.data ?? [];
+}
+
+// Module-level so TanStack Query keeps the shuffled result stable between renders
+function shuffleSermons(sermons: SermonWithRelations[]): SermonWithRelations[] {
+  return [...sermons].sort(() => 0.5 - Math.random());
+}
+
 // ── Main Home Page Component ──────────────────────────────────────────────────
 function HomeContent() {
   const [activeMood, setActiveMood] = useState<string | null>(null);
@@ -708,32 +723,19 @@ function HomeContent() {
     staleTime: 15 * 60 * 1000, // 15 minutes — preachers list rarely changes
   });
 
-  // Featured sermons query
-  const { data: featured, isLoading: featuredLoading } = useQuery<SermonWithRelations[]>({
-    queryKey: ["sermons", "featured"],
+  // Featured and Recent share one cached request; Featured is a shuffled view of it
+  const { data: featured, isLoading: featuredLoading } = useQuery<SermonWithRelations[], Error, SermonWithRelations[]>({
+    queryKey: ["sermons", "recent"],
     enabled: !isFiltering,
-    queryFn: async () => {
-      const url = new URL("/api/sermons", window.location.origin);
-      url.searchParams.set("limit", "20");
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error("Failed to fetch featured sermons");
-      const json = await res.json();
-      return [...(json.data ?? [])].sort(() => 0.5 - Math.random());
-    },
+    queryFn: fetchRecentSermons,
+    select: shuffleSermons,
   });
 
   // Recent sermons query
   const { data: recent, isLoading: recentLoading } = useQuery<SermonWithRelations[]>({
     queryKey: ["sermons", "recent"],
     enabled: !isFiltering,
-    queryFn: async () => {
-      const url = new URL("/api/sermons", window.location.origin);
-      url.searchParams.set("limit", "20");
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error("Failed to fetch recent sermons");
-      const json = await res.json();
-      return json.data ?? [];
-    },
+    queryFn: fetchRecentSermons,
   });
 
   // Filtered sermons query (when search/filters applied)

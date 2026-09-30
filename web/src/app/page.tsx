@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAudioStore } from "@/store/useAudioStore";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import type { SermonWithRelations, Preacher } from "@/types/database";
 
 const MOODS = ["Grace", "Favour", "Faith", "Healing", "Redemption", "Righteousness"];
@@ -684,8 +685,9 @@ function HomeContent() {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [gridPage, setGridPage] = useState(1);
   const gridLimit = 20;
+  const debouncedSearch = useDebouncedValue(searchText);
 
-  const isFiltering = !!(activeMood || searchText || selectedPreacher || selectedYear || selectedDate);
+  const isFiltering = !!(activeMood || debouncedSearch || selectedPreacher || selectedYear || selectedDate);
 
   const clearFilters = () => {
     setActiveMood(null);
@@ -736,14 +738,14 @@ function HomeContent() {
 
   // Filtered sermons query (when search/filters applied)
   const { data: gridResults, isLoading: gridLoading } = useQuery<{ data: SermonWithRelations[]; count: number }>({
-    queryKey: ["sermons", "grid", activeMood, searchText, selectedPreacher, selectedYear, selectedDate, gridPage],
+    queryKey: ["sermons", "grid", activeMood, debouncedSearch, selectedPreacher, selectedYear, selectedDate, gridPage],
     enabled: isFiltering,
     queryFn: async () => {
       const url = new URL("/api/sermons", window.location.origin);
       url.searchParams.set("limit", gridLimit.toString());
       url.searchParams.set("page", gridPage.toString());
       if (activeMood) url.searchParams.set("tag", activeMood);
-      if (searchText) url.searchParams.set("title", searchText);
+      if (debouncedSearch) url.searchParams.set("title", debouncedSearch);
       if (selectedPreacher) url.searchParams.set("preacher", selectedPreacher);
       if (selectedYear) url.searchParams.set("year", selectedYear);
       if (selectedDate) url.searchParams.set("date", selectedDate);

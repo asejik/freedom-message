@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { supabase } from "@/lib/supabase";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -141,6 +142,7 @@ function SeriesContent() {
   const selectedYear = searchParams.get("year") || "";
 
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [page, setPage] = useState(1);
   const limit = 24;
 
@@ -167,7 +169,7 @@ function SeriesContent() {
 
   // Query for All Series List
   const { data: seriesResult, isLoading: seriesLoading } = useQuery<{ data: Series[]; count: number }>({
-    queryKey: ["series", "paginated", search, selectedYear, page],
+    queryKey: ["series", "paginated", debouncedSearch, selectedYear, page],
     enabled: !selectedSeries,
     queryFn: async () => {
       let selectFields = "id, name, thumbnail_url, created_at";
@@ -187,8 +189,8 @@ function SeriesContent() {
           .lte("sermons.date_preached", `${selectedYear}-12-31`);
       }
 
-      if (search) {
-        q = q.ilike("name", `%${search}%`);
+      if (debouncedSearch) {
+        q = q.ilike("name", `%${debouncedSearch}%`);
       }
 
       const { data, count, error } = await q;

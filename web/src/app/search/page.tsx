@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { SermonWithRelations, Preacher } from "@/types/database";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 // ── Filter Dropdown ──────────────────────────────────────────────────────────
 function FilterDropdown({
@@ -273,7 +274,9 @@ function SearchContent() {
   const [gridPage, setGridPage] = useState(1);
   const gridLimit = 20;
 
-  const isFiltering = !!(searchText.trim() || selectedPreacher || selectedYear || selectedDate);
+  const debouncedSearch = useDebouncedValue(searchText.trim());
+
+  const isFiltering = !!(debouncedSearch || selectedPreacher || selectedYear || selectedDate);
 
   const clearFilters = () => {
     setSearchText("");
@@ -295,13 +298,13 @@ function SearchContent() {
 
   // Query for sermon search (ONLY executed when user has searched/filtered)
   const { data: gridResults, isLoading: gridLoading } = useQuery<{ data: SermonWithRelations[]; count: number }>({
-    queryKey: ["sermons", "search", searchText, selectedPreacher, selectedYear, selectedDate, gridPage],
+    queryKey: ["sermons", "search", debouncedSearch, selectedPreacher, selectedYear, selectedDate, gridPage],
     enabled: isFiltering,
     queryFn: async () => {
       const url = new URL("/api/sermons", window.location.origin);
       url.searchParams.set("limit", gridLimit.toString());
       url.searchParams.set("page", gridPage.toString());
-      if (searchText.trim()) url.searchParams.set("title", searchText.trim());
+      if (debouncedSearch) url.searchParams.set("title", debouncedSearch);
       if (selectedPreacher) url.searchParams.set("preacher", selectedPreacher);
       if (selectedYear) url.searchParams.set("year", selectedYear);
       if (selectedDate) url.searchParams.set("date", selectedDate);

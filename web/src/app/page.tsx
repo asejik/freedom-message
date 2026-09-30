@@ -358,7 +358,7 @@ function QuickPicksSection({
                     >
                       {thumb ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={thumb} alt={sermon.title} className="w-full h-full object-cover" />
+                        <img src={thumb} alt={sermon.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <span className="material-symbols-outlined text-white/30 text-xl">headphones</span>
@@ -792,6 +792,8 @@ function HomeContent() {
         <img
           src="/footer-bg.jpg"
           alt="Lower Background"
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover object-[center_20%] opacity-25 filter contrast-105 saturate-110"
         />
         {/* Smooth dark overlays for seamless blending */}

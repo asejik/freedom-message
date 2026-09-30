@@ -370,7 +370,7 @@ function SeriesContent() {
                     <div className="aspect-square rounded-xl overflow-hidden bg-surface-container relative shadow-md border border-white/10 group-hover:scale-105 transition-transform duration-300">
                       {s.thumbnail_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={s.thumbnail_url} alt={s.name} className="w-full h-full object-cover" />
+                        <img src={s.thumbnail_url} alt={s.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       ) : (
                         <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
                           <span className="material-symbols-outlined text-[32px] text-white/30 drop-shadow-md">

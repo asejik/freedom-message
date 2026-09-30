@@ -58,7 +58,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
         <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 relative shadow-sm border border-white/50 bg-surface-container">
           {hasArtwork ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={sermon.artwork_url!} alt="" className="w-full h-full object-cover" />
+            <img src={sermon.artwork_url!} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
               <span className="material-symbols-outlined text-primary/30 text-[28px] sm:text-[32px]">music_note</span>
@@ -117,7 +117,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
         
         {hasArtwork ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={sermon.artwork_url!} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={sermon.artwork_url!} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-500`}>
             <span className="material-symbols-outlined text-primary/20 text-[48px] sm:text-[64px]">music_note</span>

@@ -67,6 +67,8 @@ export async function POST(request: Request) {
       .from('artwork')
       .upload(fileName, buffer, {
         contentType: mimeType,
+        // Unique filename that is never overwritten, so browsers/CDN can keep it for a year
+        cacheControl: '31536000',
         upsert: false
       });
 

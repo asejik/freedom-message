@@ -8,6 +8,8 @@ const PORT = 3100;
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
+  // Two browsers at a time: more starves the single local production server (and WSL)
+  workers: 2,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: "list",

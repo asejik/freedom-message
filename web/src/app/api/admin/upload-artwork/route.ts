@@ -16,6 +16,20 @@ const ALLOWED_MIME_TYPES: Record<string, string> = {
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
+/** Identifies JPEG / PNG / WebP by their leading signature bytes; null for anything else. */
+function detectImageMime(buffer: Buffer): string | null {
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+    return 'image/jpeg';
+  }
+  if (buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+    return 'image/png';
+  }
+  if (buffer.length >= 12 && buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP') {
+    return 'image/webp';
+  }
+  return null;
+}
+
 export async function POST(request: Request) {
   try {
     const authClient = await createServerClient();
@@ -41,11 +55,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "File size exceeds maximum limit of 5MB." }, { status: 400 });
     }
 
-    // 3. Validate Strict MIME Type & Derive Safe Extension
-    const mimeType = (file.type || '').toLowerCase();
-    const safeExtension = ALLOWED_MIME_TYPES[mimeType];
+    // 3. Validate the real file type from its contents (the browser-declared
+    //    file.type is attacker-controlled) & derive a safe extension
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const mimeType = detectImageMime(buffer);
+    const safeExtension = mimeType ? ALLOWED_MIME_TYPES[mimeType] : undefined;
 
-    if (!safeExtension) {
+    if (!mimeType || !safeExtension) {
       return NextResponse.json(
         { error: "Invalid image format. Only JPEG, PNG, and WebP files are permitted." },
         { status: 400 }
@@ -64,7 +80,6 @@ export async function POST(request: Request) {
       auth: { persistSession: false }
     });
 
-    const buffer = Buffer.from(await file.arrayBuffer());
     const fileName = `${randomUUID()}.${safeExtension}`;
 
     const { error: uploadError } = await adminClient.storage

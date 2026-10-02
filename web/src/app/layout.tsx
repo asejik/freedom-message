@@ -72,6 +72,21 @@ const geist = localFont({
   display: "swap",
 });
 
+// Icon font: request ONLY the icons the app uses (12 KB instead of the full 1.1 MB font).
+// IMPORTANT: when you use a new Material Symbols icon anywhere, add its name here (keep the
+// list alphabetical, as Google requires) or it will render as plain text.
+// display=block keeps icon names from flashing as words while the font loads.
+const MATERIAL_SYMBOLS = [
+  "arrow_back", "auto_awesome", "calendar_today", "check", "chevron_left", "chevron_right",
+  "close", "cloud_off", "download", "error_outline", "expand_more", "explore_off", "favorite",
+  "favorite_border", "headphones", "home", "info", "language", "library_music", "menu_book",
+  "more_vert", "music_note", "open_in_new", "pause", "pause_circle", "play_arrow", "play_circle",
+  "refresh", "search", "search_off", "share", "sign_language", "smart_toy", "volume_up",
+];
+const MATERIAL_SYMBOLS_URL =
+  "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" +
+  `&icon_names=${MATERIAL_SYMBOLS.join(",")}&display=block`;
+
 export const metadata: Metadata = {
   title: {
     default: "Messages",
@@ -125,7 +140,7 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <link href={MATERIAL_SYMBOLS_URL} rel="stylesheet" />
       </head>
       <body className="h-screen w-screen overflow-hidden flex text-on-background relative bg-[#030303]">
         <AnimatedBackground />

@@ -32,7 +32,7 @@ jobs:
           cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci  # same strict peer-dependency resolution as Vercel
 
       - name: TypeScript Type Check
         run: npx tsc --noEmit

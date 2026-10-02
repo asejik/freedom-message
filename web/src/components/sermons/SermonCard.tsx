@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { SermonWithRelations } from "@/types/database";
 import { useAudioStore } from "@/store/useAudioStore";
-import { artworkGradient, seriesAccent } from "@/lib/utils";
+import { artworkGradient, seriesAccent, openExternalUrl } from "@/lib/utils";
 
 interface SermonCardProps {
   sermon: SermonWithRelations;
@@ -149,7 +149,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
           <button 
             onClick={(e) => { 
               e.stopPropagation(); 
-              window.open(sermon.audio_url, '_blank');
+              openExternalUrl(sermon.audio_url);
             }}
             className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center text-white hover:scale-110 transition-transform"
             title="Download Sermon"

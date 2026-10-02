@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAudioStore } from "@/store/useAudioStore";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { openExternalUrl } from "@/lib/utils";
 import type { SermonWithRelations, Preacher } from "@/types/database";
 
 const MOODS = ["Grace", "Favour", "Faith", "Healing", "Redemption", "Righteousness"];
@@ -181,9 +182,7 @@ function SermonActionSheet({
   };
 
   const handleDownload = () => {
-    if (sermon.audio_url) {
-      window.open(sermon.audio_url, "_blank");
-    }
+    openExternalUrl(sermon.audio_url);
   };
 
   return createPortal(

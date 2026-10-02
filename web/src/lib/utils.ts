@@ -35,3 +35,24 @@ export function artworkGradient(seed = ""): string {
 export function seriesAccent(seed = ""): string {
   return ACCENT_TEXTS[hashString(seed) % ACCENT_TEXTS.length];
 }
+
+// ── URL safety ───────────────────────────────────────────────────────────────
+
+/** True only for absolute http(s) URLs. Rejects javascript:, data:, etc. */
+export function isHttpUrl(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  try {
+    const { protocol } = new URL(value.trim());
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Opens a stored URL in a new tab, but only if it is http(s).
+ * window.open() would otherwise execute a `javascript:` URL on our origin.
+ */
+export function openExternalUrl(url: string | null | undefined): void {
+  if (isHttpUrl(url)) window.open(url, "_blank", "noopener,noreferrer");
+}

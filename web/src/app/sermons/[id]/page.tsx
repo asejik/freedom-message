@@ -8,6 +8,7 @@ import { useAudioStore } from "@/store/useAudioStore";
 import { Loader2 } from "lucide-react";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import type { SermonWithRelations } from "@/types/database";
+import { openExternalUrl } from "@/lib/utils";
 
 export default function SermonDetailPage() {
   const params = useParams();
@@ -215,7 +216,7 @@ export default function SermonDetailPage() {
 
             {/* Download Button */}
             <button 
-              onClick={() => window.open(sermon.audio_url, '_blank')}
+              onClick={() => openExternalUrl(sermon.audio_url)}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 active:scale-95 transition-all"
               title="Download Sermon"
             >

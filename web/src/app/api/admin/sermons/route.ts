@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { isMessagesAdmin } from '@/utils/supabase/admin';
 import { SERMON_CARD_SELECT } from '@/lib/supabase';
+import { isHttpUrl } from '@/lib/utils';
 
 export async function GET(request: Request) {
   try {
@@ -97,6 +98,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title, Date Preached, and Audio URL are required" }, { status: 400 });
     }
 
+    // audio_url is opened by the Download buttons, so it must be a real web link
+    if (!isHttpUrl(audio_url)) {
+      return NextResponse.json({ error: "Audio URL must start with http:// or https://" }, { status: 400 });
+    }
+
     const payload = {
       title: title.trim(),
       preacher_id: preacher_id || null,
@@ -155,7 +161,12 @@ export async function PATCH(request: Request) {
     if (updates.preacher_id !== undefined) payload.preacher_id = updates.preacher_id || null;
     if (updates.series_id !== undefined) payload.series_id = updates.series_id || null;
     if (updates.date_preached !== undefined) payload.date_preached = updates.date_preached;
-    if (updates.audio_url !== undefined) payload.audio_url = updates.audio_url.trim();
+    if (updates.audio_url !== undefined) {
+      if (!isHttpUrl(updates.audio_url)) {
+        return NextResponse.json({ error: "Audio URL must start with http:// or https://" }, { status: 400 });
+      }
+      payload.audio_url = updates.audio_url.trim();
+    }
     if (updates.artwork_url !== undefined) payload.artwork_url = updates.artwork_url ? updates.artwork_url.trim() : null;
     if (updates.transcript_text !== undefined) payload.transcript_text = updates.transcript_text ? updates.transcript_text.trim() : null;
     if (updates.ai_summary !== undefined) payload.ai_summary = updates.ai_summary ? updates.ai_summary.trim() : null;

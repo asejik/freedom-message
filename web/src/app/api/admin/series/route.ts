@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/utils/supabase/server";
 import { isMessagesAdmin } from "@/utils/supabase/admin";
 import { createClient } from "@supabase/supabase-js";
+import type { Database, SeriesInsert } from "@/types/database";
+import { getErrorMessage } from "@/lib/utils";
 
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (supabaseUrl && serviceRoleKey) {
-    return createClient(supabaseUrl, serviceRoleKey, {
+    return createClient<Database>(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false }
     });
   }
@@ -18,15 +20,15 @@ function getAdminClient() {
 export async function GET() {
   try {
     const supabase = await createServerClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("series")
       .select("*")
       .order("name", { ascending: true });
 
     if (error) throw error;
     return NextResponse.json({ data });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -54,7 +56,7 @@ export async function POST(req: Request) {
 
     // Try inserting with thumbnail_url first
     if (trimmedThumbnail) {
-      const { data, error } = await (adminClient as any)
+      const { data, error } = await adminClient
         .from("series")
         .upsert({ name: trimmedName, thumbnail_url: trimmedThumbnail }, { onConflict: "name" })
         .select()
@@ -67,7 +69,7 @@ export async function POST(req: Request) {
     }
 
     // Fallback or default name-only insertion
-    const { data: fallbackData, error: fallbackError } = await (adminClient as any)
+    const { data: fallbackData, error: fallbackError } = await adminClient
       .from("series")
       .upsert({ name: trimmedName }, { onConflict: "name" })
       .select()
@@ -76,8 +78,8 @@ export async function POST(req: Request) {
     if (fallbackError) throw fallbackError;
     return NextResponse.json({ data: fallbackData });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -100,11 +102,11 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Series ID is required" }, { status: 400 });
     }
 
-    const updatePayload: Record<string, any> = {};
+    const updatePayload: Partial<SeriesInsert> = {};
     if (thumbnail_url !== undefined) updatePayload.thumbnail_url = thumbnail_url ? thumbnail_url.trim() : null;
     if (name !== undefined) updatePayload.name = name.trim();
 
-    const { data, error } = await (adminClient as any)
+    const { data, error } = await adminClient
       .from("series")
       .update(updatePayload)
       .eq("id", id)
@@ -113,8 +115,8 @@ export async function PATCH(req: Request) {
 
     if (error) throw error;
     return NextResponse.json({ data });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -137,14 +139,14 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Series ID is required" }, { status: 400 });
     }
 
-    const { error } = await (adminClient as any)
+    const { error } = await adminClient
       .from("series")
       .delete()
       .eq("id", id);
 
     if (error) throw error;
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }

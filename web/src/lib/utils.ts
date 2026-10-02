@@ -56,3 +56,17 @@ export function isHttpUrl(value: unknown): value is string {
 export function openExternalUrl(url: string | null | undefined): void {
   if (isHttpUrl(url)) window.open(url, "_blank", "noopener,noreferrer");
 }
+
+// ── Errors ───────────────────────────────────────────────────────────────────
+
+/**
+ * Message from anything that can be thrown. Supabase throws plain objects with a
+ * `message` field rather than Error instances, so both shapes are handled.
+ */
+export function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "object" && err !== null && "message" in err && typeof err.message === "string") {
+    return err.message;
+  }
+  return String(err);
+}

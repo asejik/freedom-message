@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Loader2, CheckCircle2, AlertCircle, Sparkles, Plus, Image as ImageIcon, Check } from "lucide-react";
 import type { Preacher, Series, SermonWithRelations } from "@/types/database";
 import { compressImageClient } from "@/utils/image";
+import { getErrorMessage } from "@/lib/utils";
 
 interface SermonFormProps {
   initialData?: SermonWithRelations;
@@ -82,8 +83,8 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
       setFormData(prev => ({ ...prev, preacher_id: json.data.id }));
       setQuickPreacherName("");
       setShowQuickAddPreacher(false);
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: `Error adding preacher: ${err.message}` });
+    } catch (err) {
+      setStatus({ type: 'error', msg: `Error adding preacher: ${getErrorMessage(err)}` });
     } finally {
       setIsAddingPreacher(false);
     }
@@ -165,8 +166,8 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
       }));
 
       setEnrichmentNotice("✨ Metadata enriched from audio ID3 tags, artwork, and AI sermon analysis! All fields below remain fully editable.");
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: `Enrichment error: ${err.message}` });
+    } catch (err) {
+      setStatus({ type: 'error', msg: `Enrichment error: ${getErrorMessage(err)}` });
     } finally {
       setIsEnriching(false);
     }
@@ -226,8 +227,8 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
       if (onSuccess) {
         setTimeout(() => onSuccess(), 1000);
       }
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: err.message });
+    } catch (err) {
+      setStatus({ type: 'error', msg: getErrorMessage(err) });
     } finally {
       setIsSaving(false);
     }
@@ -464,8 +465,8 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
                     }
                     const json = await res.json();
                     setFormData(prev => ({ ...prev, artwork_url: json.url }));
-                  } catch (err: any) {
-                    setStatus({ type: 'error', msg: `Upload failed: ${err.message}` });
+                  } catch (err) {
+                    setStatus({ type: 'error', msg: `Upload failed: ${getErrorMessage(err)}` });
                   } finally {
                     setIsUploadingArtwork(false);
                   }

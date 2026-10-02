@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 import { supabase, SERMON_CARD_SELECT } from '@/lib/supabase';
+import type { SermonWithRelations } from '@/types/database';
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -60,6 +61,12 @@ function isRateLimited(ip: string): boolean {
 }
 
 const MAX_QUERY_LENGTH = 200;
+
+/** A search candidate: the card fields plus the summary used for scoring and the AI answer. */
+type SearchRow = Pick<
+  SermonWithRelations,
+  'id' | 'title' | 'date_preached' | 'audio_url' | 'artwork_url' | 'preacher_id' | 'series_id' | 'preachers' | 'series'
+> & { ai_summary?: string | null };
 
 // Words too common to narrow a sermon search
 const SEARCH_STOPWORDS = new Set([
@@ -206,13 +213,13 @@ Example: "messages on the love commandment by pastor temi" -> {"topic": "love co
       throw error;
     }
 
-    let results = (data as any[]) ?? [];
+    let results = (data as unknown as SearchRow[]) ?? [];
 
     // 4. Rigorous Relevance Scoring
     if (safeTopic) {
       const lowerTopic = safeTopic.toLowerCase();
       
-      const getScore = (sermon: any) => {
+      const getScore = (sermon: SearchRow) => {
         let score = 0;
         const title = (sermon.title || "").toLowerCase();
         const summary = (sermon.ai_summary || "").toLowerCase();

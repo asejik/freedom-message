@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/utils/supabase/server";
 import { isMessagesAdmin } from "@/utils/supabase/admin";
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
+import { getErrorMessage } from "@/lib/utils";
 
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (supabaseUrl && serviceRoleKey) {
-    return createClient(supabaseUrl, serviceRoleKey, {
+    return createClient<Database>(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false }
     });
   }
@@ -18,15 +20,15 @@ function getAdminClient() {
 export async function GET() {
   try {
     const supabase = await createServerClient();
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("preachers")
       .select("*")
       .order("name", { ascending: true });
 
     if (error) throw error;
     return NextResponse.json({ data });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
     const trimmedName = name.trim();
 
     // Check if preacher already exists (case-insensitive)
-    const { data: existing } = await (adminClient as any)
+    const { data: existing } = await adminClient
       .from("preachers")
       .select("*")
       .ilike("name", trimmedName)
@@ -63,7 +65,7 @@ export async function POST(req: Request) {
     }
 
     // Insert new preacher
-    const { data, error } = await (adminClient as any)
+    const { data, error } = await adminClient
       .from("preachers")
       .insert({ name: trimmedName })
       .select()
@@ -72,8 +74,8 @@ export async function POST(req: Request) {
     if (error) throw error;
     return NextResponse.json({ data, existed: false });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -99,7 +101,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Preacher name is required" }, { status: 400 });
     }
 
-    const { data, error } = await (adminClient as any)
+    const { data, error } = await adminClient
       .from("preachers")
       .update({ name: name.trim() })
       .eq("id", id)
@@ -108,8 +110,8 @@ export async function PATCH(req: Request) {
 
     if (error) throw error;
     return NextResponse.json({ data });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -132,14 +134,14 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Preacher ID is required" }, { status: 400 });
     }
 
-    const { error } = await (adminClient as any)
+    const { error } = await adminClient
       .from("preachers")
       .delete()
       .eq("id", id);
 
     if (error) throw error;
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }

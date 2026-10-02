@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { isMessagesAdmin } from '@/utils/supabase/admin';
 import { SERMON_CARD_SELECT } from '@/lib/supabase';
-import { isHttpUrl } from '@/lib/utils';
+import { isHttpUrl, getErrorMessage } from '@/lib/utils';
+import type { SermonUpdate } from '@/types/database';
 
 export async function GET(request: Request) {
   try {
@@ -59,9 +60,9 @@ export async function GET(request: Request) {
       limit,
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[ADMIN SERMONS GET ERROR]:", error);
-    return NextResponse.json({ error: error.message || "Failed to fetch sermons" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) || "Failed to fetch sermons" }, { status: 500 });
   }
 }
 
@@ -119,7 +120,7 @@ export async function POST(request: Request) {
 
     const { data: insertedData, error: dbError } = await supabase
       .from('sermons')
-      .insert(payload as any)
+      .insert(payload)
       .select('*, preachers(*), series(*)')
       .single();
 
@@ -127,10 +128,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ data: insertedData }, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[ADMIN SERMONS POST ERROR]:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to create sermon" },
+      { error: getErrorMessage(error) || "Failed to create sermon" },
       { status: 500 }
     );
   }
@@ -156,7 +157,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Sermon ID is required" }, { status: 400 });
     }
 
-    const payload: Record<string, any> = {};
+    const payload: SermonUpdate = {};
     if (updates.title !== undefined) payload.title = updates.title.trim();
     if (updates.preacher_id !== undefined) payload.preacher_id = updates.preacher_id || null;
     if (updates.series_id !== undefined) payload.series_id = updates.series_id || null;
@@ -174,8 +175,8 @@ export async function PATCH(request: Request) {
     if (updates.key_verses !== undefined) payload.key_verses = Array.isArray(updates.key_verses) ? updates.key_verses : null;
     if (updates.prayer_focus !== undefined) payload.prayer_focus = updates.prayer_focus ? updates.prayer_focus.trim() : null;
 
-    const { data: updatedData, error: dbError } = await (supabase
-      .from('sermons') as any)
+    const { data: updatedData, error: dbError } = await supabase
+      .from('sermons')
       .update(payload)
       .eq('id', id)
       .select('*, preachers(*), series(*)')
@@ -185,10 +186,10 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ data: updatedData });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[ADMIN SERMONS PATCH ERROR]:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to update sermon" },
+      { error: getErrorMessage(error) || "Failed to update sermon" },
       { status: 500 }
     );
   }
@@ -228,10 +229,10 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true, message: "Sermon deleted successfully" });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[ADMIN SERMONS DELETE ERROR]:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to delete sermon" },
+      { error: getErrorMessage(error) || "Failed to delete sermon" },
       { status: 500 }
     );
   }

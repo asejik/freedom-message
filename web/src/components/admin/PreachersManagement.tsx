@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { Loader2, CheckCircle2, AlertCircle, Plus, Edit3, Trash2, Check, Users } from "lucide-react";
 import type { Preacher } from "@/types/database";
+import { getErrorMessage } from "@/lib/utils";
 
 export function PreachersManagementForm() {
   const supabase = createClient();
@@ -51,8 +52,8 @@ export function PreachersManagementForm() {
       refetch();
       queryClient.invalidateQueries({ queryKey: ['admin', 'preachers-dropdown'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'stats-preachers-count'] });
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: err.message });
+    } catch (err) {
+      setStatus({ type: 'error', msg: getErrorMessage(err) });
     } finally {
       setIsCreating(false);
     }
@@ -74,8 +75,8 @@ export function PreachersManagementForm() {
       setStatus({ type: 'success', msg: `Preacher updated to "${name}" successfully!` });
       refetch();
       queryClient.invalidateQueries({ queryKey: ['admin', 'preachers-dropdown'] });
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: err.message });
+    } catch (err) {
+      setStatus({ type: 'error', msg: getErrorMessage(err) });
     } finally {
       setEditingId(null);
     }
@@ -99,8 +100,8 @@ export function PreachersManagementForm() {
       refetch();
       queryClient.invalidateQueries({ queryKey: ['admin', 'preachers-dropdown'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'stats-preachers-count'] });
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: err.message });
+    } catch (err) {
+      setStatus({ type: 'error', msg: getErrorMessage(err) });
     } finally {
       setDeletingId(null);
     }

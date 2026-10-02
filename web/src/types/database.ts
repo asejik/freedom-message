@@ -1,6 +1,6 @@
 // =============================================================================
-// CLC Sermon Platform — Database Types
-// Mirrors the Supabase PostgreSQL schema defined in web/supabase/schema.sql
+// Messages — Database Types
+// Hand-maintained to mirror the live Supabase tables (the source of truth for the schema)
 // =============================================================================
 
 // ── Base row type helper ──────────────────────────────────────────────────────
@@ -86,6 +86,9 @@ export interface SermonInsert {
   transcript_text?: string | null;
   ai_summary?:     string | null;
   ai_tags?:        string[];
+  artwork_url?:    string | null;
+  key_verses?:     string[] | null;
+  prayer_focus?:   string | null;
 }
 
 /** Payload for partially updating an existing sermon. */
@@ -122,23 +125,29 @@ export interface SermonSearchResult extends SermonWithRelations {
  *   import type { Database } from '@/types/database'
  *   const supabase = createClient<Database>(url, key)
  */
+/** Turns an interface into a plain object type, which supabase-js requires for table rows. */
+type Plain<T> = { [K in keyof T]: T[K] };
+
 export interface Database {
   public: {
     Tables: {
       preachers: {
-        Row:    Preacher;
-        Insert: PreacherInsert & { id?: string; created_at?: string };
-        Update: Partial<PreacherInsert>;
+        Row:    Plain<Preacher>;
+        Insert: Plain<PreacherInsert & { id?: string; created_at?: string }>;
+        Update: Plain<Partial<PreacherInsert>>;
+        Relationships: [];
       };
       series: {
-        Row:    Series;
-        Insert: SeriesInsert & { id?: string; created_at?: string };
-        Update: Partial<SeriesInsert>;
+        Row:    Plain<Series>;
+        Insert: Plain<SeriesInsert & { id?: string; created_at?: string }>;
+        Update: Plain<Partial<SeriesInsert>>;
+        Relationships: [];
       };
       sermons: {
-        Row:    Sermon;
-        Insert: SermonInsert & { id?: string; created_at?: string };
-        Update: SermonUpdate;
+        Row:    Plain<Sermon>;
+        Insert: Plain<SermonInsert & { id?: string; created_at?: string }>;
+        Update: Plain<SermonUpdate>;
+        Relationships: [];
       };
     };
     Views:     Record<string, never>;

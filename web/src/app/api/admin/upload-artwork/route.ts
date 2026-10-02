@@ -3,6 +3,7 @@ import { createClient as createServerClient } from '@/utils/supabase/server';
 import { isMessagesAdmin } from '@/utils/supabase/admin';
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
+import { getErrorMessage } from "@/lib/utils";
 
 // Force dynamic execution for direct image uploads
 export const dynamic = 'force-dynamic';
@@ -102,8 +103,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: publicUrl });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[UPLOAD ARTWORK] Server error:", error);
-    return NextResponse.json({ error: error.message || "Failed to upload image" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) || "Failed to upload image" }, { status: 500 });
   }
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, CheckCircle2, AlertCircle, Edit3, Trash2, Search, Music, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import type { SermonWithRelations } from "@/types/database";
+import { getErrorMessage } from "@/lib/utils";
 
 export function SermonsListManager({ onEdit }: { onEdit: (sermon: SermonWithRelations) => void }) {
   const [search, setSearch] = useState("");
@@ -60,8 +61,8 @@ export function SermonsListManager({ onEdit }: { onEdit: (sermon: SermonWithRela
       setActionStatus({ type: 'success', msg: `Sermon "${title}" was successfully deleted.` });
       refetch();
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
-    } catch (err: any) {
-      setActionStatus({ type: 'error', msg: err.message });
+    } catch (err) {
+      setActionStatus({ type: 'error', msg: getErrorMessage(err) });
     } finally {
       setDeletingId(null);
     }

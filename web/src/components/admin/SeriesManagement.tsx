@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Loader2, CheckCircle2, AlertCircle, Plus, Edit3, Image as ImageIcon, Check } from "lucide-react";
 import type { Series } from "@/types/database";
 import { compressImageClient } from "@/utils/image";
+import { getErrorMessage } from "@/lib/utils";
 
 export function SeriesManagementForm() {
   const uid = useId(); // unique per instance, so label/field ids never clash
@@ -46,8 +47,8 @@ export function SeriesManagementForm() {
       setNewName("");
       setNewThumbnail("");
       refetch();
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: err.message });
+    } catch (err) {
+      setStatus({ type: 'error', msg: getErrorMessage(err) });
     } finally {
       setIsCreating(false);
     }
@@ -68,8 +69,8 @@ export function SeriesManagementForm() {
       }
       setStatus({ type: 'success', msg: `"${newSeriesName}" updated successfully!` });
       refetch();
-    } catch (err: any) {
-      setStatus({ type: 'error', msg: err.message });
+    } catch (err) {
+      setStatus({ type: 'error', msg: getErrorMessage(err) });
     } finally {
       setSavingId(null);
     }
@@ -161,8 +162,8 @@ export function SeriesManagementForm() {
                         }
                         const json = await res.json();
                         setNewThumbnail(json.url);
-                      } catch (err: any) {
-                        setStatus({ type: 'error', msg: `Upload failed: ${err.message}` });
+                      } catch (err) {
+                        setStatus({ type: 'error', msg: `Upload failed: ${getErrorMessage(err)}` });
                       } finally {
                         setIsUploadingNew(false);
                       }
@@ -320,8 +321,8 @@ function SeriesItemRow({
                 const json = await res.json();
                 setUrl(json.url);
                 onSave(series.id, name.trim() || series.name, json.url);
-              } catch (err: any) {
-                onError(`Upload failed: ${err.message}`);
+              } catch (err) {
+                onError(`Upload failed: ${getErrorMessage(err)}`);
               } finally {
                 setIsUploading(false);
               }

@@ -5,6 +5,7 @@ import Groq from 'groq-sdk';
 import { execFile } from 'child_process';
 import path from 'path';
 import util from 'util';
+import { getErrorMessage } from "@/lib/utils";
 
 const execFileAsync = util.promisify(execFile);
 
@@ -128,9 +129,9 @@ export async function POST(request: Request) {
           if (parsedAudio.artwork_url) result.artwork_url = parsedAudio.artwork_url;
           if (parsedAudio.error) result.audio_error = parsedAudio.error;
         }
-      } catch (audioErr: any) {
-        console.warn("[ENRICH API] Audio extraction note:", audioErr.message);
-        result.audio_error = audioErr.message || "Audio metadata extraction skipped or failed";
+      } catch (audioErr) {
+        console.warn("[ENRICH API] Audio extraction note:", getErrorMessage(audioErr));
+        result.audio_error = getErrorMessage(audioErr) || "Audio metadata extraction skipped or failed";
       }
     }
 
@@ -194,9 +195,9 @@ Return a valid JSON object with EXACTLY the following keys:
 
           aiSuccess = true;
           break; // Successfully enriched with current model
-        } catch (aiErr: any) {
-          console.warn(`[ENRICH API] Model ${model} failed, trying next fallback:`, aiErr.message);
-          result.ai_error = aiErr.message;
+        } catch (aiErr) {
+          console.warn(`[ENRICH API] Model ${model} failed, trying next fallback:`, getErrorMessage(aiErr));
+          result.ai_error = getErrorMessage(aiErr);
         }
       }
 
@@ -207,10 +208,10 @@ Return a valid JSON object with EXACTLY the following keys:
 
     return NextResponse.json({ data: result });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[ENRICH API] Server error:", error);
     return NextResponse.json(
-      { error: error.message || "Internal server error during enrichment" },
+      { error: getErrorMessage(error) || "Internal server error during enrichment" },
       { status: 500 }
     );
   }

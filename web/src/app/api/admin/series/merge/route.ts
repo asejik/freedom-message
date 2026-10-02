@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/utils/supabase/server";
 import { isMessagesAdmin } from "@/utils/supabase/admin";
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
+import { getErrorMessage } from "@/lib/utils";
 
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (supabaseUrl && serviceRoleKey) {
-    return createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
+    return createClient<Database>(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
   }
   return null;
 }
@@ -81,8 +83,8 @@ export async function POST(req: Request) {
       removed_series_count: idsToRemove.length,
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[MERGE SERIES] Unexpected error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }

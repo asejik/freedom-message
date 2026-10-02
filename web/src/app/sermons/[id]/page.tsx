@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { supabase, SERMON_LIST_SELECT, SERMON_CARD_SELECT } from "@/lib/supabase";
@@ -9,48 +9,14 @@ import { Loader2 } from "lucide-react";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import type { SermonWithRelations } from "@/types/database";
 import { openExternalUrl } from "@/lib/utils";
+import { useFavourite } from "@/hooks/useFavourite";
 
 export default function SermonDetailPage() {
   const params = useParams();
   const sermonId = params.id as string;
   const { currentSermon, isPlaying, play, togglePlay } = useAudioStore();
   const [copied, setCopied] = useState(false);
-  const [isFav, setIsFav] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      const favs: string[] = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
-      return favs.includes(sermonId);
-    } catch {
-      return false;
-    }
-  });
-
-  useEffect(() => {
-    const handleStorage = () => {
-      try {
-        const favs: string[] = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
-        setIsFav(favs.includes(sermonId));
-      } catch {}
-    };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, [sermonId]);
-
-  const toggleFav = () => {
-    try {
-      const favs: string[] = JSON.parse(localStorage.getItem("favourite_sermons") || "[]");
-      let updated: string[];
-      if (favs.includes(sermonId)) {
-        updated = favs.filter(id => id !== sermonId);
-        setIsFav(false);
-      } else {
-        updated = [...favs, sermonId];
-        setIsFav(true);
-      }
-      localStorage.setItem("favourite_sermons", JSON.stringify(updated));
-      window.dispatchEvent(new Event("storage"));
-    } catch {}
-  };
+  const [isFav, toggleFav] = useFavourite(sermonId);
 
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";

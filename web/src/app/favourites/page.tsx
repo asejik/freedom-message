@@ -7,34 +7,19 @@ import { SermonCard } from "@/components/sermons/SermonCard";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { SermonWithRelations } from "@/types/database";
+import { readFavourites, subscribeToFavourites } from "@/lib/favourites";
 
 export default function FavouritesPage() {
   const [favIds, setFavIds] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = localStorage.getItem("favourite_sermons");
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
+    return readFavourites();
   });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const handleStorage = () => {
-      try {
-        const stored = localStorage.getItem("favourite_sermons");
-        if (stored) {
-          setFavIds(JSON.parse(stored));
-        }
-      } catch (e) {
-        console.warn("Could not read favourite_sermons from storage:", e);
-      }
-    };
-    window.addEventListener("storage", handleStorage);
+    const unsubscribe = subscribeToFavourites(() => setFavIds(readFavourites()));
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoaded(true);
-    return () => window.removeEventListener("storage", handleStorage);
+    return unsubscribe;
   }, []);
 
   const { data: sermons, isLoading } = useQuery<SermonWithRelations[]>({

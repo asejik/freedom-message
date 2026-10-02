@@ -1,14 +1,14 @@
-# Freedom Messages — Sermon Platform
+# Messages — Sermon Platform
 
-A modern, high-performance audio sermon streaming platform for **Freedom Messages** (Apostle Muyiwa Areo and ministers).
+A modern, high-performance audio sermon streaming platform (formerly "Freedom Messages") for the ministry of Apostle Muyiwa Areo and other ministers.
 
 ## 🚀 Tech Stack
 - **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Server Components)
 - **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, Row Level Security, Storage)
 - **State Management:** [Zustand](https://github.com/pmndrs/zustand) (Global Audio Player)
 - **Data Caching:** [TanStack Query v5](https://tanstack.com/query/latest)
-- **AI Intent & Semantic Search:** [Groq SDK](https://groq.com/) (Deepseek / Llama RAG)
-- **Styling:** Vanilla Tailwind CSS v4, Lucide Icons, Google Fonts (ES Klarheit & Geist)
+- **AI Search:** [Groq SDK](https://groq.com/) (intent extraction, then a short answer written from the matching sermons)
+- **Styling:** Tailwind CSS v4, Lucide and Material Symbols icons, locally hosted fonts (ES Klarheit Grotesk & Geist)
 
 ---
 

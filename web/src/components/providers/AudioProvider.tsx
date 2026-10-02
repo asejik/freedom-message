@@ -133,7 +133,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: currentSermon.title,
           artist: currentSermon.preachers?.name || 'Unknown Preacher',
-          album: currentSermon.series?.name || 'CLC Sermon',
+          album: currentSermon.series?.name || 'Messages',
           artwork: currentSermon.artwork_url ? [
             { src: currentSermon.artwork_url, sizes: '400x400', type: 'image/webp' }
           ] : []

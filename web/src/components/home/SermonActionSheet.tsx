@@ -32,7 +32,7 @@ export function SermonActionSheet({
   if (!sermon) return null;
 
   const thumb = sermon.artwork_url || sermon.series?.thumbnail_url || null;
-  const preacherName = sermon.preachers?.name ?? "Citizens Preacher";
+  const preacherName = sermon.preachers?.name ?? "Unknown Preacher";
 
   const copyShareLink = async () => {
     try {

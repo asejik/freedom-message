@@ -83,7 +83,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
       setQuickPreacherName("");
       setShowQuickAddPreacher(false);
     } catch (err: any) {
-      alert(`Error adding preacher: ${err.message}`);
+      setStatus({ type: 'error', msg: `Error adding preacher: ${err.message}` });
     } finally {
       setIsAddingPreacher(false);
     }
@@ -465,7 +465,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
                     const json = await res.json();
                     setFormData(prev => ({ ...prev, artwork_url: json.url }));
                   } catch (err: any) {
-                    alert(`Upload failed: ${err.message}`);
+                    setStatus({ type: 'error', msg: `Upload failed: ${err.message}` });
                   } finally {
                     setIsUploadingArtwork(false);
                   }

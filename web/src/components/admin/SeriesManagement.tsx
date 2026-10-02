@@ -162,7 +162,7 @@ export function SeriesManagementForm() {
                         const json = await res.json();
                         setNewThumbnail(json.url);
                       } catch (err: any) {
-                        alert(`Upload failed: ${err.message}`);
+                        setStatus({ type: 'error', msg: `Upload failed: ${err.message}` });
                       } finally {
                         setIsUploadingNew(false);
                       }
@@ -207,7 +207,7 @@ export function SeriesManagementForm() {
         ) : (
           <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
             {filtered.map(s => (
-              <SeriesItemRow key={s.id} series={s} onSave={handleSaveSeries} isSaving={savingId === s.id} />
+              <SeriesItemRow key={s.id} series={s} onSave={handleSaveSeries} onError={(msg) => setStatus({ type: 'error', msg })} isSaving={savingId === s.id} />
             ))}
           </div>
         )}
@@ -219,10 +219,12 @@ export function SeriesManagementForm() {
 function SeriesItemRow({
   series,
   onSave,
+  onError,
   isSaving,
 }: {
   series: Series;
   onSave: (id: string, name: string, url: string) => void;
+  onError: (message: string) => void;
   isSaving: boolean;
 }) {
   const [name, setName] = useState(series.name);
@@ -319,7 +321,7 @@ function SeriesItemRow({
                 setUrl(json.url);
                 onSave(series.id, name.trim() || series.name, json.url);
               } catch (err: any) {
-                alert(`Upload failed: ${err.message}`);
+                onError(`Upload failed: ${err.message}`);
               } finally {
                 setIsUploading(false);
               }

@@ -8,6 +8,7 @@ export function Sidebar() {
 
   const navItems = [
     { label: "Home", icon: "home", href: "/" },
+    { label: "Search", icon: "search", href: "/search" },
     { label: "Ask AI", icon: "smart_toy", href: "/ai" },
     { label: "Series", icon: "library_music", href: "/series" },
     { label: "Favourites", icon: "favorite", href: "/favourites" },

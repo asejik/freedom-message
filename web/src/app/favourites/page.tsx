@@ -82,7 +82,7 @@ export default function FavouritesPage() {
             <div className="flex flex-col gap-1.5">
               <h2 className="font-heading text-xl font-bold">No Favourites Yet</h2>
               <p className="text-sm text-[#AAAAAA] leading-relaxed">
-                Save messages you love by clicking the three dots on any sermon card and selecting &quot;Save to Favourites&quot;.
+                Open any sermon and tap the heart to save it here. Favourites are kept on this device.
               </p>
             </div>
             <Link

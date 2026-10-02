@@ -63,7 +63,7 @@ export function Sidebar() {
           className="flex items-center gap-3 px-2 lg:px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[#AAAAAA] hover:text-white transition-all group active:scale-95"
           title="Visit Main Website (muyiwaareo.com)"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary/20 to-secondary/20 flex items-center justify-center text-primary group-hover:text-white shrink-0 transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary/20 to-secondary/20 flex items-center justify-center text-blue-400 group-hover:text-white shrink-0 transition-colors">
             <span aria-hidden="true" className="material-symbols-outlined text-[18px]">language</span>
           </div>
           <div className="hidden lg:flex flex-col min-w-0">

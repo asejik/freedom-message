@@ -80,10 +80,10 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
           <span className={`text-[10px] uppercase tracking-wider font-semibold mb-0.5 truncate block ${accentText}`}>
             {seriesName}
           </span>
-          <h3 className="font-body-md text-sm sm:text-base font-bold text-primary truncate leading-tight mb-0.5">
+          <h3 className="font-body-md text-sm sm:text-base font-bold text-blue-400 truncate leading-tight mb-0.5">
             {sermon.title}
           </h3>
-          <p className="font-label-sm text-xs text-on-surface-variant truncate">
+          <p className="font-label-sm text-xs text-white/70 truncate">
             {preacherName} • {formattedDate}
           </p>
         </div>

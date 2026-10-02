@@ -90,7 +90,7 @@ export function SermonActionSheet({
             }}
             className="flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-white/10 active:bg-white/15 text-white transition-colors text-sm font-medium"
           >
-            <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-primary">play_circle</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-blue-400">play_circle</span>
             <span>Play Sermon</span>
           </button>
 

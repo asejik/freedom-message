@@ -74,7 +74,7 @@ function SearchContent() {
         {/* On desktop: single horizontal row for search + all dropdowns */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
           {/* Search bar */}
-          <div className="flex-1 bg-white/10 hover:bg-white/15 transition-colors border border-white/10 rounded-full h-11 flex items-center px-4 shrink-0">
+          <div className="flex-1 bg-white/10 hover:bg-white/15 transition-colors border border-white/10 rounded-full h-11 flex items-center px-4 shrink-0 focus-within:border-white/50">
             <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] mr-2.5 text-[20px]">search</span>
             <input
               type="text"

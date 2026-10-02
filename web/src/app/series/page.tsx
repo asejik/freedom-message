@@ -128,7 +128,7 @@ function SeriesContent() {
 
         <div className="px-4 sm:px-6 md:px-12 py-5 sm:py-8">
           <div className="mb-6 sm:mb-8">
-            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-primary">Series Archive</span>
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-blue-400">Series Archive</span>
             <h1 className="text-2xl sm:text-3xl font-bold mt-1 text-white">{selectedSeries}</h1>
             <p className="text-xs sm:text-sm text-[#AAAAAA] mt-1">
               {sermonsInSeries?.count !== undefined
@@ -166,7 +166,7 @@ function SeriesContent() {
         <h1 className="text-lg sm:text-xl font-bold tracking-tight hidden md:block w-[100px] shrink-0">Series</h1>
 
         {/* Search Bar */}
-        <div className="max-w-[420px] flex-1 bg-white/10 hover:bg-white/15 transition-colors border border-white/5 rounded-full h-10 sm:h-12 flex items-center px-3.5 sm:px-4">
+        <div className="max-w-[420px] flex-1 bg-white/10 hover:bg-white/15 transition-colors border border-white/5 rounded-full h-10 sm:h-12 flex items-center px-3.5 sm:px-4 focus-within:border-white/50">
           <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] mr-2.5 text-[18px] sm:text-[20px]">search</span>
           <input
             type="text"

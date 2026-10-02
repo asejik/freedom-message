@@ -147,7 +147,7 @@ function HomeContent() {
       {/* ── Desktop Header: Search + All dropdowns in ONE single horizontal row ── */}
       <header className="hidden md:flex sticky top-0 z-40 bg-[#030303]/80 backdrop-blur-xl w-full items-center gap-3 px-6 md:px-12 py-3 border-b border-white/5">
         {/* Search input */}
-        <div className="max-w-md w-full bg-white/10 hover:bg-white/15 transition-colors border border-white/5 rounded-full h-10 flex items-center px-4 shrink-0">
+        <div className="max-w-md w-full bg-white/10 hover:bg-white/15 transition-colors border border-white/5 rounded-full h-10 flex items-center px-4 shrink-0 focus-within:border-white/50">
           <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] mr-2 text-[18px]">search</span>
           <input
             type="text"

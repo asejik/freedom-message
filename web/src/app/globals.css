@@ -172,8 +172,10 @@
 /* ── Accessibility ─────────────────────────────────────────────────────────── */
 
 /* Always show where keyboard focus is, even on elements that use `outline-none`.
-   :focus-visible only matches keyboard/assistive focus, so mouse and touch users see no ring. */
-:where(a, button, input, select, textarea, summary, [role="slider"], [tabindex]):focus-visible {
+   :focus-visible only matches keyboard/assistive focus, so mouse and touch users see no ring.
+   Text fields are left out (they count as focus-visible on every click); their containers
+   show focus with `focus-within:` styles instead. */
+:where(a, button, summary, [role="slider"], [tabindex]):focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.85);
   outline-offset: 2px;
 }

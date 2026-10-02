@@ -128,7 +128,7 @@ export function GlobalPlayer() {
 
         {/* Info Row */}
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary border border-primary/30 shadow-sm relative overflow-hidden">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0 text-blue-400 border border-primary/30 shadow-sm relative overflow-hidden">
             {currentSermon.artwork_url && currentSermon.artwork_url !== "ERROR" ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={currentSermon.artwork_url} alt="" className="w-full h-full object-cover" />
@@ -202,7 +202,7 @@ export function GlobalPlayer() {
         )}
 
         {/* Scrubber */}
-        <div className="flex items-center gap-3 font-label-sm text-label-sm text-on-surface-variant">
+        <div className="flex items-center gap-3 font-label-sm text-label-sm text-white/70">
           <span className="w-11 text-right font-medium tabular-nums">{formatTime(displayTime)}</span>
           {/* Tall, padded hit area around the thin track so it is easy to grab on touch screens */}
           <div
@@ -238,7 +238,7 @@ export function GlobalPlayer() {
         <div className="flex sm:hidden items-center justify-between mt-1 px-1">
           <button
             onClick={toggleSpeed}
-            className="font-label-md text-label-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-md transition-colors min-w-11 min-h-11"
+            className="font-label-md text-label-sm font-bold text-blue-400 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-md transition-colors min-w-11 min-h-11"
             aria-label={`Playback speed ${playbackSpeed}x. Change speed`}
           >
             {playbackSpeed}x
@@ -280,7 +280,7 @@ export function GlobalPlayer() {
             target="_blank"
             rel="noreferrer"
             onClick={() => recordSermonEvent(currentSermon.id, "download")}
-            className="flex items-center justify-center w-11 h-11 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
+            className="flex items-center justify-center w-11 h-11 rounded-full hover:bg-surface-container text-white/70 transition-colors"
             aria-label="Download sermon"
           >
             <span className="material-symbols-outlined text-[20px]" aria-hidden="true">download</span>

@@ -229,7 +229,7 @@ export default function SermonDetailPage() {
           {sermon.ai_summary && (
             <section>
               <h3 className="text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
-                <span aria-hidden="true" className="material-symbols-outlined text-primary text-xl">auto_awesome</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-blue-400 text-xl">auto_awesome</span>
                 <span>About this Sermon</span>
               </h3>
               <div className="text-[#AAAAAA] text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">

@@ -28,7 +28,7 @@ export function BottomNav() {
               href={item.href}
               className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all duration-200 min-h-[48px] ${
                 isActive
-                  ? "text-primary font-semibold scale-105"
+                  ? "text-blue-400 font-semibold scale-105"
                   : "text-white/50 hover:text-white/80 active:scale-95"
               }`}
             >

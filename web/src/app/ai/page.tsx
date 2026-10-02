@@ -190,7 +190,7 @@ export default function AskAIPage() {
           </form>
           
           {isSearching && (
-            <div className="flex items-center gap-2.5 text-primary bg-primary/10 w-max px-3.5 py-1.5 rounded-full mt-3.5 transition-all duration-300">
+            <div className="flex items-center gap-2.5 text-blue-400 bg-primary/10 w-max px-3.5 py-1.5 rounded-full mt-3.5 transition-all duration-300">
               <Loader2 className="animate-spin w-3.5 h-3.5" />
               <span className="text-xs sm:text-sm font-medium animate-pulse">{THINKING_MESSAGES[thinkingIndex]}</span>
             </div>

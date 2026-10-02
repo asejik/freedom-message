@@ -34,7 +34,7 @@ export function QuickPicksSection({
     <section className="md:hidden">
       <div className="flex items-center gap-2 mb-1">
         <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
-          <span aria-hidden="true" className="material-symbols-outlined text-primary text-[13px]">headphones</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-blue-400 text-[13px]">headphones</span>
         </div>
         <p className="text-[#AAAAAA] text-[11px] font-bold uppercase tracking-wider">Quick picks</p>
       </div>
@@ -113,7 +113,7 @@ export function QuickPicksSection({
                       href={`/sermons/${sermon.id}`}
                       className="flex-1 min-w-0 cursor-pointer"
                     >
-                      <p className="text-white text-xs sm:text-sm font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                      <p className="text-white text-xs sm:text-sm font-semibold leading-snug line-clamp-2 group-hover:text-blue-400 transition-colors">
                         {sermon.title}
                       </p>
                       <p className="text-[#AAAAAA] text-[11px] sm:text-xs mt-0.5 truncate">

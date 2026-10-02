@@ -40,14 +40,14 @@ export default function LoginPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-primary/20 blur-[60px] pointer-events-none" />
         
         <div className="relative z-10">
-          <div className="flex justify-center mb-6 text-primary">
+          <div className="flex justify-center mb-6 text-blue-400">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
               <Lock size={22} />
             </div>
           </div>
           
           <h1 className="text-2xl font-bold text-center text-white mb-2 tracking-tight">Admin Portal</h1>
-          <p className="text-center text-muted-foreground text-xs mb-8">
+          <p className="text-center text-white/60 text-xs mb-8">
             Sign in to manage sermons and platform data.
           </p>
 
@@ -61,7 +61,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-primary transition-all"
-                  placeholder="admin@citizens.church"
+                  placeholder="you@example.com"
                   required
                 />
               </div>
@@ -91,7 +91,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl text-sm flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md mt-2"
+              className="w-full bg-primary text-white font-semibold py-3 rounded-xl text-sm flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md mt-2"
             >
               {isLoading ? <Loader2 size={18} className="animate-spin" /> : "Sign In"}
             </button>

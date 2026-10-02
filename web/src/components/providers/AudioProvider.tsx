@@ -5,6 +5,7 @@ import { useAudioStore } from "@/store/useAudioStore";
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const lastRetryToken = useRef(0);
   
   const { 
     currentSermon, 
@@ -12,7 +13,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     volume, 
     playbackSpeed,
     currentTime,
+    retryToken,
     updateProgress,
+    setBuffering,
+    setLoadError,
     pause
   } = useAudioStore();
 
@@ -42,6 +46,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [currentSermon]);
 
+  // Retry after a load failure: reload the same source (declared before the
+  // play/pause effect so the reload happens before play() is called again)
+  useEffect(() => {
+    if (retryToken !== lastRetryToken.current) {
+      lastRetryToken.current = retryToken;
+      audioRef.current?.load();
+    }
+  }, [retryToken]);
+
   // Sync play/pause
   useEffect(() => {
     if (!audioRef.current || !currentSermon) return;
@@ -50,12 +63,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       // Play returns a promise that might reject if user hasn't interacted yet
       audioRef.current.play().catch((e) => {
         console.warn("Audio playback failed:", e);
-        pause(); // Revert state if playback blocked
+        // The browser couldn't load/decode the file: show the error state.
+        // Anything else (e.g. autoplay blocked): just revert to paused.
+        if (e?.name === "NotSupportedError") setLoadError();
+        else pause();
       });
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, currentSermon, pause]);
+  }, [isPlaying, currentSermon, retryToken, pause, setLoadError]);
 
   // Sync volume
   useEffect(() => {
@@ -136,18 +152,34 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    // Loading / failure feedback for slow or broken connections
+    const handleWaiting = () => setBuffering(true);
+    const handleReady = () => setBuffering(false);
+    const handleError = () => {
+      // Clearing the player sets an empty src, which also fires "error": ignore that
+      if (currentSermon) setLoadError();
+    };
+
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("play", setupMediaSession);
+    audio.addEventListener("waiting", handleWaiting);
+    audio.addEventListener("playing", handleReady);
+    audio.addEventListener("canplay", handleReady);
+    audio.addEventListener("error", handleError);
 
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("loadedmetadata", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("play", setupMediaSession);
+      audio.removeEventListener("waiting", handleWaiting);
+      audio.removeEventListener("playing", handleReady);
+      audio.removeEventListener("canplay", handleReady);
+      audio.removeEventListener("error", handleError);
     };
-  }, [currentSermon, updateProgress, pause]);
+  }, [currentSermon, updateProgress, pause, setBuffering, setLoadError]);
 
   return <>{children}</>;
 }

@@ -9,6 +9,12 @@ interface AudioState {
   currentTime: number;
   duration: number;
   volume: number;
+  /** Audio is being fetched/buffered and isn't producing sound yet */
+  isBuffering: boolean;
+  /** The audio file failed to load (network or host problem) */
+  loadError: boolean;
+  /** Bumped by retry() so the provider reloads the same source */
+  retryToken: number;
   
   // Actions
   play: (sermon: SermonWithRelations) => void;
@@ -19,6 +25,9 @@ interface AudioState {
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
   updateProgress: (currentTime: number, duration: number) => void;
+  setBuffering: (isBuffering: boolean) => void;
+  setLoadError: () => void;
+  retry: () => void;
   clear: () => void;
 }
 
@@ -67,11 +76,15 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   currentTime: 0,
   duration: 0,
   volume: getInitialVolume(),
+  isBuffering: false,
+  loadError: false,
+  retryToken: 0,
 
   play: (sermon) => {
-    // If playing the same sermon, just resume
+    // If playing the same sermon, just resume (or retry if it had failed)
     if (get().currentSermon?.id === sermon.id) {
-      set({ isPlaying: true });
+      if (get().loadError) get().retry();
+      else set({ isPlaying: true });
       return;
     }
     
@@ -83,6 +96,8 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       isPlaying: true,
       currentTime: savedTime,
       duration: 0,
+      isBuffering: true,
+      loadError: false,
     });
   },
 
@@ -117,11 +132,22 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   },
 
   updateProgress: (currentTime, duration) => set({ currentTime, duration }),
+
+  setBuffering: (isBuffering) => set({ isBuffering }),
+
+  setLoadError: () => set({ loadError: true, isPlaying: false, isBuffering: false }),
+
+  retry: () => {
+    if (!get().currentSermon) return;
+    set((state) => ({ loadError: false, isBuffering: true, isPlaying: true, retryToken: state.retryToken + 1 }));
+  },
   
   clear: () => set({
     currentSermon: null,
     isPlaying: false,
     currentTime: 0,
     duration: 0,
+    isBuffering: false,
+    loadError: false,
   })
 }));

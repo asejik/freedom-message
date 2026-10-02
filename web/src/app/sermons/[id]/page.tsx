@@ -64,18 +64,34 @@ export default function SermonDetailPage() {
     },
   });
 
+  // "You might also like": other sermons from the same series first, then more
+  // from the same preacher, newest first
   const { data: relatedSermons } = useQuery<SermonWithRelations[]>({
     queryKey: ["sermons", "related", sermonId],
     enabled: !!sermon,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("sermons")
-        .select(SERMON_CARD_SELECT)
-        .neq("id", sermonId)
-        .limit(10);
-      
-      if (error) throw error;
-      return (data as unknown as SermonWithRelations[])?.sort(() => 0.5 - Math.random()) || [];
+      const RELATED_LIMIT = 10;
+      const fetchBy = async (column: "series_id" | "preacher_id", value: string | null | undefined) => {
+        if (!value) return [];
+        const { data, error } = await supabase
+          .from("sermons")
+          .select(SERMON_CARD_SELECT)
+          .eq(column, value)
+          .neq("id", sermonId)
+          .order("date_preached", { ascending: false })
+          .limit(RELATED_LIMIT);
+
+        if (error) throw error;
+        return (data as unknown as SermonWithRelations[]) ?? [];
+      };
+
+      const related = await fetchBy("series_id", sermon?.series_id);
+      if (related.length < RELATED_LIMIT) {
+        const seen = new Set(related.map((r) => r.id));
+        const byPreacher = await fetchBy("preacher_id", sermon?.preacher_id);
+        related.push(...byPreacher.filter((r) => !seen.has(r.id)));
+      }
+      return related.slice(0, RELATED_LIMIT);
     },
   });
 
@@ -288,7 +304,8 @@ export default function SermonDetailPage() {
         </div>
       </div>
 
-      {/* Suggested Sermons Shelf */}
+      {/* Suggested Sermons Shelf (hidden when there is nothing related to show) */}
+      {relatedSermons && relatedSermons.length > 0 && (
       <section className="px-4 sm:px-6 md:px-12 mt-8 sm:mt-12">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">You might also like</h2>
@@ -299,6 +316,7 @@ export default function SermonDetailPage() {
           ))}
         </div>
       </section>
+      )}
 
     </div>
   );

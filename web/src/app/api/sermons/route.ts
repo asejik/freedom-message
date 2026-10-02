@@ -59,9 +59,11 @@ export async function GET(request: Request) {
       dbQuery = dbQuery.gte('date_preached', `${year}-01-01`).lte('date_preached', `${year}-12-31`);
     }
 
-    // Filter by tag (mood chip) - behaves like a title search while AI tags are populating
-    if (tag && tag.trim() !== '') {
-      dbQuery = dbQuery.ilike('title', `%${tag.trim()}%`);
+    // Filter by topic (mood chip): the word may appear in the title, the AI summary
+    // or the AI tags. Tags alone would miss most sermons (only ~230 have them).
+    const safeTag = (tag ?? '').replace(/[^a-zA-Z0-9 ]/g, '').trim();
+    if (safeTag) {
+      dbQuery = dbQuery.or(`title.ilike.%${safeTag}%,ai_summary.ilike.%${safeTag}%,ai_tags.cs.{${safeTag}}`);
     }
 
     const { data, count, error } = await dbQuery

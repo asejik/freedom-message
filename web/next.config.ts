@@ -1,22 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.supabase.co',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.archive.org',
-      },
-      {
-        protocol: 'https',
-        hostname: 'archive.org',
-      },
-    ],
-  },
+  // No `images.remotePatterns`: the app renders plain <img> tags and never uses
+  // next/image, so the /_next/image optimizer must not fetch remote images at all.
 };
 
 export default nextConfig;

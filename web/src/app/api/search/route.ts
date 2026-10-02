@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 import { supabase, SERMON_CARD_SELECT } from '@/lib/supabase';
 import type { SermonWithRelations } from '@/types/database';
+import { topicWords, rankSermons } from '@/lib/search';
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -67,18 +68,6 @@ type SearchRow = Pick<
   SermonWithRelations,
   'id' | 'title' | 'date_preached' | 'audio_url' | 'artwork_url' | 'preacher_id' | 'series_id' | 'preachers' | 'series'
 > & { ai_summary?: string | null };
-
-// Words too common to narrow a sermon search
-const SEARCH_STOPWORDS = new Set([
-  'a', 'an', 'and', 'the', 'of', 'on', 'in', 'to', 'for', 'by', 'with',
-  'about', 'is', 'are', 'how', 'what', 'my', 'your', 'our',
-]);
-
-// Distinct meaningful words from the extracted topic (capped to keep the filter small)
-function topicWords(topic: string): string[] {
-  const words = topic.toLowerCase().split(/\s+/).filter((w) => w.length > 1 && !SEARCH_STOPWORDS.has(w));
-  return Array.from(new Set(words)).slice(0, 5);
-}
 
 export async function GET(request: Request) {
   try {
@@ -215,47 +204,9 @@ Example: "messages on the love commandment by pastor temi" -> {"topic": "love co
 
     let results = (data as unknown as SearchRow[]) ?? [];
 
-    // 4. Rigorous Relevance Scoring
+    // 4. Relevance ranking (see lib/search.ts), keeping the top 20
     if (safeTopic) {
-      const lowerTopic = safeTopic.toLowerCase();
-      
-      const getScore = (sermon: SearchRow) => {
-        let score = 0;
-        const title = (sermon.title || "").toLowerCase();
-        const summary = (sermon.ai_summary || "").toLowerCase();
-        
-        if (title === lowerTopic) score += 100; // Exact match
-        else if (title.includes(lowerTopic)) {
-          // If the title contains the phrase, it's highly relevant.
-          score += 60;
-          // Bonus if it starts with the topic
-          if (title.startsWith(lowerTopic)) score += 10;
-        }
-        else if (summary.includes(lowerTopic)) score += 20;
-
-        // Per-word relevance, so sermons matching more of the query rank higher
-        for (const word of words) {
-          if (title.includes(word)) score += 15;
-          else if (summary.includes(word)) score += 5;
-        }
-        
-        return score;
-      };
-
-      results.sort((a, b) => {
-        const scoreA = getScore(a);
-        const scoreB = getScore(b);
-        if (scoreA !== scoreB) {
-          return scoreB - scoreA; // Highest score first
-        }
-        // Tie-breaker: Latest date first
-        const dateA = new Date(a.date_preached).getTime();
-        const dateB = new Date(b.date_preached).getTime();
-        return dateB - dateA;
-      });
-      
-      // Slice top 20 dominant results
-      results = results.slice(0, 20);
+      results = rankSermons(results, safeTopic, words).slice(0, 20);
     }
 
     // 5. Conversational RAG response

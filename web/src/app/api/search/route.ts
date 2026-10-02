@@ -304,9 +304,10 @@ Rules:
 
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
+    // Details stay in the server log; clients get a generic message (no DB internals)
     console.error("[SEARCH API ERROR]:", message);
     return NextResponse.json(
-      { error: `Search failed: ${message}` },
+      { error: "Search failed. Please try again." },
       { status: 500 }
     );
   }

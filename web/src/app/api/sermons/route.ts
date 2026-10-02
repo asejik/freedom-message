@@ -84,9 +84,10 @@ export async function GET(request: Request) {
     );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
+    // Details stay in the server log; clients get a generic message (no DB internals)
     console.error("[CATALOG API ERROR]:", message);
     return NextResponse.json(
-      { error: `Catalog fetch failed: ${message}` },
+      { error: "Could not load sermons. Please try again." },
       { status: 500 }
     );
   }

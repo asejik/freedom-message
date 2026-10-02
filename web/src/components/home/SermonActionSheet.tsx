@@ -16,7 +16,7 @@ export function SermonActionSheet({
   onClose: () => void;
 }) {
   const router = useRouter();
-  const { play } = useAudioStore();
+  const play = useAudioStore((s) => s.play);
   const [copied, setCopied] = useState(false);
   const [isFav, toggleFavorite] = useFavourite(sermon?.id);
 

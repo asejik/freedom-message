@@ -14,7 +14,12 @@ import { useFavourite } from "@/hooks/useFavourite";
 export default function SermonDetailPage() {
   const params = useParams();
   const sermonId = params.id as string;
-  const { currentSermon, isPlaying, play, togglePlay } = useAudioStore();
+  // Select only what this component needs: the store also holds the playback
+  // position, which changes several times a second while a sermon plays
+  const currentSermonId = useAudioStore((s) => s.currentSermon?.id);
+  const isPlaying = useAudioStore((s) => s.isPlaying);
+  const play = useAudioStore((s) => s.play);
+  const togglePlay = useAudioStore((s) => s.togglePlay);
   const [copied, setCopied] = useState(false);
   const [isFav, toggleFav] = useFavourite(sermonId);
 
@@ -83,7 +88,7 @@ export default function SermonDetailPage() {
     return <div className="p-12 text-center text-white">Sermon not found.</div>;
   }
 
-  const isCurrentSermon = currentSermon?.id === sermon.id;
+  const isCurrentSermon = currentSermonId === sermon.id;
   const isPlayingThis = isCurrentSermon && isPlaying;
 
   const handlePlay = () => {

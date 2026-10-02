@@ -12,10 +12,12 @@ interface SermonCardProps {
 }
 
 export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardProps) {
-  const { currentSermon, isPlaying, play, togglePlay } = useAudioStore();
-
-  const isCurrentSermon = currentSermon?.id === sermon.id;
-  const isPlayingThis = isCurrentSermon && isPlaying;
+  // Select only what this component needs: the store also holds the playback
+  // position, which changes several times a second while a sermon plays
+  const isCurrentSermon = useAudioStore((s) => s.currentSermon?.id === sermon.id);
+  const isPlayingThis = useAudioStore((s) => s.isPlaying && s.currentSermon?.id === sermon.id);
+  const play = useAudioStore((s) => s.play);
+  const togglePlay = useAudioStore((s) => s.togglePlay);
 
   const handlePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -132,7 +134,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
             title={isPlayingThis ? "Pause" : "Play"}
           >
              <span className="material-symbols-outlined text-[24px] sm:text-[28px] translate-x-[1px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-               {isCurrentSermon ? (isPlaying ? "pause" : "play_arrow") : "play_arrow"}
+               {isPlayingThis ? "pause" : "play_arrow"}
              </span>
           </button>
         </div>

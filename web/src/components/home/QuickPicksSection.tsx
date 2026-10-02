@@ -14,7 +14,12 @@ export function QuickPicksSection({
   sermons?: SermonWithRelations[];
   isLoading?: boolean;
 }) {
-  const { currentSermon, isPlaying, play, togglePlay } = useAudioStore();
+  // Select only what this component needs: the store also holds the playback
+  // position, which changes several times a second while a sermon plays
+  const currentSermonId = useAudioStore((s) => s.currentSermon?.id);
+  const isPlaying = useAudioStore((s) => s.isPlaying);
+  const play = useAudioStore((s) => s.play);
+  const togglePlay = useAudioStore((s) => s.togglePlay);
   const [selectedSermon, setSelectedSermon] = useState<SermonWithRelations | null>(null);
 
   // Group sermons into columns of 4 items each (YouTube Music style)
@@ -60,7 +65,7 @@ export function QuickPicksSection({
                       month: "short",
                     })
                   : "";
-                const isCurrentSermon = currentSermon?.id === sermon.id;
+                const isCurrentSermon = currentSermonId === sermon.id;
                 const isPlayingThis = isCurrentSermon && isPlaying;
 
                 return (

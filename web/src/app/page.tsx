@@ -12,6 +12,7 @@ import { DateFilterPicker } from "@/components/filters/DateFilterPicker";
 import { getYearOptions } from "@/lib/years";
 import { SermonShelf } from "@/components/home/SermonShelf";
 import { QuickPicksSection } from "@/components/home/QuickPicksSection";
+import { LoadError } from "@/components/ui/LoadError";
 
 const MOODS = ["Grace", "Favour", "Faith", "Healing", "Redemption", "Righteousness"];
 
@@ -72,14 +73,14 @@ function HomeContent() {
   });
 
   // Recent sermons query
-  const { data: recent, isLoading: recentLoading } = useQuery<SermonWithRelations[]>({
+  const { data: recent, isLoading: recentLoading, isError: recentError, refetch: refetchRecent } = useQuery<SermonWithRelations[]>({
     queryKey: ["sermons", "recent"],
     enabled: !isFiltering,
     queryFn: fetchRecentSermons,
   });
 
   // Filtered sermons query (when search/filters applied)
-  const { data: gridResults, isLoading: gridLoading } = useQuery<{ data: SermonWithRelations[]; count: number }>({
+  const { data: gridResults, isLoading: gridLoading, isError: gridError, refetch: refetchGrid } = useQuery<{ data: SermonWithRelations[]; count: number }>({
     queryKey: ["sermons", "grid", activeMood, debouncedSearch, selectedPreacher, selectedYear, selectedDate, gridPage],
     enabled: isFiltering,
     queryFn: async () => {
@@ -247,6 +248,8 @@ function HomeContent() {
               <div className="h-[260px] flex items-center justify-center">
                 <Loader2 className="animate-spin text-white/40" />
               </div>
+            ) : gridError ? (
+              <LoadError onRetry={() => refetchGrid()} />
             ) : !gridResults?.data || gridResults.data.length === 0 ? (
               <div className="text-center py-12 text-[#AAAAAA]">No sermons found matching your criteria.</div>
             ) : (
@@ -282,6 +285,9 @@ function HomeContent() {
               </>
             )}
           </section>
+        ) : recentError ? (
+          /* Featured and Recent share one request, so one message covers both shelves */
+          <LoadError onRetry={() => refetchRecent()} message="We couldn't load the sermons right now. Check your connection and try again." />
         ) : (
           <>
             {/* Mobile: YouTube Music Quick Picks (4-item stacked swipeable columns) */}

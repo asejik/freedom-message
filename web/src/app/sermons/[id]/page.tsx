@@ -10,6 +10,7 @@ import { SermonCard } from "@/components/sermons/SermonCard";
 import type { SermonWithRelations } from "@/types/database";
 import { openExternalUrl } from "@/lib/utils";
 import { useFavourite } from "@/hooks/useFavourite";
+import { LoadError } from "@/components/ui/LoadError";
 
 export default function SermonDetailPage() {
   const params = useParams();
@@ -47,7 +48,7 @@ export default function SermonDetailPage() {
     }
   };
 
-  const { data: sermon, isLoading } = useQuery<SermonWithRelations>({
+  const { data: sermon, isLoading, isError, refetch } = useQuery<SermonWithRelations | null>({
     queryKey: ["sermon", sermonId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -56,6 +57,8 @@ export default function SermonDetailPage() {
         .eq("id", sermonId)
         .single();
 
+      // No such sermon (PGRST116: zero rows) or a malformed id (22P02) is "not found", not a failure
+      if (error && (error.code === "PGRST116" || error.code === "22P02")) return null;
       if (error) throw error;
       return data as unknown as SermonWithRelations;
     },
@@ -82,6 +85,10 @@ export default function SermonDetailPage() {
         <Loader2 className="animate-spin text-white/50 w-8 h-8" />
       </div>
     );
+  }
+
+  if (isError) {
+    return <LoadError onRetry={() => refetch()} message="We couldn't load this sermon right now. Check your connection and try again." />;
   }
 
   if (!sermon) {

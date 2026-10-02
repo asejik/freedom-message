@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { SermonWithRelations } from "@/types/database";
 import { readFavourites, subscribeToFavourites } from "@/lib/favourites";
+import { LoadError } from "@/components/ui/LoadError";
 
 export default function FavouritesPage() {
   const [favIds, setFavIds] = useState<string[]>(() => {
@@ -22,7 +23,7 @@ export default function FavouritesPage() {
     return unsubscribe;
   }, []);
 
-  const { data: sermons, isLoading } = useQuery<SermonWithRelations[]>({
+  const { data: sermons, isLoading, isError, refetch } = useQuery<SermonWithRelations[]>({
     queryKey: ["sermons", "favourites", favIds],
     enabled: isLoaded && favIds.length > 0,
     queryFn: async () => {
@@ -70,6 +71,8 @@ export default function FavouritesPage() {
           <div className="h-[300px] flex items-center justify-center">
             <Loader2 className="animate-spin text-white/40 w-8 h-8" />
           </div>
+        ) : isError ? (
+          <LoadError onRetry={() => refetch()} />
         ) : favIds.length === 0 ? (
           /* Empty State */
           <div className="py-20 flex flex-col items-center justify-center text-center gap-5 max-w-md mx-auto">

@@ -12,6 +12,7 @@ import type { Series, SermonWithRelations } from "@/types/database";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import { FilterDropdown } from "@/components/filters/FilterDropdown";
 import { getYearOptions } from "@/lib/years";
+import { LoadError } from "@/components/ui/LoadError";
 
 function SeriesContent() {
   const searchParams = useSearchParams();
@@ -47,7 +48,7 @@ function SeriesContent() {
   };
 
   // Query for All Series List
-  const { data: seriesResult, isLoading: seriesLoading } = useQuery<{ data: Series[]; count: number }>({
+  const { data: seriesResult, isLoading: seriesLoading, isError: seriesError, refetch: refetchSeries } = useQuery<{ data: Series[]; count: number }>({
     queryKey: ["series", "paginated", debouncedSearch, selectedYear, page],
     enabled: !selectedSeries,
     queryFn: async () => {
@@ -79,7 +80,7 @@ function SeriesContent() {
   });
 
   // Query for Sermons in Selected Series
-  const { data: sermonsInSeries, isLoading: sermonsLoading } = useQuery<{ data: SermonWithRelations[]; count: number }>({
+  const { data: sermonsInSeries, isLoading: sermonsLoading, isError: sermonsError, refetch: refetchSermons } = useQuery<{ data: SermonWithRelations[]; count: number }>({
     queryKey: ["sermons", "series", selectedSeries, selectedYear],
     enabled: !!selectedSeries,
     queryFn: async () => {
@@ -140,6 +141,8 @@ function SeriesContent() {
             <div className="h-40 flex items-center justify-center">
               <Loader2 className="animate-spin text-white/40" />
             </div>
+          ) : sermonsError ? (
+            <LoadError onRetry={() => refetchSermons()} />
           ) : !sermonsInSeries?.data || sermonsInSeries.data.length === 0 ? (
             <div className="text-center text-[#AAAAAA] py-12 text-sm">
               No sermons found in this series{selectedYear ? ` for year ${selectedYear}` : ""}.
@@ -230,6 +233,8 @@ function SeriesContent() {
           <div className="h-40 flex items-center justify-center">
             <Loader2 className="animate-spin text-white/40" />
           </div>
+        ) : seriesError ? (
+          <LoadError onRetry={() => refetchSeries()} />
         ) : !seriesResult?.data.length ? (
           <div className="text-center text-[#AAAAAA] py-12 text-sm">
             No series found{selectedYear ? ` for ${selectedYear}` : ""}{search ? ` matching "${search}"` : ""}.

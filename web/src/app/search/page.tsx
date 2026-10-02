@@ -11,6 +11,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { FilterDropdown } from "@/components/filters/FilterDropdown";
 import { DateFilterPicker } from "@/components/filters/DateFilterPicker";
 import { getYearOptions } from "@/lib/years";
+import { LoadError } from "@/components/ui/LoadError";
 
 // ── Search Content ────────────────────────────────────────────────────────────
 function SearchContent() {
@@ -47,7 +48,7 @@ function SearchContent() {
   });
 
   // Query for sermon search (ONLY executed when user has searched/filtered)
-  const { data: gridResults, isLoading: gridLoading } = useQuery<{ data: SermonWithRelations[]; count: number }>({
+  const { data: gridResults, isLoading: gridLoading, isError: gridError, refetch: refetchGrid } = useQuery<{ data: SermonWithRelations[]; count: number }>({
     queryKey: ["sermons", "search", debouncedSearch, selectedPreacher, selectedYear, selectedDate, gridPage],
     enabled: isFiltering,
     queryFn: async () => {
@@ -159,6 +160,8 @@ function SearchContent() {
               <div className="h-[300px] flex items-center justify-center">
                 <Loader2 className="animate-spin text-white/40" />
               </div>
+            ) : gridError ? (
+              <LoadError onRetry={() => refetchGrid()} />
             ) : !gridResults?.data || gridResults.data.length === 0 ? (
               <div className="text-center py-16 flex flex-col items-center gap-3">
                 <span className="material-symbols-outlined text-[48px] text-white/20">search_off</span>

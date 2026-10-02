@@ -59,6 +59,8 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+const MAX_QUERY_LENGTH = 200;
+
 // Words too common to narrow a sermon search
 const SEARCH_STOPWORDS = new Set([
   'a', 'an', 'and', 'the', 'of', 'on', 'in', 'to', 'for', 'by', 'with',
@@ -95,6 +97,14 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
+
+    // Bound prompt size: every character here is sent to (and billed by) the AI provider
+    if (query && query.length > MAX_QUERY_LENGTH) {
+      return NextResponse.json(
+        { error: `Search is limited to ${MAX_QUERY_LENGTH} characters. Please shorten your question.` },
+        { status: 400 }
+      );
+    }
 
     // 1. No query -> Return latest sermons
     if (!query || !query.trim()) {

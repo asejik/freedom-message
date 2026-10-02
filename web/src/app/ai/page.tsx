@@ -165,6 +165,7 @@ export default function AskAIPage() {
               <input
                 value={query}
                 onChange={e => setQuery(e.target.value)}
+                maxLength={200}
                 placeholder="e.g. sermons about faith in difficult times..."
                 className="w-full bg-white/10 border border-white/10 rounded-xl sm:rounded-full pl-4 sm:pl-5 pr-10 sm:pr-12 py-3 text-xs sm:text-sm text-white placeholder:text-[#AAAAAA] outline-none focus:border-white/30 transition-colors"
               />

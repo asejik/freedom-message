@@ -69,6 +69,39 @@ type SearchRow = Pick<
   'id' | 'title' | 'date_preached' | 'audio_url' | 'artwork_url' | 'preacher_id' | 'series_id' | 'preachers' | 'series'
 > & { ai_summary?: string | null };
 
+/**
+ * Full-text search over sermon titles, AI summaries and transcripts using the
+ * `search_sermons_ranked` database function (indexed; returns ids best-first).
+ * Returns null when the function is unavailable so the caller can fall back.
+ */
+async function searchByFullText(topic: string, preacher: string | null, select: string): Promise<SearchRow[] | null> {
+  const { data: ranked, error: rankError } = await supabase.rpc('search_sermons_ranked', {
+    search_query: topic,
+    preacher_filter: preacher ?? undefined,
+    max_results: 20,
+  });
+
+  if (rankError) {
+    console.warn("[SEARCH API WARN] Full-text search unavailable, using title/summary matching:", rankError.message);
+    return null;
+  }
+
+  const ids = (ranked ?? []).map((row) => row.sermon_id);
+  if (ids.length === 0) return [];
+
+  const { data, error } = await supabase.from('sermons').select(select).in('id', ids);
+  if (error) {
+    console.warn("[SEARCH API WARN] Could not load full-text matches, using title/summary matching:", error.message);
+    return null;
+  }
+
+  // .in() returns rows in table order: restore the database's relevance order
+  const position = new Map(ids.map((id, index) => [id, index]));
+  return ((data as unknown as SearchRow[]) ?? []).sort(
+    (a, b) => (position.get(a.id) ?? 0) - (position.get(b.id) ?? 0)
+  );
+}
+
 export async function GET(request: Request) {
   try {
     // 0. Rate limiting check
@@ -161,52 +194,56 @@ Example: "messages on the love commandment by pastor temi" -> {"topic": "love co
       setCachedIntent(cacheKey, intent);
     }
 
-    // 3. Query Supabase with explicit field selection (no transcript_text)
+    // 3. Find matching sermons (card fields only, never transcript_text)
     const safeTopic = intent.topic.replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
 
     // Card fields plus ai_summary, which is needed server-side for scoring and
     // the RAG answer but stripped before responding (cards never display it).
-    // Use !inner for preacher join when filtering by preacher
-    let searchSelect = `${SERMON_CARD_SELECT}, ai_summary`;
-    if (intent.preacher) {
-      searchSelect = searchSelect.replace('preachers(id, name)', 'preachers!inner(id, name)');
-    }
-    
-    // Match words individually so "holy spirit baptism" finds "The Baptism of the Holy Spirit"
+    const baseSelect = `${SERMON_CARD_SELECT}, ai_summary`;
     const words = topicWords(safeTopic);
-    const wordMatch = (word: string) => `title.ilike.%${word}%,ai_summary.ilike.%${word}%`;
 
-    // Fetch a focused candidate pool (top 50 is sufficient since we keep top 20 after scoring)
-    const runQuery = (orFilter: string) => {
-      let dbQuery = supabase.from('sermons').select(searchSelect).or(orFilter);
-      if (intent.preacher) {
-        dbQuery = dbQuery.ilike('preachers.name', `%${intent.preacher}%`);
+    // 3a. Preferred: full-text search across titles, summaries AND transcripts, ranked in the database
+    let results = safeTopic ? await searchByFullText(safeTopic, intent.preacher, baseSelect) : null;
+
+    // 3b. Fallback (database search function not installed, or it failed): match words in titles and summaries
+    if (results === null) {
+      // Use !inner for preacher join when filtering by preacher
+      const searchSelect = intent.preacher
+        ? baseSelect.replace('preachers(id, name)', 'preachers!inner(id, name)')
+        : baseSelect;
+
+      // Match words individually so "holy spirit baptism" finds "The Baptism of the Holy Spirit"
+      const wordMatch = (word: string) => `title.ilike.%${word}%,ai_summary.ilike.%${word}%`;
+
+      // Fetch a focused candidate pool (top 50 is sufficient since we keep top 20 after scoring)
+      const runQuery = (orFilter: string) => {
+        let dbQuery = supabase.from('sermons').select(searchSelect).or(orFilter);
+        if (intent.preacher) {
+          dbQuery = dbQuery.ilike('preachers.name', `%${intent.preacher}%`);
+        }
+        return dbQuery.order('date_preached', { ascending: false }).limit(50);
+      };
+
+      // Every word must appear in the title or summary; with 0–1 words this is a single-term match
+      const allWordsFilter = words.length > 1
+        ? `and(${words.map((w) => `or(${wordMatch(w)})`).join(',')})`
+        : wordMatch(words[0] ?? safeTopic);
+
+      let { data, error } = await runQuery(allWordsFilter);
+
+      // No sermon has every word: fall back to any of them (scoring ranks those matching more words first)
+      if (!error && (data?.length ?? 0) === 0 && words.length > 1) {
+        ({ data, error } = await runQuery(words.map(wordMatch).join(',')));
       }
-      return dbQuery.order('date_preached', { ascending: false }).limit(50);
-    };
 
-    // Every word must appear in the title or summary; with 0–1 words this is the old single-term match
-    const allWordsFilter = words.length > 1
-      ? `and(${words.map((w) => `or(${wordMatch(w)})`).join(',')})`
-      : wordMatch(words[0] ?? safeTopic);
+      if (error) {
+        console.error("[SEARCH API ERROR] Supabase search query:", error);
+        throw error;
+      }
 
-    let { data, error } = await runQuery(allWordsFilter);
-
-    // No sermon has every word: fall back to any of them (scoring ranks those matching more words first)
-    if (!error && (data?.length ?? 0) === 0 && words.length > 1) {
-      ({ data, error } = await runQuery(words.map(wordMatch).join(',')));
-    }
-
-    if (error) {
-      console.error("[SEARCH API ERROR] Supabase search query:", error);
-      throw error;
-    }
-
-    let results = (data as unknown as SearchRow[]) ?? [];
-
-    // 4. Relevance ranking (see lib/search.ts), keeping the top 20
-    if (safeTopic) {
-      results = rankSermons(results, safeTopic, words).slice(0, 20);
+      // Relevance ranking (see lib/search.ts), keeping the top 20
+      const candidates = (data as unknown as SearchRow[]) ?? [];
+      results = safeTopic ? rankSermons(candidates, safeTopic, words).slice(0, 20) : candidates;
     }
 
     // 5. Conversational RAG response

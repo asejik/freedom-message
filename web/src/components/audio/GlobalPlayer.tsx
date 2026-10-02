@@ -3,6 +3,7 @@
 import { useAudioStore } from "@/store/useAudioStore";
 import { Play, Pause, X, Loader2, RotateCcw, RotateCw } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { recordSermonEvent } from "@/lib/stats";
 
 const SKIP_SECONDS = 15;
 
@@ -278,6 +279,7 @@ export function GlobalPlayer() {
             download
             target="_blank"
             rel="noreferrer"
+            onClick={() => recordSermonEvent(currentSermon.id, "download")}
             className="flex items-center justify-center w-11 h-11 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
             aria-label="Download sermon"
           >

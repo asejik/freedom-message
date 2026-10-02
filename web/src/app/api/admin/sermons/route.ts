@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { isMessagesAdmin } from '@/utils/supabase/admin';
-import { SERMON_CARD_SELECT } from '@/lib/supabase';
+import { SERMON_CARD_SELECT, SERMON_ADMIN_SELECT } from '@/lib/supabase';
 import { isHttpUrl, getErrorMessage } from '@/lib/utils';
 import type { SermonUpdate } from '@/types/database';
 
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     if (id) {
       const { data, error } = await supabase
         .from('sermons')
-        .select('*, preachers(*), series(*)')
+        .select(SERMON_ADMIN_SELECT)
         .eq('id', id)
         .single();
 
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     let query = supabase
       .from('sermons')
       // Table only shows card fields; transcripts (~61KB each) load on edit via ?id=
-      .select(SERMON_CARD_SELECT, { count: 'exact' });
+      .select(`${SERMON_CARD_SELECT}, play_count, download_count`, { count: 'exact' });
 
     if (search.trim()) {
       query = query.ilike('title', `%${search.trim()}%`);
@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     const { data: insertedData, error: dbError } = await supabase
       .from('sermons')
       .insert(payload)
-      .select('*, preachers(*), series(*)')
+      .select(SERMON_CARD_SELECT)
       .single();
 
     if (dbError) throw dbError;
@@ -179,7 +179,7 @@ export async function PATCH(request: Request) {
       .from('sermons')
       .update(payload)
       .eq('id', id)
-      .select('*, preachers(*), series(*)')
+      .select(SERMON_CARD_SELECT)
       .single();
 
     if (dbError) throw dbError;

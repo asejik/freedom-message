@@ -47,3 +47,10 @@ export const SERMON_CARD_SELECT = `
   preachers(id, name),
   series(id, name, thumbnail_url)
 `.replace(/\s+/g, ' ').trim();
+
+/**
+ * Everything the admin edit form needs: the detail fields plus the transcript.
+ * Explicit on purpose: `select('*')` would also pull the large `search_vector`
+ * full-text index column.
+ */
+export const SERMON_ADMIN_SELECT = `${SERMON_LIST_SELECT}, transcript_text`;

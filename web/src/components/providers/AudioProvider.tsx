@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useAudioStore } from "@/store/useAudioStore";
+import { recordSermonEvent } from "@/lib/stats";
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -155,6 +156,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     // Loading / failure feedback for slow or broken connections
     const handleWaiting = () => setBuffering(true);
     const handleReady = () => setBuffering(false);
+    // Audio is actually playing: count the listen (once per sermon per session)
+    const handlePlaying = () => {
+      if (currentSermon) recordSermonEvent(currentSermon.id, "play");
+    };
     const handleError = () => {
       // Clearing the player sets an empty src, which also fires "error": ignore that
       if (currentSermon) setLoadError();
@@ -166,6 +171,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     audio.addEventListener("play", setupMediaSession);
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("playing", handleReady);
+    audio.addEventListener("playing", handlePlaying);
     audio.addEventListener("canplay", handleReady);
     audio.addEventListener("error", handleError);
 
@@ -176,6 +182,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audio.removeEventListener("play", setupMediaSession);
       audio.removeEventListener("waiting", handleWaiting);
       audio.removeEventListener("playing", handleReady);
+      audio.removeEventListener("playing", handlePlaying);
       audio.removeEventListener("canplay", handleReady);
       audio.removeEventListener("error", handleError);
     };

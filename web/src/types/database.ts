@@ -152,9 +152,20 @@ export interface Database {
     };
     Views:     Record<string, never>;
     Functions: {
+      /** Legacy: scans every transcript (~2s). No longer callable from the browser. */
       search_sermons: {
         Args:    { query: string };
         Returns: Sermon[];
+      };
+      /** Indexed full-text search over title, summary and transcript; best matches first. */
+      search_sermons_ranked: {
+        Args:    { search_query: string; preacher_filter?: string; max_results?: number };
+        Returns: { sermon_id: string; rank: number }[];
+      };
+      /** Adds one to a sermon's play or download counter. */
+      increment_sermon_counter: {
+        Args:    { target_sermon_id: string; counter: string };
+        Returns: undefined;
       };
     };
     Enums:     Record<string, never>;

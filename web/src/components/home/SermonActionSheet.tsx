@@ -7,6 +7,7 @@ import { useAudioStore } from "@/store/useAudioStore";
 import { openExternalUrl } from "@/lib/utils";
 import type { SermonWithRelations } from "@/types/database";
 import { useFavourite } from "@/hooks/useFavourite";
+import { recordSermonEvent } from "@/lib/stats";
 
 export function SermonActionSheet({
   sermon,
@@ -46,6 +47,7 @@ export function SermonActionSheet({
   };
 
   const handleDownload = () => {
+    recordSermonEvent(sermon.id, "download");
     openExternalUrl(sermon.audio_url);
   };
 

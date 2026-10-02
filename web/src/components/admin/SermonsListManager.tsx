@@ -123,6 +123,7 @@ export function SermonsListManager({ onEdit }: { onEdit: (sermon: SermonWithRela
                 <th className="py-3.5 px-3 hidden md:table-cell font-semibold">Preacher</th>
                 <th className="py-3.5 px-3 hidden lg:table-cell font-semibold">Series</th>
                 <th className="py-3.5 px-3 hidden sm:table-cell font-semibold">Date Preached</th>
+                <th className="py-3.5 px-3 hidden xl:table-cell font-semibold text-right">Plays / Downloads</th>
                 <th className="py-3.5 px-4 text-right font-semibold">Actions</th>
               </tr>
             </thead>
@@ -177,6 +178,11 @@ export function SermonsListManager({ onEdit }: { onEdit: (sermon: SermonWithRela
                   {/* Date */}
                   <td className="py-3 px-3 hidden sm:table-cell text-xs text-white/60 font-mono whitespace-nowrap align-middle">
                     {sermon.date_preached || "—"}
+                  </td>
+
+                  {/* Listening stats (counted once per sermon per visitor session) */}
+                  <td className="py-3 px-3 hidden xl:table-cell text-xs text-white/60 font-mono whitespace-nowrap align-middle text-right">
+                    {(sermon.play_count ?? 0).toLocaleString()} / {(sermon.download_count ?? 0).toLocaleString()}
                   </td>
 
                   {/* Actions */}

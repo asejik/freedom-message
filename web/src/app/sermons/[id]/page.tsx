@@ -11,6 +11,7 @@ import type { SermonWithRelations } from "@/types/database";
 import { openExternalUrl } from "@/lib/utils";
 import { useFavourite } from "@/hooks/useFavourite";
 import { LoadError } from "@/components/ui/LoadError";
+import { recordSermonEvent } from "@/lib/stats";
 
 export default function SermonDetailPage() {
   const params = useParams();
@@ -210,7 +211,7 @@ export default function SermonDetailPage() {
 
             {/* Download Button */}
             <button 
-              onClick={() => openExternalUrl(sermon.audio_url)}
+              onClick={() => { recordSermonEvent(sermon.id, "download"); openExternalUrl(sermon.audio_url); }}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 active:scale-95 transition-all"
               title="Download Sermon"
             >

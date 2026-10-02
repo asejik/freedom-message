@@ -17,7 +17,7 @@ export default function GlobalError({
   return (
     <div className="w-full min-h-[70vh] flex flex-col items-center justify-center text-center px-6 py-16 text-white relative z-10">
       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6 shadow-lg">
-        <span className="material-symbols-outlined text-[36px] sm:text-[44px] text-red-400">
+        <span aria-hidden="true" className="material-symbols-outlined text-[36px] sm:text-[44px] text-red-400">
           error_outline
         </span>
       </div>
@@ -35,7 +35,7 @@ export default function GlobalError({
           onClick={() => reset()}
           className="px-6 py-2.5 rounded-full bg-white text-black text-xs sm:text-sm font-bold hover:bg-white/90 active:scale-95 transition-all shadow-md flex items-center gap-2"
         >
-          <span className="material-symbols-outlined text-[18px]">refresh</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-[18px]">refresh</span>
           <span>Try Again</span>
         </button>
 

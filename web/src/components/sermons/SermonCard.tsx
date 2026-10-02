@@ -63,12 +63,12 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
             <img src={sermon.artwork_url!} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-              <span className="material-symbols-outlined text-primary/30 text-[28px] sm:text-[32px]">music_note</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-primary/30 text-[28px] sm:text-[32px]">music_note</span>
             </div>
           )}
           {/* Play overlay */}
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="material-symbols-outlined text-white text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <span aria-hidden="true" className="material-symbols-outlined text-white text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
               {isPlayingThis ? "pause" : "play_arrow"}
             </span>
           </div>
@@ -88,11 +88,11 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
         </div>
 
         {/* Quick Action */}
-        <button 
+        <button aria-label={isPlayingThis ? "Pause" : "Play sermon"} 
           onClick={handlePlay}
           className="p-2 text-white/60 hover:text-white transition-colors flex-shrink-0"
         >
-          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isPlayingThis ? "'FILL' 1" : "'FILL' 0" }}>
+          <span aria-hidden="true" className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isPlayingThis ? "'FILL' 1" : "'FILL' 0" }}>
             {isPlayingThis ? "pause_circle" : "play_circle"}
           </span>
         </button>
@@ -122,7 +122,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
           <img src={sermon.artwork_url!} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-500`}>
-            <span className="material-symbols-outlined text-primary/20 text-[48px] sm:text-[64px]">music_note</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-primary/20 text-[48px] sm:text-[64px]">music_note</span>
           </div>
         )}
         
@@ -133,7 +133,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
             className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 active:scale-95 transition-transform pointer-events-auto shadow-xl"
             title={isPlayingThis ? "Pause" : "Play"}
           >
-             <span className="material-symbols-outlined text-[24px] sm:text-[28px] translate-x-[1px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+             <span aria-hidden="true" className="material-symbols-outlined text-[24px] sm:text-[28px] translate-x-[1px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                {isPlayingThis ? "pause" : "play_arrow"}
              </span>
           </button>
@@ -142,7 +142,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
         {/* Playing indicator badge (visible when actively playing) */}
         {isPlayingThis && (
           <div className="absolute bottom-2 left-2 z-20 bg-primary/90 text-white rounded-full p-1 shadow-md">
-            <span className="material-symbols-outlined text-[16px] animate-pulse">volume_up</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[16px] animate-pulse">volume_up</span>
           </div>
         )}
 
@@ -156,7 +156,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
             className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center text-white hover:scale-110 transition-transform"
             title="Download Sermon"
           >
-            <span className="material-symbols-outlined text-[15px] sm:text-[18px]">download</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[15px] sm:text-[18px]">download</span>
           </button>
         </div>
       </div>

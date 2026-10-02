@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { Loader2, CheckCircle2, AlertCircle, Plus, Edit3, Image as ImageIcon, Check } from "lucide-react";
@@ -8,6 +8,7 @@ import type { Series } from "@/types/database";
 import { compressImageClient } from "@/utils/image";
 
 export function SeriesManagementForm() {
+  const uid = useId(); // unique per instance, so label/field ids never clash
   const supabase = createClient();
   const [isCreating, setIsCreating] = useState(false);
   const [isUploadingNew, setIsUploadingNew] = useState(false);
@@ -94,8 +95,8 @@ export function SeriesManagementForm() {
         <form onSubmit={handleCreate} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">Series Name *</label>
-              <input
+              <label htmlFor={`${uid}-series-name`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">Series Name *</label>
+              <input id={`${uid}-series-name`}
                 required
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
@@ -106,7 +107,7 @@ export function SeriesManagementForm() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider flex items-center justify-between">
+              <label htmlFor={`${uid}-thumbnail-image`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider flex items-center justify-between">
                 <span>Thumbnail Image (Optional)</span>
                 {isUploadingNew && (
                   <span className="text-xs text-blue-400 flex items-center gap-1">
@@ -126,7 +127,7 @@ export function SeriesManagementForm() {
                   )}
                 </div>
 
-                <input
+                <input id={`${uid}-thumbnail-image`}
                   type="url"
                   value={newThumbnail}
                   onChange={(e) => setNewThumbnail(e.target.value)}

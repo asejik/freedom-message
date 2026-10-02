@@ -66,7 +66,7 @@ export function SermonShelf({
             }`}
             title="Scroll left"
           >
-            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[18px]">chevron_left</span>
           </button>
           {/* Next button */}
           <button
@@ -79,7 +79,7 @@ export function SermonShelf({
             }`}
             title="Scroll right"
           >
-            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[18px]">chevron_right</span>
           </button>
         </div>
       </div>

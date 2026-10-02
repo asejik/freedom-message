@@ -12,6 +12,8 @@ export function AnimatedBackground() {
     if (!ctx) return;
 
     let animationFrameId: number;
+    // With "reduce motion" on, paint the backdrop once and leave it still
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let width = window.innerWidth;
     let height = window.innerHeight;
     canvas.width = width;
@@ -143,7 +145,7 @@ export function AnimatedBackground() {
         ctx.fill();
       });
 
-      animationFrameId = requestAnimationFrame(draw);
+      if (!reduceMotion) animationFrameId = requestAnimationFrame(draw);
     };
 
     draw();

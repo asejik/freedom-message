@@ -4,7 +4,7 @@ export default function NotFoundPage() {
   return (
     <div className="w-full min-h-[70vh] flex flex-col items-center justify-center text-center px-6 py-16 text-white relative z-10">
       <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 shadow-2xl">
-        <span className="material-symbols-outlined text-[44px] text-[#888888]">
+        <span aria-hidden="true" className="material-symbols-outlined text-[44px] text-[#888888]">
           explore_off
         </span>
       </div>
@@ -26,7 +26,7 @@ export default function NotFoundPage() {
           href="/"
           className="px-6 py-2.5 rounded-full bg-white text-black text-xs sm:text-sm font-bold hover:bg-white/90 active:scale-95 transition-all shadow-md flex items-center gap-2"
         >
-          <span className="material-symbols-outlined text-[18px]">home</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-[18px]">home</span>
           <span>Back to Home</span>
         </Link>
 
@@ -34,7 +34,7 @@ export default function NotFoundPage() {
           href="/search"
           className="px-6 py-2.5 rounded-full border border-white/20 text-white text-xs sm:text-sm font-medium hover:bg-white/10 active:scale-95 transition-all flex items-center gap-2"
         >
-          <span className="material-symbols-outlined text-[18px]">search</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-[18px]">search</span>
           <span>Search Sermons</span>
         </Link>
       </div>

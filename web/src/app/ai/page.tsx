@@ -170,7 +170,7 @@ export default function AskAIPage() {
                 className="w-full bg-white/10 border border-white/10 rounded-xl sm:rounded-full pl-4 sm:pl-5 pr-10 sm:pr-12 py-3 text-xs sm:text-sm text-white placeholder:text-[#AAAAAA] outline-none focus:border-white/30 transition-colors"
               />
               {query && (
-                <button
+                <button aria-label="Clear question"
                   type="button"
                   onClick={handleClear}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"

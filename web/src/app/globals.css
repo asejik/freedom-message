@@ -168,3 +168,24 @@
     transform: scale(1.05);
   }
 }
+
+/* ── Accessibility ─────────────────────────────────────────────────────────── */
+
+/* Always show where keyboard focus is, even on elements that use `outline-none`.
+   :focus-visible only matches keyboard/assistive focus, so mouse and touch users see no ring. */
+:where(a, button, input, select, textarea, summary, [role="slider"], [tabindex]):focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 2px;
+}
+
+/* Respect the "reduce motion" system setting: no entrance animations or smooth scrolling */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -110,7 +110,7 @@ function SeriesContent() {
             onClick={() => router.push(backHref)}
             className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-[#AAAAAA] hover:text-white bg-white/10 hover:bg-white/15 px-3 sm:px-3.5 py-1.5 rounded-full transition-colors shrink-0"
           >
-            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_back</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_back</span>
             <span>Back to All Series</span>
           </button>
 
@@ -167,7 +167,7 @@ function SeriesContent() {
 
         {/* Search Bar */}
         <div className="max-w-[420px] flex-1 bg-white/10 hover:bg-white/15 transition-colors border border-white/5 rounded-full h-10 sm:h-12 flex items-center px-3.5 sm:px-4">
-          <span className="material-symbols-outlined text-[#AAAAAA] mr-2.5 text-[18px] sm:text-[20px]">search</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] mr-2.5 text-[18px] sm:text-[20px]">search</span>
           <input
             type="text"
             value={search}
@@ -179,14 +179,14 @@ function SeriesContent() {
             className="bg-transparent border-none outline-none text-white w-full placeholder:text-[#AAAAAA] text-xs sm:text-sm"
           />
           {search && (
-            <button
+            <button aria-label="Clear search"
               onClick={() => {
                 setSearch("");
                 setPage(1);
               }}
               className="text-[#AAAAAA] hover:text-white ml-1"
             >
-              <span className="material-symbols-outlined text-[16px]">close</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[16px]">close</span>
             </button>
           )}
         </div>
@@ -208,7 +208,7 @@ function SeriesContent() {
               className="h-10 px-3 rounded-full text-xs font-semibold text-[#AAAAAA] hover:text-white hover:bg-white/10 transition-colors hidden sm:flex items-center gap-1 shrink-0"
               title="Reset all filters"
             >
-              <span className="material-symbols-outlined text-[14px]">close</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[14px]">close</span>
               Clear
             </button>
           )}
@@ -259,7 +259,7 @@ function SeriesContent() {
                         <img src={s.thumbnail_url} alt={s.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       ) : (
                         <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-                          <span className="material-symbols-outlined text-[32px] text-white/30 drop-shadow-md">
+                          <span aria-hidden="true" className="material-symbols-outlined text-[32px] text-white/30 drop-shadow-md">
                             library_music
                           </span>
                         </div>
@@ -276,22 +276,22 @@ function SeriesContent() {
             {/* Pagination Controls */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-4 mt-12">
-                <button
+                <button aria-label="Previous page"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                   className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-colors"
                 >
-                  <span className="material-symbols-outlined">chevron_left</span>
+                  <span aria-hidden="true" className="material-symbols-outlined">chevron_left</span>
                 </button>
                 <span className="text-[#AAAAAA] font-semibold text-sm">
                   Page {page} of {totalPages}
                 </span>
-                <button
+                <button aria-label="Next page"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                   className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-colors"
                 >
-                  <span className="material-symbols-outlined">chevron_right</span>
+                  <span aria-hidden="true" className="material-symbols-outlined">chevron_right</span>
                 </button>
               </div>
             )}

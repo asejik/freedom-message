@@ -42,7 +42,7 @@ export function Sidebar() {
                   : "text-[#AAAAAA] hover:text-white hover:bg-white/5"
               }`}
             >
-              <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
+              <span aria-hidden="true" className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
                 {item.icon}
               </span>
               <span className="hidden lg:block text-sm">
@@ -63,12 +63,12 @@ export function Sidebar() {
           title="Visit Main Website (muyiwaareo.com)"
         >
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary/20 to-secondary/20 flex items-center justify-center text-primary group-hover:text-white shrink-0 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">language</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[18px]">language</span>
           </div>
           <div className="hidden lg:flex flex-col min-w-0">
             <span className="text-xs font-bold text-white flex items-center gap-1">
               Main Website
-              <span className="material-symbols-outlined text-[13px] opacity-60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+              <span aria-hidden="true" className="material-symbols-outlined text-[13px] opacity-60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
                 open_in_new
               </span>
             </span>

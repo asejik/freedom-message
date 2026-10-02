@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { Loader2, CheckCircle2, AlertCircle, Sparkles, Plus, Image as ImageIcon, Check } from "lucide-react";
@@ -14,6 +14,7 @@ interface SermonFormProps {
 }
 
 export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps) {
+  const uid = useId(); // unique per instance, so label/field ids never clash
   const isEditing = !!initialData;
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -284,10 +285,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Audio URL */}
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-audio-file-url`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             Audio File URL (Archive.org / Direct MP3) *
           </label>
-          <input
+          <input id={`${uid}-audio-file-url`}
             required
             type="url"
             value={formData.audio_url}
@@ -299,10 +300,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* Sermon Title */}
         <div>
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-sermon-title`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             Sermon Title *
           </label>
-          <input
+          <input id={`${uid}-sermon-title`}
             required
             type="text"
             value={formData.title}
@@ -314,10 +315,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* Date Preached */}
         <div>
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-date-preached`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             Date Preached *
           </label>
-          <input
+          <input id={`${uid}-date-preached`}
             required
             type="date"
             value={formData.date_preached}
@@ -329,7 +330,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
         {/* Preacher Dropdown + Quick Add */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-bold text-white/80 uppercase tracking-wider">
+            <label htmlFor={`${uid}-preacher`} className="text-xs font-bold text-white/80 uppercase tracking-wider">
               Preacher
             </label>
             <button
@@ -347,7 +348,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
           {showQuickAddPreacher ? (
             <div className="flex gap-2">
-              <input
+              <input id={`${uid}-preacher`}
                 autoFocus
                 type="text"
                 value={quickPreacherName}
@@ -375,7 +376,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
               </button>
             </div>
           ) : (
-            <select
+            <select id={`${uid}-preacher`}
               value={formData.preacher_id}
               onChange={(e) => setFormData({ ...formData, preacher_id: e.target.value })}
               className="w-full bg-[#18191f] border border-white/10 rounded-xl p-3.5 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
@@ -390,10 +391,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* Series Dropdown */}
         <div>
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-series`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             Series (Optional)
           </label>
-          <select
+          <select id={`${uid}-series`}
             value={formData.series_id}
             onChange={(e) => setFormData({ ...formData, series_id: e.target.value })}
             className="w-full bg-[#18191f] border border-white/10 rounded-xl p-3.5 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
@@ -407,7 +408,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* Album Artwork URL + Preview + Direct File Upload */}
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider flex items-center justify-between">
+          <label htmlFor={`${uid}-album-artwork`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider flex items-center justify-between">
             <span>Album Artwork (Auto-extracted, Direct Upload, or Image URL)</span>
             {isUploadingArtwork && (
               <span className="text-xs text-blue-400 flex items-center gap-1">
@@ -427,7 +428,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
               )}
             </div>
 
-            <input
+            <input id={`${uid}-album-artwork`}
               type="url"
               value={formData.artwork_url}
               onChange={(e) => setFormData({ ...formData, artwork_url: e.target.value })}
@@ -476,11 +477,11 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* Full Transcript Text */}
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider flex items-center justify-between">
+          <label htmlFor={`${uid}-verbatim-transcript`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider flex items-center justify-between">
             <span>Verbatim Transcript (Optional)</span>
             <span className="text-[11px] text-white/40 font-normal lowercase">Powers AI summaries, key scriptures, and natural language search</span>
           </label>
-          <textarea
+          <textarea id={`${uid}-verbatim-transcript`}
             rows={6}
             value={formData.transcript_text}
             onChange={(e) => setFormData({ ...formData, transcript_text: e.target.value })}
@@ -499,10 +500,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* AI Summary ("About this Sermon") */}
         <div>
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-about-this-sermon`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             About this Sermon (AI Summary)
           </label>
-          <textarea
+          <textarea id={`${uid}-about-this-sermon`}
             rows={4}
             value={formData.ai_summary}
             onChange={(e) => setFormData({ ...formData, ai_summary: e.target.value })}
@@ -513,10 +514,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* Key Verses */}
         <div>
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-key-verses`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             Key Verses (Comma-separated)
           </label>
-          <input
+          <input id={`${uid}-key-verses`}
             type="text"
             value={formData.key_verses}
             onChange={(e) => setFormData({ ...formData, key_verses: e.target.value })}
@@ -527,10 +528,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* Prayer Focus */}
         <div>
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-prayer-focus`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             Prayer Focus (Actionable Declarations & Prayer Points)
           </label>
-          <textarea
+          <textarea id={`${uid}-prayer-focus`}
             rows={4}
             value={formData.prayer_focus}
             onChange={(e) => setFormData({ ...formData, prayer_focus: e.target.value })}
@@ -541,10 +542,10 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
 
         {/* AI Tags */}
         <div>
-          <label className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
+          <label htmlFor={`${uid}-thematic-tags`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider">
             Thematic Tags (Comma-separated)
           </label>
-          <input
+          <input id={`${uid}-thematic-tags`}
             type="text"
             value={formData.ai_tags}
             onChange={(e) => setFormData({ ...formData, ai_tags: e.target.value })}

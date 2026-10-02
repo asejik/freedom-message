@@ -18,7 +18,7 @@ export function DateFilterPicker({
   const [open, setOpen] = useState(false);
   const [tempDate, setTempDate] = useState(value);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,8 +31,15 @@ export function DateFilterPicker({
         setOpen(false);
       }
     };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [open]);
 
   const handleOpen = () => {
@@ -69,28 +76,37 @@ export function DateFilterPicker({
 
   return (
     <>
-      <button
+      {/* The chip holds two real buttons (open, clear) so both work by keyboard and screen reader */}
+      <div
         ref={btnRef}
-        onClick={handleOpen}
-        className={`h-10 px-3.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all whitespace-nowrap border shrink-0 ${
+        className={`h-10 rounded-full text-xs font-medium flex items-center transition-all whitespace-nowrap border shrink-0 ${
           value
             ? "bg-white text-black border-white font-semibold shadow-md"
             : "bg-white/10 text-white border-white/5 hover:bg-white/15"
         }`}
       >
-        <span className="material-symbols-outlined text-[16px] opacity-80">calendar_today</span>
-        <span>{value ? formattedValue : "Date"}</span>
-        {value ? (
-          <span
-            onClick={(e) => { e.stopPropagation(); onClear(); setTempDate(""); setOpen(false); }}
-            className="material-symbols-outlined text-[14px] hover:opacity-75 ml-0.5"
+        <button
+          type="button"
+          onClick={handleOpen}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          className={`h-full flex items-center gap-1.5 pl-3.5 rounded-full ${value ? "pr-1" : "pr-3.5"}`}
+        >
+          <span aria-hidden="true" className="material-symbols-outlined text-[16px] opacity-80">calendar_today</span>
+          <span>{value ? formattedValue : "Date"}</span>
+          {!value && <span aria-hidden="true" className="material-symbols-outlined text-[16px] opacity-70">expand_more</span>}
+        </button>
+        {value && (
+          <button
+            type="button"
+            onClick={() => { onClear(); setTempDate(""); setOpen(false); }}
+            aria-label="Clear date filter"
+            className="h-full flex items-center pl-1 pr-3 rounded-full hover:opacity-75"
           >
-            close
-          </span>
-        ) : (
-          <span className="material-symbols-outlined text-[16px] opacity-70">expand_more</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[14px]">close</span>
+          </button>
         )}
-      </button>
+      </div>
 
       {open && typeof document !== "undefined" && createPortal(
         <div
@@ -98,8 +114,9 @@ export function DateFilterPicker({
           style={{ top: dropdownPos.top, left: dropdownPos.left, width: dropdownPos.width, position: "fixed", zIndex: 999999 }}
           className="p-3.5 bg-[#121212] border border-white/15 rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.9)] flex flex-col gap-3"
         >
-          <label className="text-xs font-semibold text-[#AAAAAA]">Select Specific Date</label>
+          <label htmlFor="date-filter-input" className="text-xs font-semibold text-[#AAAAAA]">Select Specific Date</label>
           <input
+            id="date-filter-input"
             type="date"
             value={tempDate}
             onChange={(e) => {

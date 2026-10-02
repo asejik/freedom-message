@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Lock, Mail, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
+  const uid = useId(); // unique per instance, so label/field ids never clash
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -52,10 +53,10 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-white/80 mb-1.5 block uppercase tracking-wider">Email</label>
+              <label htmlFor={`${uid}-email`} className="text-xs font-semibold text-white/80 mb-1.5 block uppercase tracking-wider">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" size={16} />
-                <input
+                <input id={`${uid}-email`}
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -67,10 +68,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-white/80 mb-1.5 block uppercase tracking-wider">Password</label>
+              <label htmlFor={`${uid}-password`} className="text-xs font-semibold text-white/80 mb-1.5 block uppercase tracking-wider">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" size={16} />
-                <input
+                <input id={`${uid}-password`}
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

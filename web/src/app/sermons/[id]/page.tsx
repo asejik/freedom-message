@@ -130,7 +130,7 @@ export default function SermonDetailPage() {
             <img src={sermon.artwork_url} alt="" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-white/5">
-              <span className="material-symbols-outlined text-[64px] sm:text-[80px] text-white/20">music_note</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[64px] sm:text-[80px] text-white/20">music_note</span>
             </div>
           )}
         </div>
@@ -152,7 +152,7 @@ export default function SermonDetailPage() {
               onClick={handlePlay}
               className="flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-white text-black font-semibold hover:scale-105 active:scale-95 transition-transform text-sm sm:text-base shadow-lg"
             >
-              <span className="material-symbols-outlined text-xl sm:text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <span aria-hidden="true" className="material-symbols-outlined text-xl sm:text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                 {isPlayingThis ? "pause" : "play_arrow"}
               </span>
               <span>{isPlayingThis ? "Pause" : "Play Sermon"}</span>
@@ -168,7 +168,7 @@ export default function SermonDetailPage() {
               }`}
               title="Share or Copy Sermon Link"
             >
-              <span className="material-symbols-outlined text-[18px] sm:text-[20px]">
+              <span aria-hidden="true" className="material-symbols-outlined text-[18px] sm:text-[20px]">
                 {copied ? "check" : "share"}
               </span>
               <span>{copied ? "Link Copied!" : "Share"}</span>
@@ -184,7 +184,7 @@ export default function SermonDetailPage() {
               }`}
               title={isFav ? "Remove from Favourites" : "Save to Favourites"}
             >
-              <span 
+              <span aria-hidden="true" 
                 className="material-symbols-outlined text-[18px] sm:text-[20px]" 
                 style={{ fontVariationSettings: isFav ? "'FILL' 1" : "'FILL' 0" }}
               >
@@ -198,7 +198,7 @@ export default function SermonDetailPage() {
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 active:scale-95 transition-all"
               title="Download Sermon"
             >
-              <span className="material-symbols-outlined text-[18px] sm:text-[20px]">download</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[18px] sm:text-[20px]">download</span>
             </button>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function SermonDetailPage() {
           {sermon.ai_summary && (
             <section>
               <h3 className="text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-xl">auto_awesome</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-primary text-xl">auto_awesome</span>
                 <span>About this Sermon</span>
               </h3>
               <div className="text-[#AAAAAA] text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">
@@ -225,7 +225,7 @@ export default function SermonDetailPage() {
           {sermon.prayer_focus && (
             <section>
               <h3 className="text-lg sm:text-xl font-bold mb-3.5 flex items-center gap-2">
-                <span className="material-symbols-outlined text-purple-400 text-xl">sign_language</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-purple-400 text-xl">sign_language</span>
                 <span>Prayer Focus</span>
               </h3>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 relative overflow-hidden">
@@ -260,7 +260,7 @@ export default function SermonDetailPage() {
           {sermon.key_verses && sermon.key_verses.length > 0 && (
             <section>
               <h3 className="text-base sm:text-lg font-bold mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#AAAAAA] text-lg">menu_book</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] text-lg">menu_book</span>
                 Key Verses
               </h3>
               <ul className="flex flex-col gap-2">

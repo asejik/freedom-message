@@ -75,7 +75,7 @@ function SearchContent() {
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
           {/* Search bar */}
           <div className="flex-1 bg-white/10 hover:bg-white/15 transition-colors border border-white/10 rounded-full h-11 flex items-center px-4 shrink-0">
-            <span className="material-symbols-outlined text-[#AAAAAA] mr-2.5 text-[20px]">search</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] mr-2.5 text-[20px]">search</span>
             <input
               type="text"
               value={searchText}
@@ -85,8 +85,8 @@ function SearchContent() {
               autoFocus
             />
             {searchText && (
-              <button onClick={() => { setSearchText(""); setGridPage(1); }} className="ml-1 text-[#AAAAAA] hover:text-white">
-                <span className="material-symbols-outlined text-[18px]">close</span>
+              <button aria-label="Clear search" onClick={() => { setSearchText(""); setGridPage(1); }} className="ml-1 text-[#AAAAAA] hover:text-white">
+                <span aria-hidden="true" className="material-symbols-outlined text-[18px]">close</span>
               </button>
             )}
           </div>
@@ -119,7 +119,7 @@ function SearchContent() {
                 onClick={clearFilters}
                 className="h-10 px-3 rounded-full text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/20 transition-all flex items-center gap-1 shrink-0"
               >
-                <span className="material-symbols-outlined text-[14px]">close</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-[14px]">close</span>
                 Clear Filters
               </button>
             )}
@@ -132,7 +132,7 @@ function SearchContent() {
           /* Default state before searching */
           <div className="py-20 flex flex-col items-center justify-center text-center px-4">
             <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4 text-white/40">
-              <span className="material-symbols-outlined text-[32px]">search</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[32px]">search</span>
             </div>
             <h2 className="text-xl font-bold text-white mb-1.5">Search Messages</h2>
             <p className="text-sm text-[#AAAAAA] max-w-sm">
@@ -164,7 +164,7 @@ function SearchContent() {
               <LoadError onRetry={() => refetchGrid()} />
             ) : !gridResults?.data || gridResults.data.length === 0 ? (
               <div className="text-center py-16 flex flex-col items-center gap-3">
-                <span className="material-symbols-outlined text-[48px] text-white/20">search_off</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-[48px] text-white/20">search_off</span>
                 <p className="text-white font-bold text-lg">No sermons found</p>
                 <p className="text-[#AAAAAA] text-sm max-w-sm">
                   Try searching with different keywords, or clear some filter options.
@@ -187,22 +187,22 @@ function SearchContent() {
                 {/* Pagination Controls */}
                 {totalGridPages > 1 && (
                   <div className="flex items-center justify-center gap-4 mt-12">
-                    <button
+                    <button aria-label="Previous page"
                       onClick={() => setGridPage((p) => Math.max(1, p - 1))}
                       disabled={gridPage === 1}
                       className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-colors text-white"
                     >
-                      <span className="material-symbols-outlined text-[22px] text-white">chevron_left</span>
+                      <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-white">chevron_left</span>
                     </button>
                     <span className="text-[#AAAAAA] font-semibold text-sm">
                       Page {gridPage} of {totalGridPages}
                     </span>
-                    <button
+                    <button aria-label="Next page"
                       onClick={() => setGridPage((p) => Math.min(totalGridPages, p + 1))}
                       disabled={gridPage === totalGridPages}
                       className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-colors text-white"
                     >
-                      <span className="material-symbols-outlined text-[22px] text-white">chevron_right</span>
+                      <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-white">chevron_right</span>
                     </button>
                   </div>
                 )}

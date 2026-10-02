@@ -44,7 +44,7 @@ export default function FavouritesPage() {
       <header className="sticky top-0 z-40 bg-[#030303]/90 backdrop-blur-xl w-full border-b border-white/5 px-4 sm:px-6 md:px-12 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
-            <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <span aria-hidden="true" className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
               favorite
             </span>
           </div>
@@ -77,7 +77,7 @@ export default function FavouritesPage() {
           /* Empty State */
           <div className="py-20 flex flex-col items-center justify-center text-center gap-5 max-w-md mx-auto">
             <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg">
-              <span className="material-symbols-outlined text-[40px] text-[#888888]">favorite_border</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[40px] text-[#888888]">favorite_border</span>
             </div>
             <div className="flex flex-col gap-1.5">
               <h2 className="font-heading text-xl font-bold">No Favourites Yet</h2>

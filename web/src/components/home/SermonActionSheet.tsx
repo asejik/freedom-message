@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAudioStore } from "@/store/useAudioStore";
@@ -19,6 +19,15 @@ export function SermonActionSheet({
   const play = useAudioStore((s) => s.play);
   const [copied, setCopied] = useState(false);
   const [isFav, toggleFavorite] = useFavourite(sermon?.id);
+
+  // Close with the Escape key, like any dialog
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
 
   if (!sermon) return null;
 
@@ -46,6 +55,9 @@ export function SermonActionSheet({
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Options for ${sermon.title}`}
         className="w-full sm:max-w-md bg-[#121214] border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl flex flex-col gap-4 animate-in slide-in-from-bottom-5 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
@@ -57,7 +69,7 @@ export function SermonActionSheet({
               <img src={thumb} alt={sermon.title} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-white/30 text-2xl">headphones</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-white/30 text-2xl">headphones</span>
               </div>
             )}
           </div>
@@ -76,7 +88,7 @@ export function SermonActionSheet({
             }}
             className="flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-white/10 active:bg-white/15 text-white transition-colors text-sm font-medium"
           >
-            <span className="material-symbols-outlined text-[22px] text-primary">play_circle</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-primary">play_circle</span>
             <span>Play Sermon</span>
           </button>
 
@@ -87,7 +99,7 @@ export function SermonActionSheet({
             }}
             className="flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-white/10 active:bg-white/15 text-white transition-colors text-sm font-medium"
           >
-            <span className="material-symbols-outlined text-[22px] text-white/70">info</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-white/70">info</span>
             <span>View Sermon Details</span>
           </button>
 
@@ -95,7 +107,7 @@ export function SermonActionSheet({
             onClick={toggleFavorite}
             className="flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-white/10 active:bg-white/15 text-white transition-colors text-sm font-medium"
           >
-            <span
+            <span aria-hidden="true"
               className={`material-symbols-outlined text-[22px] ${isFav ? "text-red-400" : "text-white/70"}`}
               style={{ fontVariationSettings: isFav ? "'FILL' 1" : "'FILL' 0" }}
             >
@@ -109,7 +121,7 @@ export function SermonActionSheet({
               onClick={handleDownload}
               className="flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-white/10 active:bg-white/15 text-white transition-colors text-sm font-medium"
             >
-              <span className="material-symbols-outlined text-[22px] text-white/70">download</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-white/70">download</span>
               <span>Download Audio</span>
             </button>
           )}
@@ -118,7 +130,7 @@ export function SermonActionSheet({
             onClick={copyShareLink}
             className="flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-white/10 active:bg-white/15 text-white transition-colors text-sm font-medium"
           >
-            <span className="material-symbols-outlined text-[22px] text-white/70">
+            <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-white/70">
               {copied ? "check" : "share"}
             </span>
             <span>{copied ? "Link Copied!" : "Share / Copy Link"}</span>

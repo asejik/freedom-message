@@ -34,7 +34,7 @@ export function QuickPicksSection({
     <section className="md:hidden">
       <div className="flex items-center gap-2 mb-1">
         <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
-          <span className="material-symbols-outlined text-primary text-[13px]">headphones</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-primary text-[13px]">headphones</span>
         </div>
         <p className="text-[#AAAAAA] text-[11px] font-bold uppercase tracking-wider">Quick picks</p>
       </div>
@@ -74,21 +74,22 @@ export function QuickPicksSection({
                     className="flex items-center gap-3 py-1.5 pr-2 pl-0 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors group"
                   >
                     {/* Thumbnail: Clicking plays the sermon */}
-                    <div
+                    <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         if (isCurrentSermon) togglePlay();
                         else play(sermon);
                       }}
                       className="w-13 h-13 rounded-lg overflow-hidden flex-shrink-0 bg-white/5 relative border border-white/5 cursor-pointer active:scale-95 transition-transform"
-                      title={isPlayingThis ? "Pause" : "Play Sermon"}
+                      aria-label={isPlayingThis ? `Pause ${sermon.title}` : `Play ${sermon.title}`}
                     >
                       {thumb ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={thumb} alt={sermon.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                        <img src={thumb} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="material-symbols-outlined text-white/30 text-xl">headphones</span>
+                          <span aria-hidden="true" className="material-symbols-outlined text-white/30 text-xl">headphones</span>
                         </div>
                       )}
 
@@ -98,14 +99,14 @@ export function QuickPicksSection({
                           isPlayingThis ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                         }`}
                       >
-                        <span
+                        <span aria-hidden="true"
                           className="material-symbols-outlined text-white text-[20px]"
                           style={{ fontVariationSettings: "'FILL' 1" }}
                         >
                           {isPlayingThis ? "volume_up" : "play_arrow"}
                         </span>
                       </div>
-                    </div>
+                    </button>
 
                     {/* Text info: Clicking navigates to details page */}
                     <Link
@@ -130,7 +131,7 @@ export function QuickPicksSection({
                       className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all text-white/50 hover:text-white shrink-0"
                       aria-label="More options"
                     >
-                      <span className="material-symbols-outlined text-[20px]">more_vert</span>
+                      <span aria-hidden="true" className="material-symbols-outlined text-[20px]">more_vert</span>
                     </button>
                   </div>
                 );

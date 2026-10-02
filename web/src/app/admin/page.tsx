@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                 </h2>
                 <p className="text-xs text-white/50 mt-0.5">ID: {editingSermon.id}</p>
               </div>
-              <button
+              <button aria-label="Close editor"
                 onClick={() => setEditingSermon(null)}
                 className="text-white/60 hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition-colors"
               >

@@ -102,6 +102,8 @@ function HomeContent() {
 
   return (
     <div className="w-full min-h-full flex flex-col pb-[160px] relative">
+      {/* Page heading for screen readers and search engines; the visual design has none */}
+      <h1 className="sr-only">Messages: sermon library</h1>
       {/* ── Top Hero Background with feathered fading edges ── */}
       <div 
         className="absolute top-0 left-0 right-0 h-[480px] sm:h-[540px] md:h-[600px] pointer-events-none overflow-hidden z-0"
@@ -146,7 +148,7 @@ function HomeContent() {
       <header className="hidden md:flex sticky top-0 z-40 bg-[#030303]/80 backdrop-blur-xl w-full items-center gap-3 px-6 md:px-12 py-3 border-b border-white/5">
         {/* Search input */}
         <div className="max-w-md w-full bg-white/10 hover:bg-white/15 transition-colors border border-white/5 rounded-full h-10 flex items-center px-4 shrink-0">
-          <span className="material-symbols-outlined text-[#AAAAAA] mr-2 text-[18px]">search</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] mr-2 text-[18px]">search</span>
           <input
             type="text"
             value={searchText}
@@ -155,8 +157,8 @@ function HomeContent() {
             className="bg-transparent border-none outline-none text-white w-full placeholder:text-[#AAAAAA] text-sm"
           />
           {searchText && (
-            <button onClick={() => { setSearchText(""); setGridPage(1); }} className="ml-1 text-[#AAAAAA] hover:text-white">
-              <span className="material-symbols-outlined text-[16px]">close</span>
+            <button aria-label="Clear search" onClick={() => { setSearchText(""); setGridPage(1); }} className="ml-1 text-[#AAAAAA] hover:text-white">
+              <span aria-hidden="true" className="material-symbols-outlined text-[16px]">close</span>
             </button>
           )}
         </div>
@@ -188,7 +190,7 @@ function HomeContent() {
               onClick={clearFilters}
               className="h-10 px-3.5 rounded-full text-xs font-semibold text-[#AAAAAA] hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1 shrink-0"
             >
-              <span className="material-symbols-outlined text-[14px]">close</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[14px]">close</span>
               Clear
             </button>
           )}
@@ -204,7 +206,7 @@ function HomeContent() {
               onClick={clearFilters}
               className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all active:scale-95 bg-white/10 text-white hover:bg-white/20 flex items-center gap-1.5 shrink-0 border border-white/10"
             >
-              <span className="material-symbols-outlined text-[16px]">home</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[16px]">home</span>
               Home
             </button>
           )}
@@ -227,7 +229,7 @@ function HomeContent() {
               onClick={clearFilters}
               className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm text-[#AAAAAA] hover:text-white whitespace-nowrap transition-colors flex items-center gap-1 shrink-0"
             >
-              <span className="material-symbols-outlined text-[14px]">close</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[14px]">close</span>
               Clear
             </button>
           )}
@@ -263,22 +265,22 @@ function HomeContent() {
                 {/* Pagination Controls */}
                 {totalGridPages > 1 && (
                   <div className="flex items-center justify-center gap-4 mt-12">
-                    <button
+                    <button aria-label="Previous page"
                       onClick={() => setGridPage((p) => Math.max(1, p - 1))}
                       disabled={gridPage === 1}
                       className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-colors text-white"
                     >
-                      <span className="material-symbols-outlined text-[22px] text-white">chevron_left</span>
+                      <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-white">chevron_left</span>
                     </button>
                     <span className="text-[#AAAAAA] font-semibold text-sm">
                       Page {gridPage} of {totalGridPages}
                     </span>
-                    <button
+                    <button aria-label="Next page"
                       onClick={() => setGridPage((p) => Math.min(totalGridPages, p + 1))}
                       disabled={gridPage === totalGridPages}
                       className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition-colors text-white"
                     >
-                      <span className="material-symbols-outlined text-[22px] text-white">chevron_right</span>
+                      <span aria-hidden="true" className="material-symbols-outlined text-[22px] text-white">chevron_right</span>
                     </button>
                   </div>
                 )}

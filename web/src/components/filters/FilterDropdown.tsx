@@ -22,7 +22,7 @@ export function FilterDropdown({
   const [open, setOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
   const [search, setSearch] = useState("");
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,8 +35,15 @@ export function FilterDropdown({
         setOpen(false);
       }
     };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [open]);
 
   const handleOpen = () => {
@@ -56,27 +63,36 @@ export function FilterDropdown({
 
   return (
     <>
-      <button
+      {/* The chip holds two real buttons (open, clear) so both work by keyboard and screen reader */}
+      <div
         ref={btnRef}
-        onClick={handleOpen}
-        className={`h-10 px-3.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all whitespace-nowrap border shrink-0 ${
+        className={`h-10 rounded-full text-xs font-medium flex items-center transition-all whitespace-nowrap border shrink-0 ${
           value
             ? "bg-white text-black border-white font-semibold shadow-md"
             : "bg-white/10 text-white border-white/5 hover:bg-white/15"
         }`}
       >
-        <span>{value ? `${label}: ${value}` : label}</span>
-        {value ? (
-          <span
-            onClick={(e) => { e.stopPropagation(); onClear(); setOpen(false); }}
-            className="material-symbols-outlined text-[14px] hover:opacity-75 ml-0.5"
+        <button
+          type="button"
+          onClick={handleOpen}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          className={`h-full flex items-center gap-1.5 pl-3.5 rounded-full ${value ? "pr-1" : "pr-3.5"}`}
+        >
+          <span>{value ? `${label}: ${value}` : label}</span>
+          {!value && <span aria-hidden="true" className="material-symbols-outlined text-[16px] opacity-70">expand_more</span>}
+        </button>
+        {value && (
+          <button
+            type="button"
+            onClick={() => { onClear(); setOpen(false); }}
+            aria-label={`Clear ${label} filter`}
+            className="h-full flex items-center pl-1 pr-3 rounded-full hover:opacity-75"
           >
-            close
-          </span>
-        ) : (
-          <span className="material-symbols-outlined text-[16px] opacity-70">expand_more</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[14px]">close</span>
+          </button>
         )}
-      </button>
+      </div>
 
       {open && typeof document !== "undefined" && createPortal(
         <div
@@ -111,7 +127,7 @@ export function FilterDropdown({
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
-                {value === opt.label && <span className="material-symbols-outlined text-[16px]">check</span>}
+                {value === opt.label && <span aria-hidden="true" className="material-symbols-outlined text-[16px]">check</span>}
               </button>
             ))}
           </div>

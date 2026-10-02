@@ -32,7 +32,7 @@ export function BottomNav() {
                   : "text-white/50 hover:text-white/80 active:scale-95"
               }`}
             >
-              <span
+              <span aria-hidden="true"
                 className="material-symbols-outlined text-[22px]"
                 style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
               >

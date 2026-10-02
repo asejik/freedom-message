@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { isMessagesAdmin } from '@/utils/supabase/admin';
 import Groq from 'groq-sdk';
 import { execFile } from 'child_process';
 import path from 'path';
@@ -47,6 +48,9 @@ export async function POST(request: Request) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!isMessagesAdmin(user)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();

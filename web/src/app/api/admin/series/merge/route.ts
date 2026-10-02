@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/utils/supabase/server";
+import { isMessagesAdmin } from "@/utils/supabase/admin";
 import { createClient } from "@supabase/supabase-js";
 
 function getAdminClient() {
@@ -25,6 +26,9 @@ export async function POST(req: Request) {
     const { data: { user }, error: authError } = await authClient.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!isMessagesAdmin(user)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const adminClient = getAdminClient();

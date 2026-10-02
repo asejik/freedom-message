@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { isMessagesAdmin } from '@/utils/supabase/admin';
 import { SERMON_CARD_SELECT } from '@/lib/supabase';
 
 export async function GET(request: Request) {
@@ -10,6 +11,9 @@ export async function GET(request: Request) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!isMessagesAdmin(user)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -68,6 +72,9 @@ export async function POST(request: Request) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!isMessagesAdmin(user)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // 2. Parse Body
@@ -132,6 +139,9 @@ export async function PATCH(request: Request) {
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (!isMessagesAdmin(user)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const body = await request.json();
     const { id, ...updates } = body;
@@ -181,6 +191,9 @@ export async function DELETE(request: Request) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!isMessagesAdmin(user)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

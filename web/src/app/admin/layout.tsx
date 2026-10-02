@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
+import { isMessagesAdmin } from '@/utils/supabase/admin';
 import { ShieldCheck, LogOut } from 'lucide-react';
 
 export default async function AdminLayout({
@@ -13,6 +14,26 @@ export default async function AdminLayout({
 
   if (error || !data?.user) {
     redirect('/login');
+  }
+
+  // Logged in is not enough: the Supabase project is shared with apps that allow sign-up
+  if (!isMessagesAdmin(data.user)) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center min-h-full flex-1 text-white gap-4 p-8 text-center">
+        <h1 className="text-xl font-bold">Not authorized</h1>
+        <p className="text-sm text-white/60 max-w-sm">
+          This account does not have admin access to Messages.
+        </p>
+        <form action="/auth/signout" method="post">
+          <button
+            type="submit"
+            className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition-all"
+          >
+            Sign Out
+          </button>
+        </form>
+      </div>
+    );
   }
 
   const userEmail = data.user.email || 'Admin';

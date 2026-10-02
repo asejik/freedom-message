@@ -40,6 +40,17 @@ function isSafePublicUrl(urlString: string): boolean {
   }
 }
 
+/** True for https?://archive.org or any *.archive.org host (where all sermon audio lives). */
+function isArchiveOrgUrl(urlString: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(urlString);
+    const host = hostname.toLowerCase();
+    return ['http:', 'https:'].includes(protocol) && (host === 'archive.org' || host.endsWith('.archive.org'));
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -89,7 +100,11 @@ export async function POST(request: Request) {
     };
 
     // 2. Audio Metadata & Artwork Extraction (if audio_url provided)
-    if (audio_url && audio_url.trim()) {
+    //    The extractor downloads the URL server-side and follows redirects, so only
+    //    allow the host the library actually uses rather than any "public-looking" URL.
+    if (audio_url && audio_url.trim() && !isArchiveOrgUrl(audio_url.trim())) {
+      result.audio_error = "Automatic audio details are only read from archive.org links.";
+    } else if (audio_url && audio_url.trim()) {
       try {
         const pythonBin = path.resolve(process.cwd(), '../.venv/bin/python');
         const scriptPath = path.resolve(process.cwd(), '../scripts/extract_audio_metadata.py');

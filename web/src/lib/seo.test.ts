@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, sitemapEntries } from "@/lib/seo";
 
 describe("pageMetadata", () => {
   const meta = pageMetadata({ title: "Sermon series", description: "Every series.", path: "/series" });
@@ -17,5 +17,27 @@ describe("pageMetadata", () => {
     expect(meta.title).toBe("Sermon series");
     const home = pageMetadata({ title: "Messages: Sermons", description: "d", path: "/", absoluteTitle: true });
     expect(home.title).toEqual({ absolute: "Messages: Sermons" });
+  });
+});
+
+describe("sitemapEntries", () => {
+  it("lists the public pages first, then every sermon, as absolute production URLs", () => {
+    const entries = sitemapEntries(["a1", "b2"]);
+    expect(entries.map((e) => e.url)).toEqual([
+      "https://messages.muyiwaareo.com",
+      "https://messages.muyiwaareo.com/search",
+      "https://messages.muyiwaareo.com/series",
+      "https://messages.muyiwaareo.com/ai",
+      "https://messages.muyiwaareo.com/privacy",
+      "https://messages.muyiwaareo.com/sermons/a1",
+      "https://messages.muyiwaareo.com/sermons/b2",
+    ]);
+  });
+
+  it("never includes private or device-only pages", () => {
+    const urls = sitemapEntries([]).map((e) => e.url);
+    for (const path of ["/admin", "/login", "/favourites"]) {
+      expect(urls.some((u) => u.endsWith(path))).toBe(false);
+    }
   });
 });

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, MetadataRoute } from "next";
 
 /** The site's one public address: used for canonicals, the sitemap and link previews. */
 export const SITE_URL = "https://messages.muyiwaareo.com";
@@ -37,4 +37,18 @@ export function pageMetadata({ title, description, path, absoluteTitle = false }
     openGraph: { ...OPEN_GRAPH_BASE, title, description, url: path },
     twitter: { card: "summary_large_image", title, description },
   };
+}
+
+/** Public pages that aren't sermons. Keep in sync with the routes that use pageMetadata(). */
+export const PUBLIC_PATHS = ["/", "/search", "/series", "/ai", "/privacy"] as const;
+
+/**
+ * Sitemap entries: the public pages, then one per sermon. No `lastModified`: sermons have
+ * no updated-at column, and search engines ignore dates that aren't reliably accurate.
+ */
+export function sitemapEntries(sermonIds: readonly string[]): MetadataRoute.Sitemap {
+  return [
+    ...PUBLIC_PATHS.map((path) => ({ url: `${SITE_URL}${path === "/" ? "" : path}` })),
+    ...sermonIds.map((id) => ({ url: `${SITE_URL}/sermons/${id}` })),
+  ];
 }

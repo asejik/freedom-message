@@ -133,7 +133,7 @@ export function SeriesManagementForm() {
                   value={newThumbnail}
                   onChange={(e) => setNewThumbnail(e.target.value)}
                   placeholder="https://... (or click upload)"
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-white/30 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                  className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-white/30 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                 />
 
                 <label className="bg-white/10 hover:bg-white/15 text-white font-semibold px-3.5 py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors border border-white/10 shrink-0">

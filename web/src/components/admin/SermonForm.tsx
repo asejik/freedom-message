@@ -480,7 +480,7 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
         <div className="md:col-span-2">
           <label htmlFor={`${uid}-verbatim-transcript`} className="block text-xs font-bold text-white/80 mb-2 uppercase tracking-wider flex items-center justify-between">
             <span>Verbatim Transcript (Optional)</span>
-            <span className="text-[11px] text-white/40 font-normal lowercase">Powers AI summaries, key scriptures, and natural language search</span>
+            <span className="text-[11px] text-white/60 font-normal lowercase">Powers AI summaries, key scriptures, and natural language search</span>
           </label>
           <textarea id={`${uid}-verbatim-transcript`}
             rows={6}

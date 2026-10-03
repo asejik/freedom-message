@@ -65,6 +65,7 @@ export default async function AdminLayout({
           <form action="/auth/signout" method="post">
             <button 
               type="submit"
+              aria-label="Sign out"
               className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all flex items-center gap-1.5"
             >
               <LogOut size={13} />

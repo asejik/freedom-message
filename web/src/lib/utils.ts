@@ -28,6 +28,28 @@ function hashString(seed = ""): number {
   return h;
 }
 
+/**
+ * Shuffles a copy of `items` in an order fixed by `seed`: the server and the browser get the
+ * same order for the same seed (a Math.random() shuffle would differ and break hydration).
+ */
+export function seededShuffle<T>(items: readonly T[], seed: number): T[] {
+  // mulberry32: a small, fast seeded random number generator
+  let state = seed >>> 0;
+  const random = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 export function artworkGradient(seed = ""): string {
   return GRADIENTS[hashString(seed) % GRADIENTS.length];
 }

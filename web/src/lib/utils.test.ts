@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getErrorMessage, isHttpUrl, usableImageUrl } from "@/lib/utils";
+import { getErrorMessage, isHttpUrl, seededShuffle, usableImageUrl } from "@/lib/utils";
 
 describe("isHttpUrl", () => {
   it("accepts http and https URLs, ignoring surrounding spaces", () => {
@@ -21,6 +21,24 @@ describe("isHttpUrl", () => {
     expect(isHttpUrl(null)).toBe(false);
     expect(isHttpUrl(undefined)).toBe(false);
     expect(isHttpUrl(42)).toBe(false);
+  });
+});
+
+describe("seededShuffle", () => {
+  const items = Array.from({ length: 20 }, (_, i) => i);
+
+  it("gives the same order for the same seed (server and browser agree)", () => {
+    expect(seededShuffle(items, 1791027806038)).toEqual(seededShuffle(items, 1791027806038));
+  });
+
+  it("keeps every item exactly once and leaves the input untouched", () => {
+    const shuffled = seededShuffle(items, 42);
+    expect([...shuffled].sort((a, b) => a - b)).toEqual(items);
+    expect(items[0]).toBe(0);
+  });
+
+  it("gives different orders for different seeds", () => {
+    expect(seededShuffle(items, 1)).not.toEqual(seededShuffle(items, 2));
   });
 });
 

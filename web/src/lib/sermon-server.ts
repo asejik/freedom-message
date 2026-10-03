@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { supabase, SERMON_LIST_SELECT } from "@/lib/supabase";
+import { supabase, SERMON_CARD_SELECT, SERMON_LIST_SELECT } from "@/lib/supabase";
 import type { SermonWithRelations } from "@/types/database";
 
 /**
@@ -29,3 +29,32 @@ export const getSermon = cache(async (id: string): Promise<SermonWithRelations |
     return undefined;
   }
 });
+
+/** The newest sermons for the home shelves, plus when they were loaded (seeds the Featured shuffle). */
+export interface InitialSermons {
+  sermons: SermonWithRelations[];
+  loadedAt: number;
+}
+
+/**
+ * The 20 newest sermons for the home page's server render (the same query as
+ * `/api/sermons?limit=20&count=false`). Returns `undefined` if they couldn't be loaded,
+ * in which case the page fetches them in the browser as before.
+ */
+export async function getRecentSermons(): Promise<InitialSermons | undefined> {
+  try {
+    const { data, error } = await supabase
+      .from("sermons")
+      .select(SERMON_CARD_SELECT)
+      .order("date_preached", { ascending: false })
+      .range(0, 19);
+    if (error) {
+      console.error("[HOME PAGE] Server-side load failed, falling back to browser:", error.message);
+      return undefined;
+    }
+    return { sermons: (data ?? []) as unknown as SermonWithRelations[], loadedAt: Date.now() };
+  } catch (err) {
+    console.error("[HOME PAGE] Server-side load failed, falling back to browser:", err);
+    return undefined;
+  }
+}

@@ -4,6 +4,7 @@ import { isMessagesAdmin } from "@/utils/supabase/admin";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 import { getErrorMessage } from "@/lib/utils";
+import { logAdminAction } from "@/lib/server/logs";
 
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -72,6 +73,7 @@ export async function POST(req: Request) {
       .single();
 
     if (error) throw error;
+    await logAdminAction(user, "preacher.create", { type: "preacher", id: data?.id }, { name: trimmedName });
     return NextResponse.json({ data, existed: false });
 
   } catch (error) {
@@ -109,6 +111,7 @@ export async function PATCH(req: Request) {
       .single();
 
     if (error) throw error;
+    await logAdminAction(user, "preacher.update", { type: "preacher", id }, { name: name.trim() });
     return NextResponse.json({ data });
   } catch (error) {
     return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
@@ -140,6 +143,7 @@ export async function DELETE(req: Request) {
       .eq("id", id);
 
     if (error) throw error;
+    await logAdminAction(user, "preacher.delete", { type: "preacher", id });
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });

@@ -4,6 +4,8 @@ import { isMessagesAdmin } from '@/utils/supabase/admin';
 import { SERMON_CARD_SELECT, SERMON_ADMIN_SELECT } from '@/lib/supabase';
 import { isHttpUrl, getErrorMessage } from '@/lib/utils';
 import type { SermonUpdate } from '@/types/database';
+import { logAdminAction } from "@/lib/server/logs";
+import { removeUnusedArtwork } from "@/lib/server/artwork";
 
 export async function GET(request: Request) {
   try {
@@ -126,6 +128,9 @@ export async function POST(request: Request) {
 
     if (dbError) throw dbError;
 
+    const created = insertedData as { id?: string; title?: string } | null;
+    await logAdminAction(user, 'sermon.create', { type: 'sermon', id: created?.id }, { title: created?.title });
+
     return NextResponse.json({ data: insertedData }, { status: 201 });
 
   } catch (error) {
@@ -184,6 +189,8 @@ export async function PATCH(request: Request) {
 
     if (dbError) throw dbError;
 
+    await logAdminAction(user, 'sermon.update', { type: 'sermon', id }, { fields: Object.keys(payload) });
+
     return NextResponse.json({ data: updatedData });
 
   } catch (error) {
@@ -220,12 +227,26 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Sermon ID is required" }, { status: 400 });
     }
 
+    // Keep a full copy of the sermon (transcript included) in the audit log, so a
+    // delete made between monthly backups can still be recovered.
+    const { data: snapshot } = await supabase
+      .from('sermons')
+      .select(SERMON_ADMIN_SELECT)
+      .eq('id', id)
+      .maybeSingle();
+
     const { error: dbError } = await supabase
       .from('sermons')
       .delete()
       .eq('id', id);
 
     if (dbError) throw dbError;
+
+    await logAdminAction(user, 'sermon.delete', { type: 'sermon', id }, { deleted: snapshot ?? null });
+
+    // Remove the sermon's artwork file if no other sermon or series uses it
+    const artworkUrl = (snapshot as { artwork_url?: string | null } | null)?.artwork_url;
+    if (artworkUrl) await removeUnusedArtwork(artworkUrl, user);
 
     return NextResponse.json({ success: true, message: "Sermon deleted successfully" });
 

@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
 import { getErrorMessage } from "@/lib/utils";
 import { detectImageMime } from "@/lib/images";
+import { logAdminAction } from "@/lib/server/logs";
 
 // Force dynamic execution for direct image uploads
 export const dynamic = 'force-dynamic';
@@ -87,6 +88,8 @@ export async function POST(request: Request) {
     const { data: { publicUrl } } = adminClient.storage
       .from('artwork')
       .getPublicUrl(fileName);
+
+    await logAdminAction(user, "artwork.upload", { type: "artwork", id: fileName }, { bytes: buffer.length, type: mimeType });
 
     return NextResponse.json({ url: publicUrl });
 

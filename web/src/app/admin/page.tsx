@@ -3,15 +3,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
-import { Sparkles, Plus, Edit3, X, BookOpen, Layers, Users } from "lucide-react";
+import { Sparkles, Plus, Edit3, X, BookOpen, Layers, Users, DatabaseBackup } from "lucide-react";
 import type { SermonWithRelations } from "@/types/database";
 import { SermonsListManager } from "@/components/admin/SermonsListManager";
 import { SermonForm } from "@/components/admin/SermonForm";
 import { SeriesManagementForm } from "@/components/admin/SeriesManagement";
 import { PreachersManagementForm } from "@/components/admin/PreachersManagement";
+import { BackupPanel, BackupReminder } from "@/components/admin/BackupPanel";
+import { LogsPanel } from "@/components/admin/LogsPanel";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"sermons" | "add" | "series" | "preachers">("sermons");
+  const [activeTab, setActiveTab] = useState<"sermons" | "add" | "series" | "preachers" | "system">("sermons");
   const [editingSermon, setEditingSermon] = useState<SermonWithRelations | null>(null);
   const supabase = createClient();
 
@@ -64,6 +66,9 @@ export default function AdminDashboard() {
           <span>Add New Sermon</span>
         </button>
       </div>
+
+      {/* Monthly backup reminder with countdown (the free database plan keeps no backups) */}
+      <BackupReminder onOpen={() => { setEditingSermon(null); setActiveTab("system"); }} />
 
       {/* Quick Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
@@ -172,6 +177,21 @@ export default function AdminDashboard() {
           <Users size={14} />
           <span>Preachers</span>
         </button>
+
+        <button
+          onClick={() => {
+            setEditingSermon(null);
+            setActiveTab("system");
+          }}
+          className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === "system"
+              ? "bg-blue-600/25 text-blue-300 border border-blue-500/40 shadow-sm"
+              : "text-white/60 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <DatabaseBackup size={14} />
+          <span>Backups & logs</span>
+        </button>
       </div>
 
       {/* Tab Content Panels */}
@@ -197,6 +217,13 @@ export default function AdminDashboard() {
         {activeTab === "series" && <SeriesManagementForm />}
 
         {activeTab === "preachers" && <PreachersManagementForm />}
+
+        {activeTab === "system" && (
+          <div className="flex flex-col gap-8">
+            <BackupPanel />
+            <LogsPanel />
+          </div>
+        )}
       </div>
 
       {/* Edit Sermon Modal */}

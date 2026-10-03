@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase, SERMON_CARD_SELECT } from "@/lib/supabase";
+import { recordError } from "@/lib/server/logs";
 
 // Public catalog is identical for every visitor and only changes on admin
 // uploads, so let the Vercel CDN serve it for 5 minutes (stale up to 1 hour
@@ -88,6 +89,7 @@ export async function GET(request: Request) {
     const message = error instanceof Error ? error.message : String(error);
     // Details stay in the server log; clients get a generic message (no DB internals)
     console.error("[CATALOG API ERROR]:", message);
+    await recordError({ source: "server", error, path: request.url, context: "route /api/sermons" });
     return NextResponse.json(
       { error: "Could not load sermons. Please try again." },
       { status: 500 }

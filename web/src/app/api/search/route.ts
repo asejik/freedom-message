@@ -3,6 +3,7 @@ import Groq from 'groq-sdk';
 import { supabase, SERMON_CARD_SELECT } from '@/lib/supabase';
 import type { SermonWithRelations } from '@/types/database';
 import { topicWords, rankSermons } from '@/lib/search';
+import { recordError } from '@/lib/server/logs';
 
 const GROQ_TIMEOUT_MS = 15_000;
 
@@ -307,6 +308,7 @@ Rules:
     const message = error instanceof Error ? error.message : String(error);
     // Details stay in the server log; clients get a generic message (no DB internals)
     console.error("[SEARCH API ERROR]:", message);
+    await recordError({ source: "server", error, path: request.url, context: "route /api/search" });
     return NextResponse.json(
       { error: "Search failed. Please try again." },
       { status: 500 }

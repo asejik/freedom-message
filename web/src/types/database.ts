@@ -125,6 +125,31 @@ export interface SermonSearchResult extends SermonWithRelations {
  *   import type { Database } from '@/types/database'
  *   const supabase = createClient<Database>(url, key)
  */
+/** One admin action (create/update/delete/merge/upload/backup). */
+export type MessagesAdminLog = {
+  id: number;
+  created_at: string;
+  actor_id: string | null;
+  actor_email: string | null;
+  action: string;
+  target_type: string | null;
+  target_id: string | null;
+  details: Record<string, unknown>;
+};
+
+/** One captured error. `path` never includes the query string. */
+export type MessagesErrorLog = {
+  id: number;
+  created_at: string;
+  source: 'server' | 'browser';
+  message: string;
+  digest: string | null;
+  path: string | null;
+  context: string | null;
+  user_agent: string | null;
+  stack: string | null;
+};
+
 /** Turns an interface into a plain object type, which supabase-js requires for table rows. */
 type Plain<T> = { [K in keyof T]: T[K] };
 
@@ -147,6 +172,20 @@ export interface Database {
         Row:    Plain<Sermon>;
         Insert: Plain<SermonInsert & { id?: string; created_at?: string }>;
         Update: Plain<SermonUpdate>;
+        Relationships: [];
+      };
+      /** Append-only record of admin actions (server-only; see migration 2026-10-03_4). */
+      messages_admin_log: {
+        Row:    MessagesAdminLog;
+        Insert: Plain<Omit<MessagesAdminLog, 'id' | 'created_at'> & { created_at?: string }>;
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      /** Server and browser error reports, kept 90 days (server-only). */
+      messages_error_log: {
+        Row:    MessagesErrorLog;
+        Insert: Plain<Omit<MessagesErrorLog, 'id' | 'created_at'> & { created_at?: string }>;
+        Update: Record<string, never>;
         Relationships: [];
       };
     };

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { reportClientError } from "@/lib/report-error";
 
 export default function GlobalError({
   error,
@@ -12,6 +13,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error("[GLOBAL CLIENT ERROR]:", error);
+    reportClientError(error);
   }, [error]);
 
   return (

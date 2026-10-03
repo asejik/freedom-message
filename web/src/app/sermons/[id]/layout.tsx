@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getSermon } from "@/lib/sermon-server";
 import { usableImageUrl } from "@/lib/utils";
+import { OPEN_GRAPH_BASE, truncateDescription } from "@/lib/seo";
 
 interface SermonLayoutProps {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     if (!sermon || !sermon.title) {
       return {
-        title: "Sermon | Messages",
+        title: "Sermon",
         description: "Listen to sermon audio on Messages.",
       };
     }
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     // The root layout's title template already appends " | Messages"
     const title = preacherName ? `${sermon.title} — ${preacherName}` : sermon.title;
     const description = sermon.ai_summary
-      ? sermon.ai_summary.slice(0, 160)
+      ? truncateDescription(sermon.ai_summary)
       : `Listen to "${sermon.title}"${preacherName ? ` by ${preacherName}` : ""} on Messages.`;
 
     const artwork = usableImageUrl(sermon.artwork_url);
@@ -36,13 +37,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title,
       description,
       alternates: { canonical: `/sermons/${id}` },
+      // A page about one recording; shares the site name and locale (see OPEN_GRAPH_BASE)
       openGraph: {
+        ...OPEN_GRAPH_BASE,
+        type: "article",
+        publishedTime: sermon.date_preached,
         title,
         description,
         url: `/sermons/${id}`,
-        type: "music.song",
         images,
-        siteName: "Messages",
       },
       twitter: {
         card: "summary_large_image",
@@ -53,7 +56,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   } catch {
     return {
-      title: "Sermon | Messages",
+      title: "Sermon",
       description: "Listen to sermon audio on Messages.",
     };
   }

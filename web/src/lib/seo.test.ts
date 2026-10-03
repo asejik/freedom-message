@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pageMetadata, sitemapEntries } from "@/lib/seo";
+import { pageMetadata, sitemapEntries, truncateDescription } from "@/lib/seo";
 
 describe("pageMetadata", () => {
   const meta = pageMetadata({ title: "Sermon series", description: "Every series.", path: "/series" });
@@ -39,5 +39,20 @@ describe("sitemapEntries", () => {
     for (const path of ["/admin", "/login", "/favourites"]) {
       expect(urls.some((u) => u.endsWith(path))).toBe(false);
     }
+  });
+});
+
+describe("truncateDescription", () => {
+  it("leaves short text alone, collapsing extra whitespace", () => {
+    expect(truncateDescription("  A short\n summary. ")).toBe("A short summary.");
+  });
+
+  it("cuts long text at a word boundary and adds an ellipsis", () => {
+    const text = "God is still working supernatural wonders in the lives of those who believe ".repeat(4);
+    const result = truncateDescription(text);
+    expect(result.length).toBeLessThanOrEqual(155);
+    expect(result.endsWith("…")).toBe(true);
+    expect(text.startsWith(result.slice(0, -1))).toBe(true);
+    expect(text.charAt(result.length - 1)).toBe(" ");
   });
 });

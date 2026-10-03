@@ -52,3 +52,14 @@ export function sitemapEntries(sermonIds: readonly string[]): MetadataRoute.Site
     ...sermonIds.map((id) => ({ url: `${SITE_URL}/sermons/${id}` })),
   ];
 }
+
+/** Shortens text for a meta description at a word boundary (results show about 155 characters). */
+export function truncateDescription(text: string, max = 155): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  // Fall back to a hard cut only if the text has no space in a sensible place
+  const shortened = lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut;
+  return `${shortened.replace(/[\s,;:.]+$/, "")}…`;
+}

@@ -7,7 +7,7 @@ import { useAudioStore } from "@/store/useAudioStore";
 import { Loader2 } from "lucide-react";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import type { SermonWithRelations } from "@/types/database";
-import { openExternalUrl } from "@/lib/utils";
+import { openExternalUrl, usableImageUrl } from "@/lib/utils";
 import { useFavourite } from "@/hooks/useFavourite";
 import { LoadError } from "@/components/ui/LoadError";
 import { recordSermonEvent } from "@/lib/stats";
@@ -132,6 +132,7 @@ export function SermonDetail({
   };
 
   const formattedDate = formatSermonDate(sermon.date_preached);
+  const artwork = usableImageUrl(sermon.artwork_url);
 
   return (
     <div className="w-full flex flex-col pb-[140px] text-white">
@@ -142,7 +143,7 @@ export function SermonDetail({
         <div 
           className="absolute inset-0 z-0 opacity-20 blur-3xl pointer-events-none"
           style={{ 
-            backgroundImage: sermon.artwork_url ? `url(${sermon.artwork_url})` : 'none',
+            backgroundImage: artwork ? `url(${artwork})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
@@ -151,9 +152,9 @@ export function SermonDetail({
 
         {/* Artwork */}
         <div className="relative z-10 w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] md:w-[260px] md:h-[260px] shrink-0 rounded-2xl overflow-hidden shadow-2xl bg-surface-container border border-white/10">
-          {sermon.artwork_url ? (
+          {artwork ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={sermon.artwork_url} alt="" className="w-full h-full object-cover" />
+            <img src={artwork} alt="" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-white/5">
               <span aria-hidden="true" className="material-symbols-outlined text-[64px] sm:text-[80px] text-white/20">music_note</span>

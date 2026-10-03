@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getSermon } from "@/lib/sermon-server";
+import { usableImageUrl } from "@/lib/utils";
 
 interface SermonLayoutProps {
   children: React.ReactNode;
@@ -28,7 +29,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       ? sermon.ai_summary.slice(0, 160)
       : `Listen to "${sermon.title}"${preacherName ? ` by ${preacherName}` : ""} on Messages.`;
 
-    const images = sermon.artwork_url ? [sermon.artwork_url] : [];
+    const artwork = usableImageUrl(sermon.artwork_url);
+    const images = artwork ? [artwork] : [];
 
     return {
       title,

@@ -7,6 +7,7 @@ import { useAudioStore } from "@/store/useAudioStore";
 import type { SermonWithRelations } from "@/types/database";
 import { SermonActionSheet } from "@/components/home/SermonActionSheet";
 import { formatSermonDate } from "@/lib/dates";
+import { usableImageUrl } from "@/lib/utils";
 
 export function QuickPicksSection({
   sermons,
@@ -58,7 +59,7 @@ export function QuickPicksSection({
               className="w-[85vw] sm:w-[340px] shrink-0 snap-start flex flex-col gap-1"
             >
               {col.map((sermon) => {
-                const thumb = sermon.artwork_url || sermon.series?.thumbnail_url || null;
+                const thumb = usableImageUrl(sermon.artwork_url) ?? usableImageUrl(sermon.series?.thumbnail_url);
                 const preacherName = sermon.preachers?.name ?? "Unknown Preacher";
                 const dateStr = formatSermonDate(sermon.date_preached, "short");
                 const isCurrentSermon = currentSermonId === sermon.id;

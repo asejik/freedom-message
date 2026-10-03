@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAudioStore } from "@/store/useAudioStore";
-import { openExternalUrl } from "@/lib/utils";
+import { openExternalUrl, usableImageUrl } from "@/lib/utils";
 import type { SermonWithRelations } from "@/types/database";
 import { useFavourite } from "@/hooks/useFavourite";
 import { recordSermonEvent } from "@/lib/stats";
@@ -32,7 +32,7 @@ export function SermonActionSheet({
 
   if (!sermon) return null;
 
-  const thumb = sermon.artwork_url || sermon.series?.thumbnail_url || null;
+  const thumb = usableImageUrl(sermon.artwork_url) ?? usableImageUrl(sermon.series?.thumbnail_url);
   const preacherName = sermon.preachers?.name ?? "Unknown Preacher";
 
   const copyShareLink = async () => {

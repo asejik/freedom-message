@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useAudioStore } from "@/store/useAudioStore";
 import { recordSermonEvent } from "@/lib/stats";
+import { usableImageUrl } from "@/lib/utils";
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -131,12 +132,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     // Media Session API for mobile lock screen controls
     const setupMediaSession = () => {
       if ('mediaSession' in navigator && currentSermon) {
+        const artwork = usableImageUrl(currentSermon.artwork_url);
         navigator.mediaSession.metadata = new MediaMetadata({
           title: currentSermon.title,
           artist: currentSermon.preachers?.name || 'Unknown Preacher',
           album: currentSermon.series?.name || 'Messages',
-          artwork: currentSermon.artwork_url ? [
-            { src: currentSermon.artwork_url, sizes: '400x400', type: 'image/webp' }
+          artwork: artwork ? [
+            { src: artwork, sizes: '400x400', type: 'image/webp' }
           ] : []
         });
 

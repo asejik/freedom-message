@@ -50,6 +50,14 @@ export function isHttpUrl(value: unknown): value is string {
 }
 
 /**
+ * A stored image URL if it's usable, else null. Some sermons hold "ERROR" instead of
+ * artwork (left by the extraction script); a plain truthy check would render it.
+ */
+export function usableImageUrl(url: string | null | undefined): string | null {
+  return isHttpUrl(url) ? url.trim() : null;
+}
+
+/**
  * Opens a stored URL in a new tab, but only if it is http(s).
  * window.open() would otherwise execute a `javascript:` URL on our origin.
  */

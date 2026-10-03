@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getErrorMessage, isHttpUrl } from "@/lib/utils";
+import { getErrorMessage, isHttpUrl, usableImageUrl } from "@/lib/utils";
 
 describe("isHttpUrl", () => {
   it("accepts http and https URLs, ignoring surrounding spaces", () => {
@@ -21,6 +21,19 @@ describe("isHttpUrl", () => {
     expect(isHttpUrl(null)).toBe(false);
     expect(isHttpUrl(undefined)).toBe(false);
     expect(isHttpUrl(42)).toBe(false);
+  });
+});
+
+describe("usableImageUrl", () => {
+  it("returns http(s) image URLs, trimmed", () => {
+    expect(usableImageUrl(" https://x.supabase.co/a.webp ")).toBe("https://x.supabase.co/a.webp");
+  });
+
+  it("returns null for the stored \"ERROR\" placeholder, empty and missing values", () => {
+    expect(usableImageUrl("ERROR")).toBeNull();
+    expect(usableImageUrl("")).toBeNull();
+    expect(usableImageUrl(null)).toBeNull();
+    expect(usableImageUrl(undefined)).toBeNull();
   });
 });
 

@@ -33,9 +33,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return {
       title,
       description,
+      alternates: { canonical: `/sermons/${id}` },
       openGraph: {
         title,
         description,
+        url: `/sermons/${id}`,
         type: "music.song",
         images,
         siteName: "Messages",

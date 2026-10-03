@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "@/components/layout/SiteFooter";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy",
   description: "How Messages handles information when you listen to and search sermons.",
-};
+  path: "/privacy",
+});
 
 const LAST_UPDATED = "3 October 2026";
 

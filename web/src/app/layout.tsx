@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     default: "Messages",
     template: "%s | Messages",
   },
-  description: "A curated library of sermon audio recordings by Apostle Muyiwa Areo and ministers.",
+  description: "A library of over 1,400 sermon recordings by Apostle Muyiwa Areo and other ministers.",
   manifest: "/manifest.json",
   applicationName: "Messages",
   appleWebApp: {
@@ -74,12 +74,12 @@ export const metadata: Metadata = {
   openGraph: {
     ...OPEN_GRAPH_BASE,
     title: "Messages — Sermon Library",
-    description: "Stream and search hundreds of sermons by Apostle Muyiwa Areo.",
+    description: "Stream and search over 1,400 sermons by Apostle Muyiwa Areo and other ministers.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Messages",
-    description: "Stream and search hundreds of sermons by Apostle Muyiwa Areo.",
+    description: "Stream and search over 1,400 sermons by Apostle Muyiwa Areo and other ministers.",
   },
 };
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { pageMetadata, sitemapEntries, truncateDescription } from "@/lib/seo";
+import { homeJsonLd, pageMetadata, serializeJsonLd, sermonJsonLd, sitemapEntries, truncateDescription } from "@/lib/seo";
+import type { SermonWithRelations } from "@/types/database";
 
 describe("pageMetadata", () => {
   const meta = pageMetadata({ title: "Sermon series", description: "Every series.", path: "/series" });
@@ -62,5 +63,44 @@ describe("share image", () => {
     const meta = pageMetadata({ title: "t", description: "d", path: "/ai" });
     expect(meta.openGraph).toMatchObject({ images: [{ url: "/og-default.jpg", width: 1200, height: 630 }] });
     expect(meta.twitter).toMatchObject({ images: [{ url: "/og-default.jpg" }] });
+  });
+});
+
+describe("structured data", () => {
+  const sermon = {
+    id: "abc",
+    title: "Faith </script><script>alert(1)</script>",
+    date_preached: "2026-09-27",
+    audio_url: "https://archive.org/download/x/y.mp3",
+    artwork_url: "ERROR",
+    ai_summary: "A message about faith.",
+    preachers: null,
+    series: { id: "s1", name: "Global Miracle Service", thumbnail_url: null },
+  } as unknown as SermonWithRelations;
+
+  it("escapes \"<\" so stored text can't close the script tag", () => {
+    const json = serializeJsonLd(sermonJsonLd(sermon));
+    expect(json).not.toContain("<");
+    expect(JSON.parse(json).name).toBe(sermon.title);
+  });
+
+  it("describes a sermon with only the facts it has", () => {
+    const data = sermonJsonLd(sermon);
+    expect(data).toMatchObject({
+      "@type": "AudioObject",
+      url: "https://messages.muyiwaareo.com/sermons/abc",
+      contentUrl: "https://archive.org/download/x/y.mp3",
+      datePublished: "2026-09-27",
+      isPartOf: { name: "Global Miracle Service" },
+    });
+    // No preacher recorded, and "ERROR" is not an image
+    expect(data).not.toHaveProperty("creator");
+    expect(data).not.toHaveProperty("thumbnailUrl");
+  });
+
+  it("names the site and its publisher on the home page", () => {
+    const graph = homeJsonLd("info@example.org")["@graph"] as Record<string, unknown>[];
+    expect(graph.map((n) => n["@type"])).toEqual(["WebSite", "Organization"]);
+    expect(graph[1]).toMatchObject({ name: "Muyiwa Areo Ministry International", email: "info@example.org" });
   });
 });

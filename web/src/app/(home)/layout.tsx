@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/seo";
+import { homeJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { CONTACT_EMAIL } from "@/components/layout/SiteFooter";
 
 // The page is a client component, so its metadata lives in this layout (route group: same URL /)
 export const metadata: Metadata = pageMetadata({
@@ -10,5 +12,10 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={homeJsonLd(CONTACT_EMAIL)} />
+      {children}
+    </>
+  );
 }

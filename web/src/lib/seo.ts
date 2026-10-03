@@ -1,4 +1,6 @@
 import type { Metadata, MetadataRoute } from "next";
+import type { SermonWithRelations } from "@/types/database";
+import { isHttpUrl, usableImageUrl } from "@/lib/utils";
 
 /** The site's one public address: used for canonicals, the sitemap and link previews. */
 export const SITE_URL = "https://messages.muyiwaareo.com";
@@ -74,4 +76,65 @@ export function truncateDescription(text: string, max = 155): string {
   // Fall back to a hard cut only if the text has no space in a sensible place
   const shortened = lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut;
   return `${shortened.replace(/[\s,;:.]+$/, "")}…`;
+}
+
+// ── Structured data (JSON-LD) ────────────────────────────────────────────────
+// Only facts the site already shows. Never add ratings, reviews or invented details.
+
+/** The ministry that publishes the sermons (as named in the site footer). */
+const PUBLISHER = {
+  "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
+  name: "Muyiwa Areo Ministry International",
+  url: "https://www.muyiwaareo.com",
+  logo: `${SITE_URL}/icon-512.png`,
+};
+
+/**
+ * JSON for a <script type="application/ld+json"> tag. "<" is escaped so stored text
+ * (titles, summaries) can never close the script tag and inject HTML.
+ */
+export function serializeJsonLd(data: Record<string, unknown>): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+/** Home page: the site (its name in search results) and its publisher. */
+export function homeJsonLd(contactEmail: string): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        inLanguage: "en",
+        publisher: { "@id": PUBLISHER["@id"] },
+      },
+      { ...PUBLISHER, email: contactEmail },
+    ],
+  };
+}
+
+/** A sermon page: the recording, with only the fields the page displays. */
+export function sermonJsonLd(sermon: SermonWithRelations): Record<string, unknown> {
+  const url = `${SITE_URL}/sermons/${sermon.id}`;
+  const artwork = usableImageUrl(sermon.artwork_url);
+  return {
+    "@context": "https://schema.org",
+    "@type": "AudioObject",
+    "@id": url,
+    url,
+    name: sermon.title,
+    // Summaries can run to several KB and are already on the page: keep the HTML light
+    ...(sermon.ai_summary ? { description: truncateDescription(sermon.ai_summary, 300) } : {}),
+    ...(isHttpUrl(sermon.audio_url) ? { contentUrl: sermon.audio_url.trim(), encodingFormat: "audio/mpeg" } : {}),
+    datePublished: sermon.date_preached,
+    inLanguage: "en",
+    ...(artwork ? { thumbnailUrl: artwork } : {}),
+    // Only name a preacher when one is recorded
+    ...(sermon.preachers?.name ? { creator: { "@type": "Person", name: sermon.preachers.name } } : {}),
+    ...(sermon.series?.name ? { isPartOf: { "@type": "CreativeWorkSeries", name: sermon.series.name } } : {}),
+    publisher: { "@type": "Organization", name: PUBLISHER.name, url: PUBLISHER.url },
+  };
 }

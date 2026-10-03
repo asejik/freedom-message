@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Geist, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 import { AudioProvider } from "@/components/providers/AudioProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
@@ -11,63 +11,19 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import { Analytics } from "@vercel/analytics/next";
 
-// Klarheit font for Headings & Titles
-const klarheit = localFont({
-  src: [
-    {
-      path: "../fonts/ESKlarheitGrotesk-Regular.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/ESKlarheitGrotesk-Medium.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/ESKlarheitGrotesk-SemiBold.otf",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../fonts/ESKlarheitGrotesk-Bold.otf",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../fonts/ESKlarheitGrotesk-ExtraBold.otf",
-      weight: "800",
-      style: "normal",
-    },
-  ],
+// Fonts are downloaded at build time and served from our own domain as compressed,
+// Latin-only woff2 variable fonts (was nine uncompressed .otf files, ~278 KB).
+// Headings: Schibsted Grotesk (SIL Open Font License), the closest openly licensed
+// match to ES Klarheit Grotesk, whose trial files were not licensed for a public site.
+const headingFont = Schibsted_Grotesk({
+  subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
 });
 
-// Geist font for Body & UI
-const geist = localFont({
-  src: [
-    {
-      path: "../fonts/Geist-Regular.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/Geist-Medium.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/Geist-SemiBold.otf",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../fonts/Geist-Bold.otf",
-      weight: "700",
-      style: "normal",
-    },
-  ],
+// Body & UI: Geist (SIL Open Font License)
+const bodyFont = Geist({
+  subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
@@ -131,7 +87,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${klarheit.variable} ${geist.variable} h-full antialiased`}>
+    <html lang="en" className={`${headingFont.variable} ${bodyFont.variable} h-full antialiased`}>
       <head>
         <meta name="theme-color" content="#030303" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

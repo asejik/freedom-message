@@ -32,7 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     // Only name a preacher when one is recorded (32 sermons have none)
     const preacherName = (sermon.preachers as unknown as { name?: string })?.name;
-    const title = preacherName ? `${sermon.title} — ${preacherName}` : `${sermon.title} | Messages`;
+    // The root layout's title template already appends " | Messages"
+    const title = preacherName ? `${sermon.title} — ${preacherName}` : sermon.title;
     const description = sermon.ai_summary
       ? sermon.ai_summary.slice(0, 160)
       : `Listen to "${sermon.title}"${preacherName ? ` by ${preacherName}` : ""} on Messages.`;

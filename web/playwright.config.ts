@@ -26,5 +26,15 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
+    // Never let tests reach the real database: pages that load data on the server
+    // (e.g. /sermons/[id]) then fail over to the browser fetch, which the tests mock.
+    // Real environment variables override .env.local, so this also applies locally.
+    env: {
+      NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder-anon-key",
+      SUPABASE_URL: "https://placeholder.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "placeholder-service-role-key",
+      GROQ_API_KEY: "placeholder-groq-key",
+    },
   },
 });

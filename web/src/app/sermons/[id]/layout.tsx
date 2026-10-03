@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { supabase } from "@/lib/supabase";
+import { getSermon } from "@/lib/sermon-server";
 
 interface SermonLayoutProps {
   children: React.ReactNode;
@@ -10,18 +10,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
 
   try {
-    const { data } = await supabase
-      .from("sermons")
-      .select("title, ai_summary, artwork_url, preachers(name)")
-      .eq("id", id)
-      .single();
-
-    const sermon = data as {
-      title?: string;
-      ai_summary?: string | null;
-      artwork_url?: string | null;
-      preachers?: { name?: string } | null;
-    } | null;
+    // Same cached query as the page, so a page view costs one database round trip
+    const sermon = await getSermon(id);
 
     if (!sermon || !sermon.title) {
       return {
@@ -31,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     }
 
     // Only name a preacher when one is recorded (32 sermons have none)
-    const preacherName = (sermon.preachers as unknown as { name?: string })?.name;
+    const preacherName = sermon.preachers?.name;
     // The root layout's title template already appends " | Messages"
     const title = preacherName ? `${sermon.title} — ${preacherName}` : sermon.title;
     const description = sermon.ai_summary

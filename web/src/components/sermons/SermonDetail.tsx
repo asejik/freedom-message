@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { supabase, SERMON_LIST_SELECT, SERMON_CARD_SELECT } from "@/lib/supabase";
 import { useAudioStore } from "@/store/useAudioStore";
 import { Loader2 } from "lucide-react";
@@ -172,7 +173,17 @@ export function SermonDetail({
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-[#AAAAAA] mt-1">
             {sermon.preachers?.name || "Unknown Preacher"} 
-            {sermon.series && ` • ${sermon.series.name}`}
+            {sermon.series && (
+              <>
+                {" • "}
+                <Link
+                  href={`/series?series=${encodeURIComponent(sermon.series.name)}`}
+                  className="underline decoration-white/30 underline-offset-4 hover:text-white hover:decoration-white"
+                >
+                  {sermon.series.name}
+                </Link>
+              </>
+            )}
           </p>
           <div className="flex items-center justify-center sm:justify-start gap-3 sm:gap-4 mt-4 sm:mt-6 flex-wrap">
             <button 
@@ -238,10 +249,10 @@ export function SermonDetail({
           {/* Summary */}
           {sermon.ai_summary && (
             <section>
-              <h3 className="text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 flex items-center gap-2">
                 <span aria-hidden="true" className="material-symbols-outlined text-blue-400 text-xl">auto_awesome</span>
                 <span>About this Sermon</span>
-              </h3>
+              </h2>
               <div className="text-[#AAAAAA] text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">
                 {sermon.ai_summary}
               </div>
@@ -251,10 +262,10 @@ export function SermonDetail({
           {/* Prayer Focus */}
           {sermon.prayer_focus && (
             <section>
-              <h3 className="text-lg sm:text-xl font-bold mb-3.5 flex items-center gap-2">
+              <h2 className="text-lg sm:text-xl font-bold mb-3.5 flex items-center gap-2">
                 <span aria-hidden="true" className="material-symbols-outlined text-purple-400 text-xl">sign_language</span>
                 <span>Prayer Focus</span>
-              </h3>
+              </h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 relative overflow-hidden">
                 <ul className="space-y-3">
                   {(() => {
@@ -286,10 +297,10 @@ export function SermonDetail({
         <div className="flex flex-col gap-6 sm:gap-8">
           {sermon.key_verses && sermon.key_verses.length > 0 && (
             <section>
-              <h3 className="text-base sm:text-lg font-bold mb-3 flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold mb-3 flex items-center gap-2">
                 <span aria-hidden="true" className="material-symbols-outlined text-[#AAAAAA] text-lg">menu_book</span>
                 Key Verses
-              </h3>
+              </h2>
               <ul className="flex flex-col gap-2">
                 {sermon.key_verses.map((verse, i) => (
                   <li key={i} className="text-[#AAAAAA] bg-white/5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium border border-white/5">
@@ -302,7 +313,7 @@ export function SermonDetail({
 
           {sermon.ai_tags && sermon.ai_tags.length > 0 && (
             <section>
-              <h3 className="text-base sm:text-lg font-bold mb-3">Tags</h3>
+              <h2 className="text-base sm:text-lg font-bold mb-3">Tags</h2>
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {sermon.ai_tags.map(tag => (
                   <span key={tag} className="px-3 py-1 rounded-full bg-white/10 text-[11px] sm:text-xs font-semibold text-[#AAAAAA]">

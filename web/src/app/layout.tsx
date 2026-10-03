@@ -111,7 +111,9 @@ export default function RootLayout({
             <main className="flex-1 h-screen overflow-y-auto overflow-x-hidden relative w-full flex flex-col pb-20 md:pb-8">
               {/* Mobile-only top header */}
               <MobileHeader />
-              {children}
+              {/* Pages must keep their natural height (flex items shrink by default, which made
+                  them collapse to the screen height and the footer overlap their content) */}
+              <div className="grow shrink-0 flex flex-col">{children}</div>
               <SiteFooter />
             </main>
 

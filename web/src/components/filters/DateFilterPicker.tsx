@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { formatSermonDate } from "@/lib/dates";
 
 export function DateFilterPicker({
   value,
@@ -55,13 +56,7 @@ export function DateFilterPicker({
     setOpen(true);
   };
 
-  const formattedValue = value
-    ? (() => {
-        try {
-          return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(value));
-        } catch { return value; }
-      })()
-    : "";
+  const formattedValue = formatSermonDate(value);
 
   const handleApply = () => {
     if (tempDate) {

@@ -5,6 +5,7 @@ import { SermonWithRelations } from "@/types/database";
 import { useAudioStore } from "@/store/useAudioStore";
 import { artworkGradient, seriesAccent, openExternalUrl } from "@/lib/utils";
 import { recordSermonEvent } from "@/lib/stats";
+import { formatSermonDate } from "@/lib/dates";
 
 interface SermonCardProps {
   sermon: SermonWithRelations;
@@ -26,22 +27,7 @@ export function SermonCard({ sermon, layout = "grid", index = 0 }: SermonCardPro
     else play(sermon);
   };
 
-  const formattedDate = sermon.date_preached
-    ? (() => {
-        try {
-          const d = new Date(sermon.date_preached);
-          return isNaN(d.getTime())
-            ? sermon.date_preached
-            : new Intl.DateTimeFormat("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              }).format(d);
-        } catch {
-          return sermon.date_preached;
-        }
-      })()
-    : null;
+  const formattedDate = formatSermonDate(sermon.date_preached) || null;
 
   const seriesName = sermon.series?.name ?? "Standalone";
   const preacherName = sermon.preachers?.name ?? "Unknown Preacher";

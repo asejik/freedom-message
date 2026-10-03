@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAudioStore } from "@/store/useAudioStore";
 import type { SermonWithRelations } from "@/types/database";
 import { SermonActionSheet } from "@/components/home/SermonActionSheet";
+import { formatSermonDate } from "@/lib/dates";
 
 export function QuickPicksSection({
   sermons,
@@ -59,12 +60,7 @@ export function QuickPicksSection({
               {col.map((sermon) => {
                 const thumb = sermon.artwork_url || sermon.series?.thumbnail_url || null;
                 const preacherName = sermon.preachers?.name ?? "Unknown Preacher";
-                const dateStr = sermon.date_preached
-                  ? new Date(sermon.date_preached).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                    })
-                  : "";
+                const dateStr = formatSermonDate(sermon.date_preached, "short");
                 const isCurrentSermon = currentSermonId === sermon.id;
                 const isPlayingThis = isCurrentSermon && isPlaying;
 

@@ -12,6 +12,7 @@ import { openExternalUrl } from "@/lib/utils";
 import { useFavourite } from "@/hooks/useFavourite";
 import { LoadError } from "@/components/ui/LoadError";
 import { recordSermonEvent } from "@/lib/stats";
+import { formatSermonDate } from "@/lib/dates";
 
 export default function SermonDetailPage() {
   const params = useParams();
@@ -120,9 +121,7 @@ export default function SermonDetailPage() {
     else play(sermon);
   };
 
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  }).format(new Date(sermon.date_preached));
+  const formattedDate = formatSermonDate(sermon.date_preached);
 
   return (
     <div className="w-full flex flex-col pb-[140px] text-white">

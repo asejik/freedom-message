@@ -58,6 +58,27 @@ export function seriesAccent(seed = ""): string {
   return ACCENT_TEXTS[hashString(seed) % ACCENT_TEXTS.length];
 }
 
+// ── List paging ──────────────────────────────────────────────────────────────
+
+/** Most rows one list request may return (series pages need the most: the largest has 54). */
+export const MAX_LIST_LIMIT = 200;
+
+/**
+ * Reads `page` and `limit` query values for a list API. Missing values use the defaults
+ * (page 1, 20 rows); a limit above MAX_LIST_LIMIT is lowered to it. Returns null for anything
+ * that isn't a whole number of at least 1, so the route can answer 400 instead of failing.
+ */
+export function parsePaging(pageParam: string | null, limitParam: string | null): { page: number; limit: number } | null {
+  const read = (value: string | null, fallback: number) => {
+    if (value === null || value.trim() === "") return fallback;
+    return /^\d+$/.test(value.trim()) ? Number(value.trim()) : NaN;
+  };
+  const page = read(pageParam, 1);
+  const limit = read(limitParam, 20);
+  if (!Number.isSafeInteger(page) || !Number.isSafeInteger(limit) || page < 1 || limit < 1) return null;
+  return { page, limit: Math.min(limit, MAX_LIST_LIMIT) };
+}
+
 // ── URL safety ───────────────────────────────────────────────────────────────
 
 /** True only for absolute http(s) URLs. Rejects javascript:, data:, etc. */

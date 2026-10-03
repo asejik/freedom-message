@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase, SERMON_CARD_SELECT } from "@/lib/supabase";
 import { recordError } from "@/lib/server/logs";
+import { parsePaging } from "@/lib/utils";
 
 // Public catalog is identical for every visitor and only changes on admin
 // uploads, so let the Vercel CDN serve it for 5 minutes (stale up to 1 hour
@@ -17,8 +18,13 @@ export async function GET(request: Request) {
     const seriesId = searchParams.get('series_id');
     const year = searchParams.get('year');
     const tag = searchParams.get('tag');
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '20', 10);
+    // Bounded: an unchecked limit returned up to 1,000 rows (736 KB) per request, and bad
+    // values caused 500s that were recorded in the error log
+    const paging = parsePaging(searchParams.get('page'), searchParams.get('limit'));
+    if (!paging) {
+      return NextResponse.json({ error: "Invalid page or limit." }, { status: 400 });
+    }
+    const { page, limit } = paging;
     const offset = (page - 1) * limit;
 
     // Build the select projection, conditionally using !inner for active filters.
@@ -76,6 +82,11 @@ export async function GET(request: Request) {
     const { data, count, error } = await dbQuery
       .order('date_preached', { ascending: false })
       .range(offset, offset + limit - 1);
+
+    // A page past the end (only possible when counting) is an empty page, not a server error
+    if (error?.code === 'PGRST103') {
+      return NextResponse.json({ data: [], count: 0, page, limit }, { headers: { 'Cache-Control': PUBLIC_LIST_CACHE } });
+    }
 
     if (error) {
       console.error("[CATALOG API ERROR] Supabase query failed:", error);

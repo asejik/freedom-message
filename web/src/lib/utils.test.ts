@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getErrorMessage, isHttpUrl, seededShuffle, usableImageUrl } from "@/lib/utils";
+import { getErrorMessage, isHttpUrl, MAX_LIST_LIMIT, parsePaging, seededShuffle, usableImageUrl } from "@/lib/utils";
 
 describe("isHttpUrl", () => {
   it("accepts http and https URLs, ignoring surrounding spaces", () => {
@@ -21,6 +21,24 @@ describe("isHttpUrl", () => {
     expect(isHttpUrl(null)).toBe(false);
     expect(isHttpUrl(undefined)).toBe(false);
     expect(isHttpUrl(42)).toBe(false);
+  });
+});
+
+describe("parsePaging", () => {
+  it("uses page 1 and 20 rows when nothing is given", () => {
+    expect(parsePaging(null, null)).toEqual({ page: 1, limit: 20 });
+    expect(parsePaging("", " ")).toEqual({ page: 1, limit: 20 });
+  });
+
+  it("accepts whole numbers and lowers an oversized limit to the maximum", () => {
+    expect(parsePaging("3", "50")).toEqual({ page: 3, limit: 50 });
+    expect(parsePaging("1", "5000")).toEqual({ page: 1, limit: MAX_LIST_LIMIT });
+  });
+
+  it("rejects zero, negative, fractional and non-numeric values", () => {
+    for (const [page, limit] of [["0", "20"], ["-3", "20"], ["1", "-5"], ["1", "0"], ["1.5", "20"], ["1", "abc"], ["2e3", "20"], ["99999999999999999999", "20"]]) {
+      expect(parsePaging(page, limit)).toBeNull();
+    }
   });
 });
 

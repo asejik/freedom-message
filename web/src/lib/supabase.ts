@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+import { MAX_LIST_LIMIT } from '@/lib/utils';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -48,8 +49,8 @@ export const SERMON_CARD_SELECT = `
   series(id, name, thumbnail_url)
 `.replace(/\s+/g, ' ').trim();
 
-/** Most sermons a series page loads (the largest series has 54); guards against runaway queries. */
-export const SERIES_SERMON_LIMIT = 200;
+/** Most sermons a series page loads (the largest series has 54): the most /api/sermons allows. */
+export const SERIES_SERMON_LIMIT = MAX_LIST_LIMIT;
 
 /**
  * Everything the admin edit form needs: the detail fields plus the transcript.

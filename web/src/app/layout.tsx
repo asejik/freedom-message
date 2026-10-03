@@ -11,7 +11,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Analytics } from "@vercel/analytics/next";
-import { OPEN_GRAPH_BASE, SITE_URL } from "@/lib/seo";
+import { DEFAULT_SHARE_IMAGE, OPEN_GRAPH_BASE, SITE_URL } from "@/lib/seo";
 
 // Fonts are downloaded at build time and served from our own domain as compressed,
 // Latin-only woff2 variable fonts (was nine uncompressed .otf files, ~278 KB).
@@ -78,6 +78,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    images: [DEFAULT_SHARE_IMAGE],
     title: "Messages",
     description: "Stream and search over 1,400 sermons by Apostle Muyiwa Areo and other ministers.",
   },

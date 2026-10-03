@@ -5,6 +5,17 @@ export const SITE_URL = "https://messages.muyiwaareo.com";
 export const SITE_NAME = "Messages";
 
 /**
+ * The 1200×630 card shown when a page without its own image is shared (public/og-default.jpg).
+ * Referenced explicitly: Next's opengraph-image file is dropped by any page that sets openGraph.
+ */
+export const DEFAULT_SHARE_IMAGE = {
+  url: "/og-default.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Messages: sermons by Apostle Muyiwa Areo",
+};
+
+/**
  * Open Graph fields every page shares. Next.js merges metadata shallowly, so a page that
  * sets its own `openGraph` replaces the root layout's whole object: spread this into it
  * so the site name and locale aren't lost.
@@ -12,8 +23,9 @@ export const SITE_NAME = "Messages";
 export const OPEN_GRAPH_BASE = {
   siteName: SITE_NAME,
   locale: "en_US",
-  type: "website",
-} as const;
+  type: "website" as const,
+  images: [DEFAULT_SHARE_IMAGE],
+};
 
 interface PageMetadataInput {
   title: string;
@@ -35,7 +47,7 @@ export function pageMetadata({ title, description, path, absoluteTitle = false }
     description,
     alternates: { canonical: path },
     openGraph: { ...OPEN_GRAPH_BASE, title, description, url: path },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title, description, images: [DEFAULT_SHARE_IMAGE] },
   };
 }
 

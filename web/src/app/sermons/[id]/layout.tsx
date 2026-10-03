@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getSermon } from "@/lib/sermon-server";
 import { usableImageUrl } from "@/lib/utils";
-import { OPEN_GRAPH_BASE, truncateDescription } from "@/lib/seo";
+import { DEFAULT_SHARE_IMAGE, OPEN_GRAPH_BASE, truncateDescription } from "@/lib/seo";
 
 interface SermonLayoutProps {
   children: React.ReactNode;
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       : `Listen to "${sermon.title}"${preacherName ? ` by ${preacherName}` : ""} on Messages.`;
 
     const artwork = usableImageUrl(sermon.artwork_url);
-    const images = artwork ? [artwork] : [];
+    const images = artwork ? [artwork] : [DEFAULT_SHARE_IMAGE];
 
     return {
       title,
@@ -48,7 +48,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         images,
       },
       twitter: {
-        card: "summary_large_image",
+        // Sermon artwork is square: X crops square images in the large card
+        card: artwork ? "summary" : "summary_large_image",
         title,
         description,
         images,

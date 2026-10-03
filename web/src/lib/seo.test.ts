@@ -56,3 +56,11 @@ describe("truncateDescription", () => {
     expect(text.charAt(result.length - 1)).toBe(" ");
   });
 });
+
+describe("share image", () => {
+  it("every page built with pageMetadata carries the default 1200×630 image", () => {
+    const meta = pageMetadata({ title: "t", description: "d", path: "/ai" });
+    expect(meta.openGraph).toMatchObject({ images: [{ url: "/og-default.jpg", width: 1200, height: 630 }] });
+    expect(meta.twitter).toMatchObject({ images: [{ url: "/og-default.jpg" }] });
+  });
+});

@@ -11,6 +11,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Analytics } from "@vercel/analytics/next";
+import { OPEN_GRAPH_BASE, SITE_URL } from "@/lib/seo";
 
 // Fonts are downloaded at build time and served from our own domain as compressed,
 // Latin-only woff2 variable fonts (was nine uncompressed .otf files, ~278 KB).
@@ -45,6 +46,8 @@ const MATERIAL_SYMBOLS_URL =
   `&icon_names=${MATERIAL_SYMBOLS.join(",")}&display=block`;
 
 export const metadata: Metadata = {
+  // Makes every relative URL in metadata (canonicals, preview images) absolute
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Messages",
     template: "%s | Messages",
@@ -67,11 +70,9 @@ export const metadata: Metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
+  // No `url` here: each page sets its own (a shared one would point every preview at one page)
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://www.muyiwaareo.com",
-    siteName: "Messages",
+    ...OPEN_GRAPH_BASE,
     title: "Messages — Sermon Library",
     description: "Stream and search hundreds of sermons by Apostle Muyiwa Areo.",
   },

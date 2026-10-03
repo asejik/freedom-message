@@ -60,3 +60,6 @@ web/supabase/
 # Ad-hoc scratch scripts
 web/test_*.js
 web/fix_db.js
+
+# The template (placeholders only) must be committed: the README tells redeployers to copy it
+!.env.example

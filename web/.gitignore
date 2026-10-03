@@ -43,3 +43,6 @@ next-env.d.ts
 # Test output
 test-results/
 playwright-report/
+
+# The template (placeholders only) must be committed: the README tells redeployers to copy it
+!.env.example

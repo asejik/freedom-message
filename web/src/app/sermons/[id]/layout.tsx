@@ -30,11 +30,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       };
     }
 
-    const preacherName = (sermon.preachers as unknown as { name?: string })?.name || "Apostle Muyiwa Areo";
-    const title = `${sermon.title} — ${preacherName}`;
-    const description = sermon.ai_summary 
-      ? sermon.ai_summary.slice(0, 160) 
-      : `Listen to "${sermon.title}" by ${preacherName} on Messages.`;
+    // Only name a preacher when one is recorded (32 sermons have none)
+    const preacherName = (sermon.preachers as unknown as { name?: string })?.name;
+    const title = preacherName ? `${sermon.title} — ${preacherName}` : `${sermon.title} | Messages`;
+    const description = sermon.ai_summary
+      ? sermon.ai_summary.slice(0, 160)
+      : `Listen to "${sermon.title}"${preacherName ? ` by ${preacherName}` : ""} on Messages.`;
 
     const images = sermon.artwork_url ? [sermon.artwork_url] : [];
 

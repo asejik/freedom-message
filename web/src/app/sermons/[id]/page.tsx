@@ -29,7 +29,9 @@ export default function SermonDetailPage() {
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
     const title = sermon?.title || "Messages Sermon";
-    const text = sermon ? `Listen to "${sermon.title}" by ${sermon.preachers?.name || "Apostle Muyiwa Areo"}` : "Messages Sermon";
+    // Only name a preacher when one is recorded (32 sermons have none)
+    const by = sermon?.preachers?.name ? ` by ${sermon.preachers.name}` : "";
+    const text = sermon ? `Listen to "${sermon.title}"${by} on Messages` : "Messages Sermon";
 
     if (navigator.share) {
       try {

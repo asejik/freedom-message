@@ -4,8 +4,14 @@ import { supabase, SERMON_CARD_SELECT } from '@/lib/supabase';
 import type { SermonWithRelations } from '@/types/database';
 import { topicWords, rankSermons } from '@/lib/search';
 
+const GROQ_TIMEOUT_MS = 15_000;
+
+// SDK defaults are a 60 s timeout and 2 retries per call, so a slow Groq could hold a
+// request for minutes. Every Groq step here is best-effort, so fail fast instead.
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
+  timeout: GROQ_TIMEOUT_MS,
+  maxRetries: 1,
 });
 
 // ── In-memory LRU intent cache (avoids redundant Groq calls for repeated queries) ──

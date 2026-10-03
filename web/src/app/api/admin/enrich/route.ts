@@ -9,8 +9,14 @@ import { getErrorMessage } from "@/lib/utils";
 
 const execFileAsync = util.promisify(execFile);
 
+const GROQ_TIMEOUT_MS = 45_000; // enrichment sends up to 15k characters of transcript
+
+// SDK defaults are a 60 s timeout and 2 retries per call, so a slow Groq could hold a
+// request for minutes. Every Groq step here is best-effort, so fail fast instead.
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
+  timeout: GROQ_TIMEOUT_MS,
+  maxRetries: 1,
 });
 
 // Primary and fallback models available on Groq

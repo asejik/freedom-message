@@ -1,0 +1,36 @@
+name: Keep Supabase awake
+
+# Supabase Free pauses a project after 1 week without activity, which would take
+# down Messages AND the CES app (they share the project). One tiny read a day
+# prevents that. Uses the public anon key (stored as repository secrets).
+#
+# Note: GitHub turns off scheduled workflows in a repository with no commits for
+# 60 days. If that happens, re-enable it under Actions -> Keep Supabase awake.
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # daily, 06:17 UTC (07:17 in Lagos)
+  workflow_dispatch: {} # allows a manual "Run workflow" test
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read one sermon id from the database
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Add the SUPABASE_URL and SUPABASE_ANON_KEY repository secrets (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/sermons?select=id&limit=1")
+          echo "Supabase responded with HTTP $status"
+          [ "$status" = "200" ] || [ "$status" = "206" ]

@@ -177,7 +177,7 @@ export function SermonDetail({
               <>
                 {" • "}
                 <Link
-                  href={`/series?series=${encodeURIComponent(sermon.series.name)}`}
+                  href={`/series/${sermon.series.id}`}
                   className="underline decoration-white/30 underline-offset-4 hover:text-white hover:decoration-white"
                 >
                   {sermon.series.name}

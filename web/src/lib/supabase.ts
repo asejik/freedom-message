@@ -48,6 +48,9 @@ export const SERMON_CARD_SELECT = `
   series(id, name, thumbnail_url)
 `.replace(/\s+/g, ' ').trim();
 
+/** Most sermons a series page loads (the largest series has 54); guards against runaway queries. */
+export const SERIES_SERMON_LIMIT = 200;
+
 /**
  * Everything the admin edit form needs: the detail fields plus the transcript.
  * Explicit on purpose: `select('*')` would also pull the large `search_vector`

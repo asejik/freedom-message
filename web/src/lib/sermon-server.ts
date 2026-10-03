@@ -1,6 +1,6 @@
 import { cache } from "react";
-import { supabase, SERMON_CARD_SELECT, SERMON_LIST_SELECT } from "@/lib/supabase";
-import type { SermonWithRelations } from "@/types/database";
+import { supabase, SERIES_SERMON_LIMIT, SERMON_CARD_SELECT, SERMON_LIST_SELECT } from "@/lib/supabase";
+import type { Series, SermonWithRelations } from "@/types/database";
 
 /**
  * Loads one sermon for server rendering (page + link-preview metadata).
@@ -58,3 +58,43 @@ export async function getRecentSermons(): Promise<InitialSermons | undefined> {
     return undefined;
   }
 }
+
+/** A series and all of its sermons, newest first. */
+export interface SeriesWithSermons {
+  series: Pick<Series, "id" | "name" | "thumbnail_url">;
+  sermons: SermonWithRelations[];
+}
+
+/**
+ * Loads one series page on the server (page + metadata share it through `cache`).
+ * Sermons are matched by series_id, so a series whose name appears inside another's
+ * ("Service" in "Christmas Service") shows only its own sermons.
+ * Returns `null` if the series doesn't exist, `undefined` if it couldn't be loaded
+ * (the page then loads it in the browser).
+ */
+export const getSeries = cache(async (id: string): Promise<SeriesWithSermons | null | undefined> => {
+  try {
+    const [seriesResult, sermonsResult] = await Promise.all([
+      supabase.from("series").select("id, name, thumbnail_url").eq("id", id).single(),
+      supabase
+        .from("sermons")
+        .select(SERMON_CARD_SELECT)
+        .eq("series_id", id)
+        .order("date_preached", { ascending: false })
+        .range(0, SERIES_SERMON_LIMIT - 1),
+    ]);
+    const error = seriesResult.error ?? sermonsResult.error;
+    if (error && (error.code === "PGRST116" || error.code === "22P02")) return null;
+    if (error || !seriesResult.data) {
+      console.error("[SERIES PAGE] Server-side load failed, falling back to browser:", error?.message);
+      return undefined;
+    }
+    return {
+      series: seriesResult.data as SeriesWithSermons["series"],
+      sermons: (sermonsResult.data ?? []) as unknown as SermonWithRelations[],
+    };
+  } catch (err) {
+    console.error("[SERIES PAGE] Server-side load failed, falling back to browser:", err);
+    return undefined;
+  }
+});

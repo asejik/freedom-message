@@ -9,6 +9,7 @@ const PAGES = [
   { name: "home", path: "/", ready: "Recent Sermons" },
   { name: "search", path: "/search?q=faith", ready: "Showing" },
   { name: "series", path: "/series", ready: "All Series" },
+  { name: "series detail", path: "/series/s1", ready: "1 sermon found" },
   { name: "sermon", path: `/sermons/${FAITH_SERMON.id}`, ready: "About this Sermon" },
   { name: "ask AI", path: "/ai", ready: "What are you looking for?" },
   { name: "favourites", path: "/favourites", ready: "No Favourites Yet" },

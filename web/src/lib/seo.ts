@@ -36,6 +36,8 @@ interface PageMetadataInput {
   path: string;
   /** Use the title as is, without the " | Messages" suffix (home page) */
   absoluteTitle?: boolean;
+  /** The page's own (square) artwork; without it the default 1200×630 card is used */
+  image?: string | null;
 }
 
 /**
@@ -43,26 +45,43 @@ interface PageMetadataInput {
  * Never set a canonical in the root layout: every page without its own would inherit it
  * and point search engines at the home page instead.
  */
-export function pageMetadata({ title, description, path, absoluteTitle = false }: PageMetadataInput): Metadata {
+export function pageMetadata({ title, description, path, absoluteTitle = false, image }: PageMetadataInput): Metadata {
+  const images = image ? [image] : [DEFAULT_SHARE_IMAGE];
   return {
-    title: absoluteTitle ? { absolute: title } : title,
+    // Written out in full: a parent layout with a plain-string title (e.g. /series for
+    // /series/[id]) stops the root layout's "%s | Messages" template reaching its children
+    title: { absolute: absoluteTitle ? title : `${title} | ${SITE_NAME}` },
     description,
     alternates: { canonical: path },
-    openGraph: { ...OPEN_GRAPH_BASE, title, description, url: path },
-    twitter: { card: "summary_large_image", title, description, images: [DEFAULT_SHARE_IMAGE] },
+    openGraph: { ...OPEN_GRAPH_BASE, title, description, url: path, images },
+    // Artwork is square: X crops square images in the large card
+    twitter: { card: image ? "summary" : "summary_large_image", title, description, images },
   };
+}
+
+/** Meta description for a series page, from facts the page shows (count and years). */
+export function seriesDescription(name: string, datesPreached: readonly string[]): string {
+  const years = datesPreached.map((d) => Number(d.slice(0, 4))).filter(Number.isFinite);
+  const first = Math.min(...years);
+  const last = Math.max(...years);
+  const span = years.length === 0 ? "" : first === last ? ` (${first})` : ` (${first}–${last})`;
+  const count = datesPreached.length;
+  return count === 1
+    ? `Listen to the sermon in the "${name}" series${span} on Messages.`
+    : `Listen to all ${count} sermons in the "${name}" series${span} on Messages.`;
 }
 
 /** Public pages that aren't sermons. Keep in sync with the routes that use pageMetadata(). */
 export const PUBLIC_PATHS = ["/", "/search", "/series", "/ai", "/privacy"] as const;
 
 /**
- * Sitemap entries: the public pages, then one per sermon. No `lastModified`: sermons have
+ * Sitemap entries: the public pages, then one per series and one per sermon. No `lastModified`: sermons have
  * no updated-at column, and search engines ignore dates that aren't reliably accurate.
  */
-export function sitemapEntries(sermonIds: readonly string[]): MetadataRoute.Sitemap {
+export function sitemapEntries(sermonIds: readonly string[], seriesIds: readonly string[] = []): MetadataRoute.Sitemap {
   return [
     ...PUBLIC_PATHS.map((path) => ({ url: `${SITE_URL}${path === "/" ? "" : path}` })),
+    ...seriesIds.map((id) => ({ url: `${SITE_URL}/series/${id}` })),
     ...sermonIds.map((id) => ({ url: `${SITE_URL}/sermons/${id}` })),
   ];
 }

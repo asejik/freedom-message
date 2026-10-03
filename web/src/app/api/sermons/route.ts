@@ -13,6 +13,8 @@ export async function GET(request: Request) {
     const title = searchParams.get('title');
     const preacher = searchParams.get('preacher');
     const series = searchParams.get('series');
+    // Exact series match (series pages); `series` above matches names partially
+    const seriesId = searchParams.get('series_id');
     const year = searchParams.get('year');
     const tag = searchParams.get('tag');
     const page = parseInt(searchParams.get('page') || '1', 10);
@@ -49,6 +51,10 @@ export async function GET(request: Request) {
 
     if (hasSeriesFilter) {
       dbQuery = dbQuery.ilike('series.name', `%${series.trim()}%`);
+    }
+
+    if (seriesId && seriesId.trim() !== '') {
+      dbQuery = dbQuery.eq('series_id', seriesId.trim());
     }
 
     const date = searchParams.get('date');

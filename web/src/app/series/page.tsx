@@ -5,11 +5,10 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { supabase } from "@/lib/supabase";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { artworkGradient } from "@/lib/utils";
-import type { Series, SermonWithRelations } from "@/types/database";
-import { SermonCard } from "@/components/sermons/SermonCard";
+import type { Series } from "@/types/database";
 import { FilterDropdown } from "@/components/filters/FilterDropdown";
 import { getYearOptions } from "@/lib/years";
 import { LoadError } from "@/components/ui/LoadError";
@@ -18,7 +17,8 @@ function SeriesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const selectedSeries = searchParams.get("series") || searchParams.get("name");
+  // Old links (/series?series=Name) now live at /series/<id>
+  const legacySeriesName = searchParams.get("series") || searchParams.get("name");
   const selectedYear = searchParams.get("year") || "";
 
   const [search, setSearch] = useState("");
@@ -50,7 +50,7 @@ function SeriesContent() {
   // Query for All Series List
   const { data: seriesResult, isLoading: seriesLoading, isError: seriesError, refetch: refetchSeries } = useQuery<{ data: Series[]; count: number }>({
     queryKey: ["series", "paginated", debouncedSearch, selectedYear, page],
-    enabled: !selectedSeries,
+    enabled: !legacySeriesName,
     queryFn: async () => {
       let selectFields = "id, name, thumbnail_url, created_at";
       if (selectedYear) {
@@ -79,82 +79,40 @@ function SeriesContent() {
     },
   });
 
-  // Query for Sermons in Selected Series
-  const { data: sermonsInSeries, isLoading: sermonsLoading, isError: sermonsError, refetch: refetchSermons } = useQuery<{ data: SermonWithRelations[]; count: number }>({
-    queryKey: ["sermons", "series", selectedSeries, selectedYear],
-    enabled: !!selectedSeries,
+  // Find the series an old link names (exact match) and move to its page
+  const { data: legacySeriesId, isError: legacyError, refetch: refetchLegacy } = useQuery<string | null>({
+    queryKey: ["series", "by-name", legacySeriesName],
+    enabled: !!legacySeriesName,
     queryFn: async () => {
-      const url = new URL("/api/sermons", window.location.origin);
-      url.searchParams.set("series", selectedSeries!);
-      if (selectedYear) {
-        url.searchParams.set("year", selectedYear);
-      }
-      url.searchParams.set("limit", "50");
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error("Failed to fetch series sermons");
-      return res.json();
+      const { data, error } = await supabase.from("series").select("id").eq("name", legacySeriesName!).limit(1);
+      if (error) throw error;
+      return (data as { id: string }[] | null)?.[0]?.id ?? null;
     },
   });
+
+  useEffect(() => {
+    if (legacySeriesId) router.replace(`/series/${legacySeriesId}`);
+  }, [legacySeriesId, router]);
 
   const totalPages = seriesResult?.count ? Math.ceil(seriesResult.count / limit) : 1;
   const isFiltering = !!(selectedYear || search.trim());
 
-  // ── Selected Series View (Sermons in Series) ──────────────────────────────────
-  if (selectedSeries) {
-    const backHref = selectedYear ? `/series?year=${encodeURIComponent(selectedYear)}` : "/series";
-
+  // ── Old ?series= link: redirecting to the series page ─────────────────────────
+  if (legacySeriesName) {
     return (
-      <div className="w-full flex flex-col pb-[120px] text-white">
-        <header className="sticky top-0 z-40 bg-[#030303]/90 backdrop-blur-xl w-full h-14 sm:h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-white/5 gap-3">
-          <button
-            onClick={() => router.push(backHref)}
-            className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-[#AAAAAA] hover:text-white bg-white/10 hover:bg-white/15 px-3 sm:px-3.5 py-1.5 rounded-full transition-colors shrink-0"
-          >
-            <span aria-hidden="true" className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_back</span>
-            <span>Back to All Series</span>
-          </button>
-
-          <div className="flex items-center gap-2">
-            <FilterDropdown
-              label="Year"
-              value={selectedYear}
-              options={getYearOptions()}
-            menuWidth={220}
-              onSelect={handleYearChange}
-              onClear={() => handleYearChange("")}
-            />
+      <div className="w-full px-4 sm:px-6 md:px-12 py-12 text-white text-center">
+        {legacyError ? (
+          <LoadError onRetry={() => refetchLegacy()} />
+        ) : legacySeriesId === null ? (
+          <p className="text-sm text-[#AAAAAA]">
+            We couldn&apos;t find that series.{" "}
+            <Link href="/series" className="underline underline-offset-4 hover:text-white">Browse all series</Link>
+          </p>
+        ) : (
+          <div className="h-40 flex items-center justify-center">
+            <Loader2 className="animate-spin text-white/40" />
           </div>
-        </header>
-
-        <div className="px-4 sm:px-6 md:px-12 py-5 sm:py-8">
-          <div className="mb-6 sm:mb-8">
-            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-blue-400">Series Archive</span>
-            <h1 className="text-2xl sm:text-3xl font-bold mt-1 text-white">{selectedSeries}</h1>
-            <p className="text-xs sm:text-sm text-[#AAAAAA] mt-1">
-              {sermonsInSeries?.count !== undefined
-                ? `${sermonsInSeries.count} sermon${sermonsInSeries.count === 1 ? "" : "s"} found${selectedYear ? ` in ${selectedYear}` : ""}`
-                : "Browse messages"}
-            </p>
-          </div>
-
-          {sermonsLoading ? (
-            <div className="h-40 flex items-center justify-center">
-              <Loader2 className="animate-spin text-white/40" />
-            </div>
-          ) : sermonsError ? (
-            <LoadError onRetry={() => refetchSermons()} />
-          ) : !sermonsInSeries?.data || sermonsInSeries.data.length === 0 ? (
-            <div className="text-center text-[#AAAAAA] py-12 text-sm">
-              No sermons found in this series{selectedYear ? ` for year ${selectedYear}` : ""}.
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-5">
-              {sermonsInSeries.data.map((sermon, idx) => (
-                <SermonCard key={sermon.id} sermon={sermon} index={idx} layout="grid" />
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     );
   }
@@ -245,12 +203,11 @@ function SeriesContent() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-3.5 sm:gap-4">
               {seriesResult.data.map((s) => {
                 const gradient = artworkGradient(s.name);
-                const seriesHref = `/series?series=${encodeURIComponent(s.name)}${selectedYear ? `&year=${encodeURIComponent(selectedYear)}` : ""}`;
 
                 return (
                   <Link
                     key={s.id}
-                    href={seriesHref}
+                    href={`/series/${s.id}`}
                     className="group flex flex-col gap-1.5"
                   >
                     <div className="aspect-square rounded-xl overflow-hidden bg-surface-container relative shadow-md border border-white/10 group-hover:scale-105 transition-transform duration-300">

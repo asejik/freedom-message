@@ -35,8 +35,16 @@ test("series list opens a series with its sermons and count", async ({ page }) =
 
   await page.getByRole("link", { name: /Walking by Faith/ }).click();
 
-  await expect(page).toHaveURL(/series=Walking/);
+  await expect(page).toHaveURL(/\/series\/s1$/);
+  await expect(page.getByRole("heading", { name: "Walking by Faith" })).toBeVisible();
   await expect(page.getByText("1 sermon found").filter({ visible: true }).first()).toBeVisible();
+  await expect(page.getByText("Faith for Today").filter({ visible: true }).first()).toBeVisible();
+});
+
+test("an old ?series= link moves to that series' own page", async ({ page }) => {
+  await page.goto("/series?series=Walking%20by%20Faith");
+
+  await expect(page).toHaveURL(/\/series\/s1$/);
   await expect(page.getByText("Faith for Today").filter({ visible: true }).first()).toBeVisible();
 });
 

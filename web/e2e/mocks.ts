@@ -75,6 +75,7 @@ function handleCatalog(route: Route) {
       contains(s.title, params.get("tag")) &&
       contains(s.preachers.name, params.get("preacher")) &&
       contains(s.series?.name, params.get("series")) &&
+      (!params.get("series_id") || s.series_id === params.get("series_id")) &&
       (!params.get("year") || s.date_preached.startsWith(params.get("year")!))
   );
   return json(route, { data, count: data.length, page: 1, limit: 20 });

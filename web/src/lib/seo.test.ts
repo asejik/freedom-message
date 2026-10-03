@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { homeJsonLd, pageMetadata, serializeJsonLd, sermonJsonLd, sitemapEntries, truncateDescription } from "@/lib/seo";
+import { homeJsonLd, pageMetadata, serializeJsonLd, seriesDescription, sermonJsonLd, sitemapEntries, truncateDescription } from "@/lib/seo";
 import type { SermonWithRelations } from "@/types/database";
 
 describe("pageMetadata", () => {
@@ -14,8 +14,9 @@ describe("pageMetadata", () => {
     expect(meta.openGraph).toMatchObject({ siteName: "Messages", locale: "en_US" });
   });
 
-  it("uses the title template unless the title is marked absolute", () => {
-    expect(meta.title).toBe("Sermon series");
+  it("adds the site name to the title unless the title is marked absolute", () => {
+    expect(meta.title).toEqual({ absolute: "Sermon series | Messages" });
+    expect(meta.openGraph).toMatchObject({ title: "Sermon series" });
     const home = pageMetadata({ title: "Messages: Sermons", description: "d", path: "/", absoluteTitle: true });
     expect(home.title).toEqual({ absolute: "Messages: Sermons" });
   });
@@ -32,6 +33,14 @@ describe("sitemapEntries", () => {
       "https://messages.muyiwaareo.com/privacy",
       "https://messages.muyiwaareo.com/sermons/a1",
       "https://messages.muyiwaareo.com/sermons/b2",
+    ]);
+  });
+
+  it("lists series pages after the main pages and before the sermons", () => {
+    const urls = sitemapEntries(["a1"], ["s9"]).map((e) => e.url);
+    expect(urls.slice(-2)).toEqual([
+      "https://messages.muyiwaareo.com/series/s9",
+      "https://messages.muyiwaareo.com/sermons/a1",
     ]);
   });
 
@@ -58,11 +67,29 @@ describe("truncateDescription", () => {
   });
 });
 
+describe("seriesDescription", () => {
+  it("states the sermon count and the years they span", () => {
+    expect(seriesDescription("Faith", ["2021-05-02", "2019-01-06", "2020-03-01"])).toBe(
+      'Listen to all 3 sermons in the "Faith" series (2019–2021) on Messages.'
+    );
+  });
+
+  it("handles a single sermon and a single year", () => {
+    expect(seriesDescription("Easter", ["2024-03-31"])).toBe('Listen to the sermon in the "Easter" series (2024) on Messages.');
+  });
+});
+
 describe("share image", () => {
   it("every page built with pageMetadata carries the default 1200×630 image", () => {
     const meta = pageMetadata({ title: "t", description: "d", path: "/ai" });
     expect(meta.openGraph).toMatchObject({ images: [{ url: "/og-default.jpg", width: 1200, height: 630 }] });
     expect(meta.twitter).toMatchObject({ images: [{ url: "/og-default.jpg" }] });
+  });
+
+  it("uses a page's own square artwork with X's square card", () => {
+    const meta = pageMetadata({ title: "t", description: "d", path: "/series/s1", image: "https://x.supabase.co/a.webp" });
+    expect(meta.openGraph).toMatchObject({ images: ["https://x.supabase.co/a.webp"] });
+    expect(meta.twitter).toMatchObject({ card: "summary", images: ["https://x.supabase.co/a.webp"] });
   });
 });
 

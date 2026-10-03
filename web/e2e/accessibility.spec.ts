@@ -13,6 +13,7 @@ const PAGES = [
   { name: "ask AI", path: "/ai", ready: "What are you looking for?" },
   { name: "favourites", path: "/favourites", ready: "No Favourites Yet" },
   { name: "login", path: "/login", ready: "Admin Portal" },
+  { name: "privacy", path: "/privacy", ready: "Your rights and contact" },
 ];
 
 test.beforeEach(async ({ page }) => {

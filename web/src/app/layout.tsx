@@ -9,6 +9,7 @@ import { AnimatedBackground } from "@/components/layout/AnimatedBackground";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MobileHeader } from "@/components/layout/MobileHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Analytics } from "@vercel/analytics/next";
 
 // Fonts are downloaded at build time and served from our own domain as compressed,
@@ -111,6 +112,7 @@ export default function RootLayout({
               {/* Mobile-only top header */}
               <MobileHeader />
               {children}
+              <SiteFooter />
             </main>
 
             {/* Floating Audio Player */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SermonCard } from "@/components/sermons/SermonCard";
 import { Loader2 } from "lucide-react";
@@ -16,26 +16,97 @@ import { LoadError } from "@/components/ui/LoadError";
 // ── Search Content ────────────────────────────────────────────────────────────
 function SearchContent() {
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get("q") || "";
+  const initialQuery = useMemo(
+    () => searchParams.get("q") || searchParams.get("title") || "",
+    [searchParams]
+  );
+  const initialPreachers = useMemo(
+    () =>
+      searchParams
+        .getAll("preacher")
+        .flatMap((p) => p.split(","))
+        .map((p) => p.trim())
+        .filter(Boolean),
+    [searchParams]
+  );
+  const initialYear = useMemo(() => searchParams.get("year") || "", [searchParams]);
+  const initialDate = useMemo(() => searchParams.get("date") || "", [searchParams]);
+  const initialPage = useMemo(
+    () => Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1),
+    [searchParams]
+  );
 
   const [searchText, setSearchText] = useState(initialQuery);
-  const [selectedPreacher, setSelectedPreacher] = useState<string>("");
-  const [selectedYear, setSelectedYear] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [gridPage, setGridPage] = useState(1);
+  const [selectedPreachers, setSelectedPreachers] = useState<string[]>(initialPreachers);
+  const [selectedYear, setSelectedYear] = useState<string>(initialYear);
+  const [selectedDate, setSelectedDate] = useState<string>(initialDate);
+  const [gridPage, setGridPage] = useState(initialPage);
   const gridLimit = 20;
 
   const debouncedSearch = useDebouncedValue(searchText.trim());
 
-  const isFiltering = !!(debouncedSearch || selectedPreacher || selectedYear || selectedDate);
+  const isFiltering = !!(debouncedSearch || selectedPreachers.length > 0 || selectedYear || selectedDate);
+
+  const togglePreacher = (name: string) => {
+    setSelectedPreachers((prev) =>
+      prev.includes(name) ? prev.filter((p) => p !== name) : [...prev, name]
+    );
+    setGridPage(1);
+  };
 
   const clearFilters = () => {
     setSearchText("");
-    setSelectedPreacher("");
+    setSelectedPreachers([]);
     setSelectedYear("");
     setSelectedDate("");
     setGridPage(1);
   };
+
+  // Keep the URL query string in sync with search and filter state
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams();
+    const trimmed = debouncedSearch.trim();
+    if (trimmed) params.set("q", trimmed);
+    for (const p of selectedPreachers) {
+      if (p.trim()) params.append("preacher", p.trim());
+    }
+    if (selectedYear.trim()) params.set("year", selectedYear.trim());
+    if (selectedDate.trim()) params.set("date", selectedDate.trim());
+    if (gridPage > 1) params.set("page", gridPage.toString());
+
+    const qs = params.toString();
+    const newUrl = qs ? `/search?${qs}` : "/search";
+    const currentUrl = window.location.pathname + window.location.search;
+    if (currentUrl !== newUrl) {
+      window.history.replaceState(null, "", newUrl);
+    }
+  }, [debouncedSearch, selectedPreachers, selectedYear, selectedDate, gridPage]);
+
+  // Handle browser Back / Forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("q") || params.get("title") || "";
+      const p = params
+        .getAll("preacher")
+        .flatMap((x) => x.split(","))
+        .map((x) => x.trim())
+        .filter(Boolean);
+      const y = params.get("year") || "";
+      const d = params.get("date") || "";
+      const pg = Math.max(1, parseInt(params.get("page") || "1", 10) || 1);
+
+      setSearchText(q);
+      setSelectedPreachers(p);
+      setSelectedYear(y);
+      setSelectedDate(d);
+      setGridPage(pg);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   // Preachers list
   const { data: preachers } = useQuery<Preacher[]>({
@@ -49,14 +120,16 @@ function SearchContent() {
 
   // Query for sermon search (ONLY executed when user has searched/filtered)
   const { data: gridResults, isLoading: gridLoading, isError: gridError, refetch: refetchGrid } = useQuery<{ data: SermonWithRelations[]; count: number }>({
-    queryKey: ["sermons", "search", debouncedSearch, selectedPreacher, selectedYear, selectedDate, gridPage],
+    queryKey: ["sermons", "search", debouncedSearch, selectedPreachers, selectedYear, selectedDate, gridPage],
     enabled: isFiltering,
     queryFn: async () => {
       const url = new URL("/api/sermons", window.location.origin);
       url.searchParams.set("limit", gridLimit.toString());
       url.searchParams.set("page", gridPage.toString());
       if (debouncedSearch) url.searchParams.set("title", debouncedSearch);
-      if (selectedPreacher) url.searchParams.set("preacher", selectedPreacher);
+      for (const p of selectedPreachers) {
+        url.searchParams.append("preacher", p);
+      }
       if (selectedYear) url.searchParams.set("year", selectedYear);
       if (selectedDate) url.searchParams.set("date", selectedDate);
       const res = await fetch(url.toString());
@@ -95,10 +168,10 @@ function SearchContent() {
           <div className="flex items-center gap-2 flex-wrap">
             <FilterDropdown
               label="Preacher"
-              value={selectedPreacher}
+              values={selectedPreachers}
               options={(preachers ?? []).map((p) => ({ id: p.id, label: p.name }))}
-              onSelect={(v) => { setSelectedPreacher(v); setGridPage(1); }}
-              onClear={() => { setSelectedPreacher(""); setGridPage(1); }}
+              onToggle={togglePreacher}
+              onClear={() => { setSelectedPreachers([]); setGridPage(1); }}
             />
             <FilterDropdown
               label="Year"
@@ -147,8 +220,12 @@ function SearchContent() {
                 {gridLoading ? "Searching catalog..." : (
                   <>
                     Showing <span className="text-white font-semibold">{gridResults?.count ?? 0}</span> sermons
-                    {searchText ? ` matching "${searchText}"` : ""}
-                    {selectedPreacher ? ` by ${selectedPreacher}` : ""}
+                    {debouncedSearch ? ` matching "${debouncedSearch}"` : ""}
+                    {selectedPreachers.length === 1
+                      ? ` by ${selectedPreachers[0]}`
+                      : selectedPreachers.length > 1
+                      ? ` by ${selectedPreachers.join(", ")}`
+                      : ""}
                     {selectedYear ? ` (${selectedYear})` : ""}
                     {selectedDate ? ` on ${selectedDate}` : ""}
                   </>

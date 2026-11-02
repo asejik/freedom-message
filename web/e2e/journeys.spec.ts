@@ -25,9 +25,37 @@ test("search finds sermons by title and can be cleared", async ({ page }) => {
   await searchBox.fill("love");
   await expect(page.getByText("The Love Commandment 4").filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByText("Faith for Today").filter({ visible: true })).toHaveCount(0);
+  await expect(page).toHaveURL(/(\?|&)q=love/);
 
   await page.getByRole("button", { name: "Clear search" }).click();
   await expect(searchBox).toHaveValue("");
+  await expect(page).not.toHaveURL(/q=love/);
+});
+
+test("search URL can be opened directly with query and multiple preachers", async ({ page }) => {
+  await page.goto("/search?q=Faith&preacher=Apostle%20Test%20Preacher");
+  const searchBox = page.getByPlaceholder("Search sermons by title or topic...");
+  await expect(searchBox).toHaveValue("Faith");
+  await expect(page.getByText("Faith for Today").filter({ visible: true }).first()).toBeVisible();
+});
+
+test("filtering by multiple preachers updates the URL and displays matching sermons", async ({ page }) => {
+  await page.goto("/search");
+  const preacherBtn = page.getByRole("button", { name: /^Preacher/ });
+  await preacherBtn.click();
+
+  // Select first preacher
+  await page.getByRole("button", { name: "Apostle Test Preacher" }).click();
+  await expect(page).toHaveURL(/preacher=Apostle\+Test\+Preacher/);
+
+  // Select second preacher without closing dropdown
+  await page.getByRole("button", { name: "Pastor Example" }).click();
+  await expect(page).toHaveURL(/preacher=Apostle\+Test\+Preacher/);
+  await expect(page).toHaveURL(/preacher=Pastor\+Example/);
+
+  // Both preachers should have sermons visible
+  await expect(page.getByText("Faith for Today").filter({ visible: true }).first()).toBeVisible();
+  await expect(page.getByText("The Love Commandment 4").filter({ visible: true }).first()).toBeVisible();
 });
 
 test("series list opens a series with its sermons and count", async ({ page }) => {

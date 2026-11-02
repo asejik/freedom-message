@@ -12,7 +12,11 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const title = searchParams.get('title');
-    const preacher = searchParams.get('preacher');
+    const preacherParams = searchParams.getAll('preacher');
+    const preachers = preacherParams
+      .flatMap((p) => p.split(','))
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
     const series = searchParams.get('series');
     // Exact series match (series pages); `series` above matches names partially
     const seriesId = searchParams.get('series_id');
@@ -29,7 +33,7 @@ export async function GET(request: Request) {
 
     // Build the select projection, conditionally using !inner for active filters.
     const hasSeriesFilter = series && series.trim() !== '';
-    const hasPreacherFilter = preacher && preacher.trim() !== '';
+    const hasPreacherFilter = preachers.length > 0;
 
     // Replace the join portions of SERMON_CARD_SELECT with !inner when filtering
     let selectQuery = SERMON_CARD_SELECT;
@@ -51,8 +55,10 @@ export async function GET(request: Request) {
       dbQuery = dbQuery.ilike('title', `%${title.trim()}%`);
     }
 
-    if (preacher && preacher.trim() !== '') {
-      dbQuery = dbQuery.ilike('preachers.name', `%${preacher.trim()}%`);
+    if (preachers.length === 1) {
+      dbQuery = dbQuery.ilike('preachers.name', `%${preachers[0]}%`);
+    } else if (preachers.length > 1) {
+      dbQuery = dbQuery.in('preachers.name', preachers);
     }
 
     if (hasSeriesFilter) {

@@ -69,11 +69,22 @@ function handleCatalog(route: Route) {
   const contains = (value: string | null | undefined, needle: string | null) =>
     !needle || (value ?? "").toLowerCase().includes(needle.toLowerCase());
 
+  const preacherFilters = params
+    .getAll("preacher")
+    .flatMap((p) => p.split(","))
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const matchesPreachers = (name: string | undefined) => {
+    if (preacherFilters.length === 0) return true;
+    return preacherFilters.some((pf) => (name ?? "").toLowerCase().includes(pf.toLowerCase()));
+  };
+
   const data = SERMONS.filter(
     (s) =>
       contains(s.title, params.get("title")) &&
       contains(s.title, params.get("tag")) &&
-      contains(s.preachers.name, params.get("preacher")) &&
+      matchesPreachers(s.preachers?.name) &&
       contains(s.series?.name, params.get("series")) &&
       (!params.get("series_id") || s.series_id === params.get("series_id")) &&
       (!params.get("year") || s.date_preached.startsWith(params.get("year")!))

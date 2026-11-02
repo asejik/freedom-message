@@ -1,11 +1,11 @@
 import { supabase } from "@/lib/supabase";
 
-type SermonCounter = "play" | "download";
+export type SermonCounter = "play" | "download" | "view";
 
 /**
- * Adds one to a sermon's play or download count, at most once per sermon per
- * browser session (so replays and pause/resume don't inflate the numbers).
- * Fire-and-forget: counting must never get in the way of listening, so every
+ * Adds one to a sermon's play, download, or view count, at most once per sermon per
+ * browser session (so replays, repeated visits and pause/resume don't inflate the numbers).
+ * Fire-and-forget: counting must never get in the way of listening or browsing, so every
  * failure (offline, database function not installed) is ignored.
  */
 export function recordSermonEvent(sermonId: string, counter: SermonCounter): void {

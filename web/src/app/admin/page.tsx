@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
-import { Sparkles, Plus, Edit3, X, BookOpen, Layers, Users, DatabaseBackup } from "lucide-react";
+import { Sparkles, Plus, Edit3, X, BookOpen, Layers, Users, DatabaseBackup, BarChart3 } from "lucide-react";
 import type { SermonWithRelations } from "@/types/database";
 import { SermonsListManager } from "@/components/admin/SermonsListManager";
 import { SermonForm } from "@/components/admin/SermonForm";
@@ -11,9 +11,10 @@ import { SeriesManagementForm } from "@/components/admin/SeriesManagement";
 import { PreachersManagementForm } from "@/components/admin/PreachersManagement";
 import { BackupPanel, BackupReminder } from "@/components/admin/BackupPanel";
 import { LogsPanel } from "@/components/admin/LogsPanel";
+import { OverviewPanel } from "@/components/admin/OverviewPanel";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"sermons" | "add" | "series" | "preachers" | "system">("sermons");
+  const [activeTab, setActiveTab] = useState<"overview" | "sermons" | "add" | "series" | "preachers" | "system">("overview");
   const [editingSermon, setEditingSermon] = useState<SermonWithRelations | null>(null);
   const supabase = createClient();
 
@@ -121,6 +122,21 @@ export default function AdminDashboard() {
         <button
           onClick={() => {
             setEditingSermon(null);
+            setActiveTab("overview");
+          }}
+          className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === "overview"
+              ? "bg-blue-600/25 text-blue-300 border border-blue-500/40 shadow-sm"
+              : "text-white/60 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <BarChart3 size={14} />
+          <span>Overview</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setEditingSermon(null);
             setActiveTab("sermons");
           }}
           className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
@@ -196,6 +212,8 @@ export default function AdminDashboard() {
 
       {/* Tab Content Panels */}
       <div className="bg-[#0c0d10]/95 backdrop-blur-xl rounded-2xl p-3.5 sm:p-6 border border-white/10 shadow-2xl">
+        {activeTab === "overview" && <OverviewPanel />}
+
         {activeTab === "sermons" && (
           <SermonsListManager onEdit={(sermon) => setEditingSermon(sermon)} />
         )}

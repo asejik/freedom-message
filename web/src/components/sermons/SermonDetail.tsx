@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { supabase, SERMON_LIST_SELECT, SERMON_CARD_SELECT } from "@/lib/supabase";
@@ -33,6 +33,12 @@ export function SermonDetail({
   const togglePlay = useAudioStore((s) => s.togglePlay);
   const [copied, setCopied] = useState(false);
   const [isFav, toggleFav] = useFavourite(sermonId);
+
+  useEffect(() => {
+    if (sermonId) {
+      recordSermonEvent(sermonId, "view");
+    }
+  }, [sermonId]);
 
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";

@@ -123,6 +123,50 @@ function handleSupabase(route: Route) {
 export async function mockBackend(page: Page) {
   await page.route("**/api/sermons**", handleCatalog);
   await page.route("**/api/search**", (route) => json(route, { answer: AI_ANSWER, results: SERMONS.slice(0, 2) }));
+  await page.route("**/api/admin/overview**", (route) =>
+    json(route, {
+      metrics: {
+        views: { weekly: 40, lifetime: 300 },
+        plays: { weekly: 15, lifetime: 150 },
+        downloads: { weekly: 8, lifetime: 80 },
+        totalEngagement: { weekly: 63, lifetime: 530 },
+      },
+      topPlayed: [
+        { id: "1", title: "Faith for Today", date_preached: "2026-05-17", preacher_name: "Apostle Test Preacher", series_name: "Walking by Faith", count: 85 },
+        { id: "2", title: "The Love Commandment 4", date_preached: "2026-04-12", preacher_name: "Pastor Example", series_name: "The Love Commandment", count: 45 },
+        { id: "3", title: "Healing Grace", date_preached: "2026-03-01", preacher_name: "Apostle Test Preacher", series_name: null, count: 20 },
+      ],
+      topDownloaded: [
+        { id: "1", title: "Faith for Today", date_preached: "2026-05-17", preacher_name: "Apostle Test Preacher", series_name: "Walking by Faith", count: 40 },
+        { id: "2", title: "The Love Commandment 4", date_preached: "2026-04-12", preacher_name: "Pastor Example", series_name: "The Love Commandment", count: 25 },
+        { id: "3", title: "Healing Grace", date_preached: "2026-03-01", preacher_name: "Apostle Test Preacher", series_name: null, count: 15 },
+      ],
+      topViewed: [
+        { id: "1", title: "Faith for Today", date_preached: "2026-05-17", preacher_name: "Apostle Test Preacher", series_name: "Walking by Faith", count: 150 },
+        { id: "2", title: "The Love Commandment 4", date_preached: "2026-04-12", preacher_name: "Pastor Example", series_name: "The Love Commandment", count: 90 },
+        { id: "3", title: "Healing Grace", date_preached: "2026-03-01", preacher_name: "Apostle Test Preacher", series_name: null, count: 60 },
+      ],
+      health: {
+        totalSermons: 3,
+        withAiSummary: 3,
+        aiSummaryPercent: 100,
+        withKeyVerses: 2,
+        keyVersesPercent: 67,
+        withAiTags: 3,
+        aiTagsPercent: 100,
+        withArtwork: 1,
+        artworkPercent: 33,
+      },
+      totalSeries: 2,
+      totalPreachers: 2,
+      topPreachers: [
+        { name: "Apostle Test Preacher", sermonCount: 2 },
+        { name: "Pastor Example", sermonCount: 1 },
+      ],
+      recentErrorsCount: 0,
+      generatedAt: "2026-11-02T12:00:00.000Z",
+    })
+  );
   await page.route("**/rest/v1/**", handleSupabase);
   await page.route("https://archive.org/**", (route) => route.abort());
 }

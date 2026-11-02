@@ -46,6 +46,7 @@ export interface Sermon extends BaseRow {
   prayer_focus?:   string | null;
   play_count?:     number;
   download_count?: number;
+  view_count?:     number;
 }
 
 
@@ -150,6 +151,14 @@ export type MessagesErrorLog = {
   stack: string | null;
 };
 
+/** One recorded stats event (view, play, download). */
+export type MessagesStatsEvent = {
+  id: number;
+  sermon_id: string;
+  event_type: 'view' | 'play' | 'download';
+  created_at: string;
+};
+
 /** Turns an interface into a plain object type, which supabase-js requires for table rows. */
 type Plain<T> = { [K in keyof T]: T[K] };
 
@@ -188,6 +197,13 @@ export interface Database {
         Update: Record<string, never>;
         Relationships: [];
       };
+      /** Recorded engagement events for weekly/time-window analytics. */
+      messages_stats_events: {
+        Row:    MessagesStatsEvent;
+        Insert: Plain<Omit<MessagesStatsEvent, 'id' | 'created_at'> & { created_at?: string }>;
+        Update: Record<string, never>;
+        Relationships: [];
+      };
     };
     Views:     Record<string, never>;
     Functions: {
@@ -201,7 +217,7 @@ export interface Database {
         Args:    { search_query: string; preacher_filter?: string; max_results?: number };
         Returns: { sermon_id: string; rank: number }[];
       };
-      /** Adds one to a sermon's play or download counter. */
+      /** Adds one to a sermon's play, download, or view counter and records the event. */
       increment_sermon_counter: {
         Args:    { target_sermon_id: string; counter: string };
         Returns: undefined;

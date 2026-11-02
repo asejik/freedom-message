@@ -30,6 +30,12 @@ export function SermonActionSheet({
     return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
+  useEffect(() => {
+    if (sermon?.id) {
+      recordSermonEvent(sermon.id, "view");
+    }
+  }, [sermon?.id]);
+
   if (!sermon) return null;
 
   const thumb = usableImageUrl(sermon.artwork_url) ?? usableImageUrl(sermon.series?.thumbnail_url);

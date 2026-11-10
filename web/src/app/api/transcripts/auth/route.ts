@@ -5,6 +5,10 @@ import {
   verifyTranscriptsAccess,
   TRANSCRIPTS_COOKIE_NAME,
 } from "@/lib/server/transcripts-auth";
+import { createAttemptLimiter } from "@/lib/server/rate-limit";
+
+// Wrong passcodes allowed per IP address before a pause (correct ones are never counted)
+const wrongPasscodes = createAttemptLimiter(10, 15 * 60 * 1000);
 
 const NO_CACHE_HEADERS = {
   "Cache-Control": "private, no-cache, no-store, must-revalidate",
@@ -42,8 +46,18 @@ export async function POST(request: Request) {
       );
     }
 
+    const forwarded = request.headers.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(",")[0].trim() : "client-ip";
+    if (wrongPasscodes.isBlocked(ip)) {
+      return NextResponse.json(
+        { error: "Too many incorrect attempts. Please wait a few minutes and try again." },
+        { status: 429, headers: { ...NO_CACHE_HEADERS, "Retry-After": String(wrongPasscodes.retryAfterSeconds(ip)) } }
+      );
+    }
+
     const isValid = validatePasscode(passcode);
     if (!isValid) {
+      wrongPasscodes.record(ip);
       return NextResponse.json(
         { error: "Incorrect access code. Please try again." },
         { status: 401, headers: NO_CACHE_HEADERS }

@@ -24,9 +24,9 @@ next-env.d.ts
 *.env*
 
 # Local media, audio files, large raw data & logs
-audio_files/
-transcripts/
-output/
+/audio_files/
+/transcripts/
+/output/
 *.mp3
 *.wav
 *.m4a

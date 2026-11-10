@@ -129,3 +129,30 @@ test("the player explains when audio cannot be loaded and offers Retry", async (
   await expect(alert).toBeVisible({ timeout: 15_000 });
   await expect(alert.getByRole("button", { name: "Retry" })).toBeVisible();
 });
+
+test("transcripts explorer gates access with passcode, displays sermons and allows viewing transcripts", async ({ page }) => {
+  await page.goto("/transcripts");
+
+  // Step 1: Passcode Gate is shown
+  await expect(page.getByRole("heading", { level: 1, name: "Transcripts Portal" })).toBeVisible({ timeout: 15_000 });
+  const passcodeInput = page.getByPlaceholder("Enter passcode...");
+  await expect(passcodeInput).toBeVisible();
+
+  // Step 2: Enter authorized passcode and enter archive
+  await passcodeInput.fill("clc-transcripts-access");
+  await page.getByRole("button", { name: "Enter Transcripts Archive" }).click();
+
+  // Step 3: Transcripts Explorer is rendered
+  await expect(page.getByText("Transcripts Explorer").first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByPlaceholder("Search sermon title...")).toBeVisible();
+
+  // Step 4: Sermon list contains sermons from fixture
+  await expect(page.getByText("Faith for Today").filter({ visible: true }).first()).toBeVisible();
+
+  // Step 5: Active sermon transcript is displayed
+  await expect(page.getByText("Walking by faith means trusting God").first()).toBeVisible();
+
+  // Step 6: Copy button is present
+  await expect(page.getByRole("button", { name: "Copy Transcript" })).toBeVisible();
+});
+

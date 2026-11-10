@@ -167,6 +167,35 @@ export async function mockBackend(page: Page) {
       generatedAt: "2026-11-02T12:00:00.000Z",
     })
   );
+  await page.route(/\/api\/transcripts($|\?)/, handleCatalog);
+
+  await page.route(/\/api\/transcripts\/[0-9a-fA-F-]+/, async (route) => {
+    const url = new URL(route.request().url());
+    const id = url.pathname.split("/").pop();
+    const sermon = SERMONS.find((s) => s.id === id) || SERMONS[0];
+    return json(route, {
+      data: {
+        ...sermon,
+        transcript_text:
+          "Welcome to this sermon message. Walking by faith means trusting God in every situation. Faith gives us courage to face uncertainty and overcome difficulties. Amen.",
+      },
+    });
+  });
+
+  await page.route("**/api/transcripts/auth", async (route) => {
+    if (route.request().method() === "POST") {
+      const body = route.request().postDataJSON() || {};
+      if (body.action === "logout") {
+        return json(route, { success: true, authenticated: false });
+      }
+      if (body.passcode === "clc-transcripts-access" || body.passcode === "unit-test-passcode-123") {
+        return json(route, { success: true, authenticated: true });
+      }
+      return json(route, { error: "Incorrect access code." }, 401);
+    }
+    // When GET is called, return unauthenticated if we want to test login flow
+    return json(route, { authenticated: false });
+  });
   await page.route("**/rest/v1/**", handleSupabase);
   await page.route("https://archive.org/**", (route) => route.abort());
 }

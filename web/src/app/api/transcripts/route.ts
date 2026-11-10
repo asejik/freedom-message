@@ -27,12 +27,15 @@ export async function GET(request: Request) {
       .filter((p) => p.length > 0);
     const series = searchParams.get("series");
     const seriesId = searchParams.get("series_id");
-    const year = searchParams.get("year");
+    const year = searchParams.get("year")?.trim() || "";
+    if (year && !/^\d{4}$/.test(year)) {
+      return NextResponse.json({ error: "Invalid year." }, { status: 400, headers: NO_CACHE_HEADERS });
+    }
     const sort = searchParams.get("sort") || "newest";
 
     const paging = parsePaging(searchParams.get("page"), searchParams.get("limit") || "25");
     if (!paging) {
-      return NextResponse.json({ error: "Invalid page or limit." }, { status: 400 });
+      return NextResponse.json({ error: "Invalid page or limit." }, { status: 400, headers: NO_CACHE_HEADERS });
     }
     const { page, limit } = paging;
     const offset = (page - 1) * limit;
@@ -70,7 +73,7 @@ export async function GET(request: Request) {
       dbQuery = dbQuery.eq("series_id", seriesId.trim());
     }
 
-    if (year && year.trim() !== "") {
+    if (year) {
       dbQuery = dbQuery
         .gte("date_preached", `${year}-01-01`)
         .lte("date_preached", `${year}-12-31`);

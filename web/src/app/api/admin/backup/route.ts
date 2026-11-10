@@ -72,7 +72,8 @@ export async function GET(request: Request) {
 
     if (part === "sermons") {
       const offset = Math.max(0, parseInt(params.get("offset") || "0", 10) || 0);
-      const { data, error } = await supabase
+      // Full rows include the transcript, which only the service role can read
+      const { data, error } = await (getServiceClient() ?? supabase)
         .from("sermons")
         .select(SERMON_BACKUP_COLUMNS)
         .order("id")

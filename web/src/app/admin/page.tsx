@@ -22,7 +22,8 @@ export default function AdminDashboard() {
   const { data: totalSermonsCount } = useQuery<number>({
     queryKey: ['admin', 'stats-sermons-count'],
     queryFn: async () => {
-      const { count } = await supabase.from('sermons').select('*', { count: 'exact', head: true });
+      // Count on `id`: `*` would touch the transcript column, which browsers may not read
+      const { count } = await supabase.from('sermons').select('id', { count: 'exact', head: true });
       return count || 0;
     }
   });

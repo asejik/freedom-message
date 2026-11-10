@@ -6,6 +6,7 @@ import { isHttpUrl, getErrorMessage } from '@/lib/utils';
 import type { SermonUpdate } from '@/types/database';
 import { logAdminAction } from "@/lib/server/logs";
 import { removeUnusedArtwork } from "@/lib/server/artwork";
+import { getServiceClient } from "@/lib/server/service-client";
 
 export async function GET(request: Request) {
   try {
@@ -22,10 +23,12 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
 
-    // Single full record (incl. transcript_text) for the edit form
+    // Single full record (incl. transcript_text) for the edit form. The transcript column is
+    // hidden from the anon and logged-in database roles (other apps' users share this
+    // project), so it is read with the service role, after the admin check above.
     const id = searchParams.get('id');
     if (id) {
-      const { data, error } = await supabase
+      const { data, error } = await (getServiceClient() ?? supabase)
         .from('sermons')
         .select(SERMON_ADMIN_SELECT)
         .eq('id', id)
@@ -228,8 +231,9 @@ export async function DELETE(request: Request) {
     }
 
     // Keep a full copy of the sermon (transcript included) in the audit log, so a
-    // delete made between monthly backups can still be recovered.
-    const { data: snapshot } = await supabase
+    // delete made between monthly backups can still be recovered. Read with the service
+    // role: the transcript column is hidden from logged-in database roles.
+    const { data: snapshot } = await (getServiceClient() ?? supabase)
       .from('sermons')
       .select(SERMON_ADMIN_SELECT)
       .eq('id', id)

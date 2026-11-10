@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Transcripts Explorer | The Messages',
+  // The root layout's title template appends " | Messages"
+  title: 'Transcripts Explorer',
   description: 'Search, read, and export sermon transcripts.',
   robots: { index: false, follow: false },
 };

@@ -8,7 +8,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/privacy",
 });
 
-const LAST_UPDATED = "3 October 2026";
+const LAST_UPDATED = "10 November 2026";
 
 // Describes what the code actually does. Update it whenever data handling changes
 // (new analytics, accounts for visitors, new third-party services, etc.).
@@ -71,6 +71,11 @@ export default function PrivacyPage() {
       <section className="flex flex-col gap-2">
         <h2 className="font-heading text-lg font-bold text-white">Staff accounts</h2>
         <p>Only ministry staff who manage the library have accounts. Their email addresses are stored securely with Supabase.</p>
+        <p>
+          Church units given access to the private transcripts page sign in with a shared passcode. Signing in
+          stores one cookie on that device, for up to 30 days, to keep them signed in. It holds no personal
+          information and isn&apos;t used for tracking.
+        </p>
       </section>
 
       <section className="flex flex-col gap-2">

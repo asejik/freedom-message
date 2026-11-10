@@ -55,14 +55,15 @@ export async function GET(request: Request) {
       dbQuery = dbQuery.ilike("title", `%${title.trim()}%`);
     }
 
-    if (preachers.length === 1) {
-      dbQuery = dbQuery.ilike("preachers.name", `%${preachers[0]}%`);
-    } else if (preachers.length > 1) {
+    // Exact names (the page offers them from lists). A partial match would mix in other
+    // entries: "Service" is inside 15 other series names, and one preacher's name is
+    // inside the joint "… & …" entry.
+    if (hasPreacherFilter) {
       dbQuery = dbQuery.in("preachers.name", preachers);
     }
 
     if (hasSeriesFilter && series) {
-      dbQuery = dbQuery.ilike("series.name", `%${series.trim()}%`);
+      dbQuery = dbQuery.eq("series.name", series.trim());
     }
 
     if (seriesId && seriesId.trim() !== "") {

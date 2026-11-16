@@ -2,12 +2,9 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { isMessagesAdmin } from '@/utils/supabase/admin';
 import Groq from 'groq-sdk';
-import { execFile } from 'child_process';
-import path from 'path';
-import util from 'util';
 import { getErrorMessage } from "@/lib/utils";
-
-const execFileAsync = util.promisify(execFile);
+import { id3TagSize, parseId3 } from "@/lib/id3";
+import { detectImageMime } from "@/lib/images";
 
 const GROQ_TIMEOUT_MS = 45_000; // enrichment sends up to 15k characters of transcript
 
@@ -58,6 +55,92 @@ function isArchiveOrgUrl(urlString: string): boolean {
   }
 }
 
+const AUDIO_FETCH_TIMEOUT_MS = 20_000;
+const FIRST_CHUNK_BYTES = 256 * 1024; // enough for the text tags of any file
+// The cover is sent back to the browser as base64 inside the JSON response, and
+// Vercel caps a response at 4.5 MB, so larger tags are not downloaded in full.
+const MAX_TAG_BYTES = 3 * 1024 * 1024;
+const MAX_REDIRECTS = 5;
+
+/**
+ * Fetches a byte range, following redirects by hand so that every hop is checked
+ * to still be on archive.org (archive.org/download/... redirects to a storage node).
+ */
+async function fetchArchiveRange(url: string, from: number, to: number): Promise<Response> {
+  let current = url;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    if (!isArchiveOrgUrl(current)) throw new Error("The audio link redirected away from archive.org.");
+    const res = await fetch(current, {
+      headers: { Range: `bytes=${from}-${to}` },
+      redirect: 'manual',
+      signal: AbortSignal.timeout(AUDIO_FETCH_TIMEOUT_MS),
+    });
+    const location = res.headers.get('location');
+    if (res.status >= 300 && res.status < 400 && location) {
+      await res.body?.cancel();
+      current = new URL(location, current).toString();
+      continue;
+    }
+    if (!res.ok) throw new Error(`Audio download failed (HTTP ${res.status}).`);
+    return res;
+  }
+  throw new Error("The audio link redirected too many times.");
+}
+
+/** Reads at most `limit` bytes of a response, then stops the download. */
+async function readBytes(res: Response, limit: number): Promise<Buffer> {
+  if (!res.body) return Buffer.alloc(0);
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  while (received < limit) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+  }
+  await reader.cancel();
+  return Buffer.concat(chunks).subarray(0, limit);
+}
+
+/**
+ * Downloads only the ID3 tag at the start of an archive.org MP3 (not the audio)
+ * and returns its text fields plus the embedded cover image, if any.
+ */
+async function readAudioTags(audioUrl: string) {
+  const firstRes = await fetchArchiveRange(audioUrl, 0, FIRST_CHUNK_BYTES - 1);
+  let bytes = await readBytes(firstRes, FIRST_CHUNK_BYTES);
+
+  const tagSize = id3TagSize(bytes);
+  if (tagSize === null) {
+    return { tag: null, image: null, note: "This audio file has no embedded details or artwork (no ID3 tag)." };
+  }
+
+  let note: string | null = null;
+  if (tagSize > bytes.length) {
+    if (tagSize > MAX_TAG_BYTES) {
+      note = "The embedded artwork is too large to extract automatically. Please upload it instead.";
+    } else if (firstRes.status === 206) {
+      const restRes = await fetchArchiveRange(audioUrl, bytes.length, tagSize - 1);
+      if (restRes.status === 206) {
+        bytes = Buffer.concat([bytes, await readBytes(restRes, tagSize - bytes.length)]);
+      } else {
+        await restRes.body?.cancel();
+      }
+    }
+  }
+
+  const tag = parseId3(bytes);
+  const mime = tag.picture ? detectImageMime(tag.picture) : null;
+  const image = tag.picture && mime ? { mime, base64: tag.picture.toString('base64') } : null;
+  if (!image && !note) {
+    note = tag.picture
+      ? "The embedded artwork is in a format that can't be used (only JPEG, PNG and WebP)."
+      : "No embedded artwork was found in this audio file.";
+  }
+  return { tag, image, note };
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -87,7 +170,8 @@ export async function POST(request: Request) {
       preacher?: string | null;
       series?: string | null;
       date_preached?: string | null;
-      artwork_url?: string | null;
+      /** Cover found inside the MP3; the form compresses and uploads it. */
+      artwork_image?: { mime: string; base64: string } | null;
       ai_summary?: string | null;
       ai_tags?: string[];
       key_verses?: string[];
@@ -99,7 +183,7 @@ export async function POST(request: Request) {
       preacher: null,
       series: null,
       date_preached: null,
-      artwork_url: null,
+      artwork_image: null,
       ai_summary: null,
       ai_tags: [],
       key_verses: [],
@@ -107,34 +191,25 @@ export async function POST(request: Request) {
     };
 
     // 2. Audio Metadata & Artwork Extraction (if audio_url provided)
-    //    The extractor downloads the URL server-side and follows redirects, so only
-    //    allow the host the library actually uses rather than any "public-looking" URL.
+    //    The tag is downloaded server-side, so only allow the host the library
+    //    actually uses rather than any "public-looking" URL.
     if (audio_url && audio_url.trim() && !isArchiveOrgUrl(audio_url.trim())) {
       result.audio_error = "Automatic audio details are only read from archive.org links.";
     } else if (audio_url && audio_url.trim()) {
       try {
-        const pythonBin = path.resolve(process.cwd(), '../.venv/bin/python');
-        const scriptPath = path.resolve(process.cwd(), '../scripts/extract_audio_metadata.py');
-
-        const { stdout } = await execFileAsync(pythonBin, [scriptPath, audio_url.trim()], {
-          timeout: 45000,
-        });
-
-        if (stdout && stdout.trim()) {
-          const parsedAudio = JSON.parse(stdout.trim());
-          if (parsedAudio.title && !result.title) result.title = parsedAudio.title;
-          if (parsedAudio.preacher) result.preacher = parsedAudio.preacher;
-          if (parsedAudio.series) result.series = parsedAudio.series;
-          if (parsedAudio.date_preached) {
-            let d = parsedAudio.date_preached;
-            if (/^\d{4}$/.test(d)) {
-              d = `${d}-01-01`;
-            }
-            result.date_preached = d;
+        const { tag, image, note } = await readAudioTags(audio_url.trim());
+        if (tag) {
+          if (tag.title && !result.title) result.title = tag.title;
+          if (tag.artist) result.preacher = tag.artist;
+          if (tag.album) result.series = tag.album;
+          if (tag.date) {
+            // Tags hold "2024", "2024-05" or a full timestamp; the form needs YYYY-MM-DD.
+            const [, year, month, day] = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/.exec(tag.date) ?? [];
+            if (year) result.date_preached = `${year}-${month ?? '01'}-${day ?? '01'}`;
           }
-          if (parsedAudio.artwork_url) result.artwork_url = parsedAudio.artwork_url;
-          if (parsedAudio.error) result.audio_error = parsedAudio.error;
         }
+        result.artwork_image = image;
+        if (note) result.audio_error = note;
       } catch (audioErr) {
         console.warn("[ENRICH API] Audio extraction note:", getErrorMessage(audioErr));
         result.audio_error = getErrorMessage(audioErr) || "Audio metadata extraction skipped or failed";

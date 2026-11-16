@@ -90,6 +90,24 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
     }
   };
 
+  // Compresses an image to a lightweight WebP (max 600x600, ~35KB), stores it and returns its URL.
+  const uploadArtwork = async (file: File): Promise<string> => {
+    const compressedBlob = await compressImageClient(file, 600, 600, 0.85);
+    const uploadData = new FormData();
+    uploadData.append("file", compressedBlob, "artwork.webp");
+
+    const res = await fetch("/api/admin/upload-artwork", {
+      method: "POST",
+      body: uploadData,
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to upload image");
+    }
+    const json = await res.json();
+    return json.url;
+  };
+
   // 1-Click Auto-Enrichment Handler
   const handleAutoEnrich = async () => {
     if (!formData.audio_url.trim() && !formData.transcript_text.trim() && !formData.title.trim()) {
@@ -152,7 +170,6 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
         ...prev,
         title: enriched.title || prev.title,
         date_preached: enriched.date_preached || prev.date_preached,
-        artwork_url: enriched.artwork_url || prev.artwork_url,
         preacher_id: matchedPreacherId || prev.preacher_id,
         series_id: matchedSeriesId || prev.series_id,
         ai_summary: enriched.ai_summary || prev.ai_summary,
@@ -165,7 +182,28 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
         prayer_focus: enriched.prayer_focus || prev.prayer_focus
       }));
 
-      setEnrichmentNotice("✨ Metadata enriched from audio ID3 tags, artwork, and AI sermon analysis! All fields below remain fully editable.");
+      // The cover embedded in the MP3 comes back as raw bytes: store it the same
+      // way as a manual upload. An artwork the admin already set is left alone.
+      let artworkNote = "";
+      if (formData.artwork_url.trim()) {
+        artworkNote = " The existing artwork was kept.";
+      } else if (enriched.artwork_image?.base64) {
+        setIsUploadingArtwork(true);
+        try {
+          const bytes = Uint8Array.from(atob(enriched.artwork_image.base64), c => c.charCodeAt(0));
+          const url = await uploadArtwork(new File([bytes], "cover", { type: enriched.artwork_image.mime }));
+          setFormData(prev => ({ ...prev, artwork_url: prev.artwork_url || url }));
+          artworkNote = " Artwork was extracted from the audio file.";
+        } catch (err) {
+          artworkNote = ` Artwork was found but could not be saved (${getErrorMessage(err)}). Please upload it manually.`;
+        } finally {
+          setIsUploadingArtwork(false);
+        }
+      } else if (enriched.audio_error) {
+        artworkNote = ` Artwork not extracted: ${enriched.audio_error}`;
+      }
+
+      setEnrichmentNotice(`✨ Enrichment finished.${artworkNote} All fields below remain fully editable.`);
     } catch (err) {
       setStatus({ type: 'error', msg: `Enrichment error: ${getErrorMessage(err)}` });
     } finally {
@@ -450,21 +488,8 @@ export function SermonForm({ initialData, onSuccess, onCancel }: SermonFormProps
                   if (!file) return;
                   setIsUploadingArtwork(true);
                   try {
-                    // Automatically compress & convert to lightweight WebP (max 600x600, ~35KB)
-                    const compressedBlob = await compressImageClient(file, 600, 600, 0.85);
-                    const uploadData = new FormData();
-                    uploadData.append("file", compressedBlob, "artwork.webp");
-                    
-                    const res = await fetch("/api/admin/upload-artwork", {
-                      method: "POST",
-                      body: uploadData,
-                    });
-                    if (!res.ok) {
-                      const err = await res.json();
-                      throw new Error(err.error || "Failed to upload image");
-                    }
-                    const json = await res.json();
-                    setFormData(prev => ({ ...prev, artwork_url: json.url }));
+                    const url = await uploadArtwork(file);
+                    setFormData(prev => ({ ...prev, artwork_url: url }));
                   } catch (err) {
                     setStatus({ type: 'error', msg: `Upload failed: ${getErrorMessage(err)}` });
                   } finally {

@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 import { getErrorMessage } from "@/lib/utils";
 import { logAdminAction } from "@/lib/server/logs";
+import { refreshAllPublicPages } from "@/lib/server/revalidate";
 
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -75,6 +76,7 @@ export async function POST(req: Request) {
 
     if (deleteError) {
       console.error("[MERGE SERIES] Failed to delete duplicates:", deleteError);
+      refreshAllPublicPages(); // the sermons did move
       return NextResponse.json({ error: `Sermons re-parented but failed to delete duplicates: ${deleteError.message}` }, { status: 500 });
     }
 
@@ -82,6 +84,7 @@ export async function POST(req: Request) {
       merged_series_ids: idsToRemove,
       sermons_moved: movedRows?.length ?? 0,
     });
+    refreshAllPublicPages();
 
     return NextResponse.json({
       success: true,

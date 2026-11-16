@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database, SeriesInsert } from "@/types/database";
 import { getErrorMessage } from "@/lib/utils";
 import { logAdminAction } from "@/lib/server/logs";
+import { refreshAllPublicPages } from "@/lib/server/revalidate";
 
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -65,6 +66,7 @@ export async function POST(req: Request) {
 
       if (!error) {
         await logAdminAction(user, "series.save", { type: "series", id: data?.id }, { name: trimmedName, thumbnail: Boolean(trimmedThumbnail) });
+        refreshAllPublicPages();
         return NextResponse.json({ data });
       }
       console.warn("[SERIES API] Could not insert thumbnail_url, falling back to name only:", error.message);
@@ -79,6 +81,7 @@ export async function POST(req: Request) {
 
     if (fallbackError) throw fallbackError;
     await logAdminAction(user, "series.save", { type: "series", id: fallbackData?.id }, { name: trimmedName });
+    refreshAllPublicPages();
     return NextResponse.json({ data: fallbackData });
 
   } catch (error) {
@@ -118,6 +121,7 @@ export async function PATCH(req: Request) {
 
     if (error) throw error;
     await logAdminAction(user, "series.update", { type: "series", id }, { fields: Object.keys(updatePayload) });
+    refreshAllPublicPages();
     return NextResponse.json({ data });
   } catch (error) {
     return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
@@ -150,6 +154,7 @@ export async function DELETE(req: Request) {
 
     if (error) throw error;
     await logAdminAction(user, "series.delete", { type: "series", id });
+    refreshAllPublicPages();
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });

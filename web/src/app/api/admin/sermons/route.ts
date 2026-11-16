@@ -7,6 +7,7 @@ import type { SermonUpdate } from '@/types/database';
 import { logAdminAction } from "@/lib/server/logs";
 import { removeUnusedArtwork } from "@/lib/server/artwork";
 import { getServiceClient } from "@/lib/server/service-client";
+import { refreshAfterSermonChange } from "@/lib/server/revalidate";
 
 export async function GET(request: Request) {
   try {
@@ -133,6 +134,7 @@ export async function POST(request: Request) {
 
     const created = insertedData as { id?: string; title?: string } | null;
     await logAdminAction(user, 'sermon.create', { type: 'sermon', id: created?.id }, { title: created?.title });
+    refreshAfterSermonChange(created?.id);
 
     return NextResponse.json({ data: insertedData }, { status: 201 });
 
@@ -193,6 +195,7 @@ export async function PATCH(request: Request) {
     if (dbError) throw dbError;
 
     await logAdminAction(user, 'sermon.update', { type: 'sermon', id }, { fields: Object.keys(payload) });
+    refreshAfterSermonChange(id);
 
     return NextResponse.json({ data: updatedData });
 
@@ -247,6 +250,7 @@ export async function DELETE(request: Request) {
     if (dbError) throw dbError;
 
     await logAdminAction(user, 'sermon.delete', { type: 'sermon', id }, { deleted: snapshot ?? null });
+    refreshAfterSermonChange(id);
 
     // Remove the sermon's artwork file if no other sermon or series uses it
     const artworkUrl = (snapshot as { artwork_url?: string | null } | null)?.artwork_url;

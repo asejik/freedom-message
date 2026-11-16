@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 import { getErrorMessage } from "@/lib/utils";
 import { logAdminAction } from "@/lib/server/logs";
+import { refreshAllPublicPages } from "@/lib/server/revalidate";
 
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -112,6 +113,7 @@ export async function PATCH(req: Request) {
 
     if (error) throw error;
     await logAdminAction(user, "preacher.update", { type: "preacher", id }, { name: name.trim() });
+    refreshAllPublicPages();
     return NextResponse.json({ data });
   } catch (error) {
     return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
@@ -144,6 +146,7 @@ export async function DELETE(req: Request) {
 
     if (error) throw error;
     await logAdminAction(user, "preacher.delete", { type: "preacher", id });
+    refreshAllPublicPages();
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
